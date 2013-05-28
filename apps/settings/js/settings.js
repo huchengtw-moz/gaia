@@ -551,7 +551,6 @@ var Settings = {
 window.addEventListener('load', function loadSettings() {
   window.removeEventListener('load', loadSettings);
   window.addEventListener('change', Settings);
-
   Settings.init();
   handleRadioAndCardState();
 
@@ -731,6 +730,38 @@ window.addEventListener('load', function loadSettings() {
         link.onclick = null;
       }
     }
+
+    function disableSIMRelatedSubpanels(disable) {
+      const itemIds = ['call-settings',
+                       'data-connectivity',
+                       'simSecurity-settings'];
+
+      for (var id = 0; id < itemIds.length; id++) {
+        var item = document.getElementById(itemIds[id]);
+        if (!item) {
+          continue;
+        }
+
+        if (disable) {
+          item.classList.add('disabled');
+        } else {
+          item.classList.remove('disabled');
+        }
+      }
+    }
+
+    var mobileConnection = window.navigator.mozMobileConnection;
+    if (!mobileConnection) {
+      disableSIMRelatedSubpanels(true);
+    }
+
+    var cardState = mobileConnection.cardState;
+    disableSIMRelatedSubpanels(cardState !== 'ready');
+
+    mobileConnection.addEventListener('cardstatechange', function() {
+      var cardState = mobileConnection.cardState;
+      disableSIMRelatedSubpanels(cardState !== 'ready');
+    });
 
     var key = 'ril.radio.disabled';
 
