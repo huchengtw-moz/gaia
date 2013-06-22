@@ -166,6 +166,7 @@ var KeypadManager = {
     }
 
     TonePlayer.init(this._onCall ? 'telephony' : 'normal');
+    VoiceClipPlayer.init();
 
     this.render();
     loader.load(['/shared/style/action_menu.css',
@@ -304,7 +305,8 @@ var KeypadManager = {
       if (key != 'delete') {
         if (keypadSoundIsEnabled) {
           // We do not support long press if not on a call
-          TonePlayer.start(gTonesFrequencies[key], !this._onCall);
+          // TonePlayer.start(gTonesFrequencies[key], !this._onCall);
+          VoiceClipPlayer.start(key);
         }
       }
 
@@ -422,7 +424,8 @@ var KeypadManager = {
 
     telephony.stopTone();
     telephony.startTone(value);
-    TonePlayer.start(gTonesFrequencies[value], true);
+    // TonePlayer.start(gTonesFrequencies[value], true);
+    VoiceClipPlayer.start(key);
     setTimeout(function nextTick() {
       telephony.stopTone();
       TonePlayer.stop();
