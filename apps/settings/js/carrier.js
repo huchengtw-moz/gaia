@@ -226,6 +226,7 @@ navigator.mozL10n.ready(function carrierSettings() {
 
         var newApnsForIccCard = [];
         var apnsForIccCard = apnsForIccCards[iccCardIndex];
+        var equalTypeFound = false;
         for (var apnIndex = 0; apnIndex < apnsForIccCard.length; apnIndex++) {
 
           var apn = apnsForIccCard[apnIndex];
@@ -253,9 +254,14 @@ navigator.mozL10n.ready(function carrierSettings() {
                 newApnsForIccCard.push(apn);
               }
             }
+            equalTypeFound = true;
           } else {
             newApnsForIccCard.push(apn);
           }
+        }
+        if (!equalTypeFound) {
+          apnToBeMerged.types = [type];
+          newApnsForIccCard.push(apnToBeMerged);
         }
         newApnsForIccCards.push(newApnsForIccCard);
       }
