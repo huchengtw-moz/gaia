@@ -183,6 +183,11 @@ var Camera = {
   _pendingPick: null,
   _savedMedia: null,
 
+  _lastMotionFilteredTime: 0,
+  _lastMotionData: null,
+  _orientationChangeTimer: 0,
+  _calculatedOrientation: 0,
+
   // The minimum available disk space to start recording a video.
   RECORD_SPACE_MIN: 1024 * 1024 * 2,
 
@@ -195,6 +200,24 @@ var Camera = {
   // Minimum video duration length for creating a video that contains at least
   // few samples, see bug 899864.
   MIN_RECORDING_TIME: 500,
+
+  // The time interval is allowed between two orientation change event
+  ORIENTATION_CHANGE_INTERVAL: 300,
+
+  // The maximum sample inter-arrival time in milliseconds. If the acceleration
+  // samples are further apart than this amount in time, we reset the state of
+  // the low-pass filter and orientation properties.  This helps to handle
+  // boundary conditions when the app becomes invisisble, wakes from suspend or
+  // there is a significant gap in samples.
+  MAX_MOTION_FILTER_TIME: 1000,
+
+  // Filtering adds latency proportional the time constant (inversely
+  // proportional to the cutoff frequency) so we don't want to make the time
+  // constant too large or we can lose responsiveness.  Likewise we don't want
+  // to make it too small or we do a poor job suppressing acceleration spikes.
+  // Empirically, 100ms seems to be too small and 500ms is too large. Android
+  // default is 200.
+  MOTION_FILTER_TIME_CONSTANT: 200,
 
   get overlayTitle() {
     return document.getElementById('overlay-title');
@@ -326,7 +349,7 @@ var Camera = {
       '#toggle-camera, #gallery-button span { -moz-transform: rotate(0deg); }';
     var insertId = this._styleSheet.cssRules.length - 1;
     this._orientationRule = this._styleSheet.insertRule(css, insertId);
-    window.addEventListener('deviceorientation', this.orientChange.bind(this));
+    window.addEventListener('devicemotion', this.handleMotionEvent.bind(this));
 
     this.toggleButton.addEventListener('click', this.toggleCamera.bind(this));
     this.toggleFlashBtn.addEventListener('click', this.toggleFlash.bind(this));
@@ -838,25 +861,94 @@ var Camera = {
     });
   },
 
-  orientChange: function camera_orientChange(e) {
-    // Orientation is 0 starting at 'natural portrait' increasing
-    // going clockwise
-    var orientation =
-      (e.beta < -45 && e.beta > -135) ? 0 :
-      (e.beta > 45 && e.beta < 135) ? 180 :
-      (e.gamma < -45 && e.gamma > -135) ? 90 :
-      (e.gamma > 45 && e.gamma < 135) ? 270 :
-      this._phoneOrientation;
+  handleMotionEvent: function camera_handleMotionEvent(e) {
 
-    if (orientation !== this._phoneOrientation) {
+    var now = new Date().getTime();
+    var x = e.accelerationIncludingGravity.x;
+    var y = e.accelerationIncludingGravity.y;
+    var z = e.accelerationIncludingGravity.z;
+    var filterReset = false;
+
+    // The motion event is too far from last filtered data, reset the data.
+    // This may be the case of hide app and go back.
+    if (now > this._lastMotionFilteredTime + this.MAX_MOTION_FILTER_TIME) {
+      // clear data to re-initialize it.
+      this._lastMotionData = null;
+      filterReset = true;
+    }
+    // applying filter to x, y, z
+    if (this._lastMotionData) {
+      // use time to calculate alpha
+      var diff = now - this._lastMotionFilteredTime;
+      var alpha = diff / (this.MOTION_FILTER_TIME_CONSTANT + diff);
+
+      // weight the x, y, z with alpha
+      x = alpha * (x - this._lastMotionData.x) + this._lastMotionData.x;
+      y = alpha * (y - this._lastMotionData.y) + this._lastMotionData.y;
+      z = alpha * (z - this._lastMotionData.z) + this._lastMotionData.z;
+    }
+
+    // update the filter state.
+    this._lastMotionData = {x: x, y: y, z: z};
+    this._lastMotionFilteredTime = now;
+
+    // We don't need to process the event when filter is reset or no data.
+    if (filterReset) {
+      return;
+    }
+
+    // We only want to measure gravity, so ignore events when there is
+    // significant acceleration in addition to gravity because this means the
+    // user is moving the phone.
+    if ((x * x + y * y + z * z) > 110) {
+      return;
+    }
+    // If the camera is close to horizontal (pointing up or down) then we can't
+    // tell what orientation the user intends, so we just return now without
+    // changing the orientation. The constant 9.2 is the force of gravity (9.8)
+    // times the cosine of 20 degrees. So if the phone is within 20 degrees of
+    // horizontal, we will never change the orientation.
+    if (z > 9.2 || z < -9.2) {
+      return;
+    }
+
+    // use atan2(-x, y) to calculate the rotation on z axis.
+    var orientationAngle = (Math.atan2(-x, y) * 180 / Math.PI);
+    // The value range of atan2 is [-180, 180]. To have the [0, 360] value
+    // range, we need to add 360 degree when the angle is less than 0.
+    if (orientationAngle < 0) {
+      orientationAngle += 360;
+    }
+
+    // find the nearest orientation.
+    // If an angle is >= 45 degrees, we view it as 90 degree. If an angle is <
+    // 45, we view it as 0 degree.
+    var orientation = (((orientationAngle + 45) / 90) >> 0) % 4 * 90;
+
+    if (orientation === this._calculatedOrientation) {
+      return;
+    }
+
+    // When phone keeps the same orientation for ORIENTATION_CHANGE_INTERVAL
+    // time interval, we change the orientation. Otherwrise the change is
+    // cancelled. This may be that user rotates phone rapidly but captured by
+    // device motion.
+    if (this._orientationChangeTimer) {
+      window.clearTimeout(this._orientationChangeTimer);
+    }
+
+    // create timer for waiting to rotate the phone
+    this._calculatedOrientation = orientation;
+    this._orientationChangeTimer = window.setTimeout((function doOrient() {
       var rule = this._styleSheet.cssRules[this._orientationRule];
       // PLEASE DO SOMETHING KITTENS ARE DYING
       // Setting MozRotate to 90 or 270 causes element to disappear
       rule.style.MozTransform = 'rotate(' + -(orientation + 1) + 'deg)';
-      this._phoneOrientation = orientation;
+      this._phoneOrientation = this._calculatedOrientation;
 
       Filmstrip.setOrientation(orientation);
-    }
+      this._orientationChangeTimer = 0;
+    }).bind(this), this.ORIENTATION_CHANGE_INTERVAL);
   },
 
   setCaptureMode: function camera_setCaptureMode(mode) {
