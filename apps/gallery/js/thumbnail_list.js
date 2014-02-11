@@ -73,9 +73,13 @@ ThumbnailList.prototype.addItem = function(item) {
   }
 
   var group = getItemGroup(item);
-  var thumbnail = group.addItem(item);
+  // prepare thumbnail object
+  var thumbnail = new ThumbnailItem(item);
   this.groupMap[item.name] = group;
   this.thumbnailMap[item.name] = thumbnail;
+  // put on screen
+  group.addThumbnail(thumbnail);
+
   this.count++;
   return thumbnail;
 };
@@ -86,7 +90,7 @@ ThumbnailList.prototype.removeItem = function(filename) {
   }
 
   var group = this.groupMap[filename];
-  group.removeItem(this.thumbnailMap[filename]);
+  group.removeThumbnail(this.thumbnailMap[filename]);
   if (!group.getCount()) {
     this.container.removeChild(group.htmlNode);
     this.itemGroups.splice(this.itemGroups.indexOf(group), 1);
@@ -98,7 +102,7 @@ ThumbnailList.prototype.removeItem = function(filename) {
 
 ThumbnailList.prototype.reset = function() {
   for (var name in this.thumbnailMap) {
-    this.groupMap[name].removeItem(this.thumbnailMap[name]);
+    this.groupMap[name].removeThumbnail(this.thumbnailMap[name]);
   }
   this.container.innerHTML = '';
   this.thumbnailMap = {};

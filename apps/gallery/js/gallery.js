@@ -751,14 +751,20 @@ function setNFCSharing(enable) {
 
 // monitorChildVisibility() calls this when a thumbnail comes onscreen
 function thumbnailOnscreen(thumbnail) {
-  if (thumbnail.dataset.backgroundImage)
-    thumbnail.style.backgroundImage = thumbnail.dataset.backgroundImage;
+  var filename = thumbnail.dataset.filename;
+  var thumbnailItem = thumbnailList.thumbnailMap[filename];
+  if (thumbnailItem) {
+    thumbnailItem.showThumbnail(true);
+  }
 }
 
 // monitorChildVisibility() calls this when a thumbnail goes offscreen
 function thumbnailOffscreen(thumbnail) {
-  if (thumbnail.dataset.backgroundImage)
-    thumbnail.style.backgroundImage = null;
+  var filename = thumbnail.dataset.filename;
+  var thumbnailItem = thumbnailList.thumbnailMap[filename];
+  if (thumbnailItem) {
+    thumbnailItem.showThumbnail(false);
+  }
 }
 
 //

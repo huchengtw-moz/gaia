@@ -87,8 +87,8 @@ ThumbnailDateGroup.compareGroupID = function(id1, id2) {
 };
 
 // Instance methods
-ThumbnailDateGroup.prototype.addItem = function(item) {
-  if (!item) {
+ThumbnailDateGroup.prototype.addThumbnail = function(thumbnail) {
+  if (!thumbnail) {
     return;
   }
 
@@ -117,7 +117,6 @@ ThumbnailDateGroup.prototype.addItem = function(item) {
     }
   }
 
-  var thumbnail = new ThumbnailItem(item);
   // calculate the position.
   var insertPosition = getInsertPosition(thumbnail);
   // put into DOM tree.
@@ -125,19 +124,20 @@ ThumbnailDateGroup.prototype.addItem = function(item) {
                               this.container.children[insertPosition]);
   // insert thumbnail view into array
   this.thumbnails.splice(insertPosition, 0, thumbnail);
-  return thumbnail;
 };
 
 ThumbnailDateGroup.prototype.getCount = function() {
   return this.thumbnails.length;
 };
 
-ThumbnailDateGroup.prototype.removeItem = function(thumbnail) {
+ThumbnailDateGroup.prototype.removeThumbnail = function(thumbnail) {
   var idx = this.thumbnails.indexOf(thumbnail);
   if (idx < 0) {
     return;
   }
   this.thumbnails.splice(idx, 1);
-  URL.revokeObjectURL(thumbnail.htmlNode.dataset.backgroundImage.slice(5, -2));
+  if (thumbnail.url) {
+    thumbnail.showThumbnail(false);
+  }
   this.container.removeChild(thumbnail.htmlNode);
 };
