@@ -1,5 +1,7 @@
+/* global AppWindow, Applications, BrowserConfigHelper, widgetManager */
 'use strict';
-(function(window) {
+
+(function(exports) {
   /**
    * HomescreenWindow creates a instance of homescreen by give manifestURL.
    *
@@ -153,7 +155,52 @@
   HomescreenWindow.prototype.view = function hw_view() {
     return '<div class="appWindow homescreen" id="homescreen">' +
               '<div class="fade-overlay"></div>' +
+              '<div class="widget-overlay"></div>' +
            '</div>';
+  };
+
+  HomescreenWindow.prototype._fetchElements = function hw_fetchElements() {
+    AppWindow.prototype._fetchElements.call(this);
+    this.widgetOverlay = this.element.querySelector('.widget-overlay');
+  };
+
+  HomescreenWindow.prototype.render = function hw_render() {
+    AppWindow.prototype.render.call(this);
+
+    // XXX: For testing widget only. Remove when widget IAC is completed.
+    setTimeout(function() {
+
+      function getAppURL(origin, path) {
+        path = path ? path : '/';
+        return window.location.protocol + '//' + origin +
+              (window.location.port ? (':' + window.location.port) : '') + path;
+      }
+
+      console.log(widgetManager.draw([{
+        requestId: 'w001',
+        action: 'add',
+        args: {
+          x: 150,
+          y: 10,
+          w: 100,
+          h: 100,
+          opacity: 0.5,
+          origin: getAppURL('clock.gaiamobile.org')
+        }
+      },
+      {
+        requestId: 'w002',
+        action: 'add',
+        args: {
+          x: 150,
+          y: 230,
+          w: 100,
+          h: 150,
+          opacity: 0.5,
+          origin: getAppURL('calendar.gaiamobile.org')
+        }
+      }]));
+    }.bind(this), 5000);
   };
 
   HomescreenWindow.prototype.eventPrefix = 'homescreen';
@@ -200,5 +247,5 @@
     this.fadeOverlay.classList.remove('hidden');
   };
 
-  window.HomescreenWindow = HomescreenWindow;
+  exports.HomescreenWindow = HomescreenWindow;
 }(window));

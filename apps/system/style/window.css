@@ -332,6 +332,21 @@
   visibility: hidden;
 }
 
+.appWindow > .widget-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.widget-overlay > .overlay {
+  position: absolute;
+  opacity: 0.5;
+  width: 100px;
+  height: 100px;
+}
+
 .appWindow.fadeout > .fade-overlay {
   visibility: visible;
 }
@@ -416,7 +431,11 @@
 }
 
 .appWindow > .fade-overlay {
+  z-index: 2048;
+}
+.appWindow > .widget-overlay {
   z-index: 1024;
+  pointer-events: none;
 }
 
 .appWindow > .chrome {
