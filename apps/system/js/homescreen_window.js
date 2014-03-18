@@ -75,7 +75,7 @@
       var app = window.applications.getByManifestURL(manifestURL);
       this.origin = app.origin;
       this.manifestURL = app.manifestURL;
-      this.url = app.origin + '/index.html#root';
+      this.url = app.origin + app.manifest.launch_path;
 
       this.browser_config =
         new window.BrowserConfigHelper(this.origin, this.manifestURL);
@@ -173,7 +173,8 @@
     if (!this.element) {
       this.render();
     } else if (reset) {
-      this.browser.element.src = this.browser_config.url + new Date();
+      this.browser.element.src = this.browser_config.url +
+        (this.browser_config.url.indexOf('#') < 0 ? '#' : '?') + new Date();
     }
 
     return this.element;
