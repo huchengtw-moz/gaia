@@ -139,8 +139,9 @@ function execute(config) {
   }
 
   // Set the homescreen URL
-  settings['homescreen.manifestURL'] = utils.gaiaManifestURL('homescreen',
-    config.GAIA_SCHEME, config.GAIA_DOMAIN, config.GAIA_PORT);
+  settings['homescreen.manifestURL'] = utils.gaiaManifestURL(
+    'homescreen-tv-arch1', config.GAIA_SCHEME, config.GAIA_DOMAIN,
+    config.GAIA_PORT);
 
   // Set the ftu manifest URL
   if (config.NOFTU === '0') {
