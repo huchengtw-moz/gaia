@@ -105,6 +105,10 @@
       "rules": {
         "minimumAccessLevel": "certified"
       }
+    },
+    "homescreen-request": {
+      "description": "Communication from Homescreen to System",
+      "rules": {}
     }
   },
   "datastores-owned": {
