@@ -28,3 +28,4 @@ test_apps/sheet-app-4
 test_apps/test-findmydevice
 test_apps/homescreen-tv-arch1
 test_apps/2048widget
+test_apps/clockwidget
