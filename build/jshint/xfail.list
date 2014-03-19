@@ -692,5 +692,6 @@ shared/js/omadrm/fl.js
 shared/js/operator_variant_helper.js
 shared/js/simple_phone_matcher.js
 shared/js/tag_visibility_monitor.js
+shared/js/uuid.js
 shared/js/visibility_monitor.js
 shared/resources/apn/query.js
