@@ -15,5 +15,9 @@ apps/music
 apps/pdfjs
 apps/video
 apps/wallpaper
+apps/bunnymark-easel
+apps/mobile-html5-gaming-test
+apps/graphic-tester
+test_apps/template
 external-apps/*
 outoftree_apps/*

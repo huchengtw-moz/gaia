@@ -862,3 +862,16 @@ shared/test/integration/profile_builder.js
 shared/test/integration/server.js
 shared/test/integration/server_child.js
 shared/test/integration/setup.js
+apps/bunnymark-easel/js/preloadjs-NEXT.min.js
+apps/bunnymark-easel/js/jquery.min.js
+apps/bunnymark-easel/js/easeljs-NEXT.min.js
+apps/bunnymark-easel/js/bunnyBenchMark.js
+apps/bunnymark-easel/js/Stage.js
+apps/bunnymark-easel/js/SpriteStage.js
+apps/bunnymark-easel/js/SpriteContainer.js
+apps/bunnymark-easel/js/Matrix2D.js
+apps/bunnymark-easel/js/Math2.js
+apps/bunnymark-easel/js/DisplayObject.js
+apps/bunnymark-easel/js/DOMElement.js
+apps/bunnymark-easel/js/BitmapText2.js
+apps/bunnymark-easel/js/stats.min.js

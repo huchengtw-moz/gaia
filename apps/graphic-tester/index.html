@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
+    <meta charset="utf-8">
+    <title>Browser</title>
+    <style>
+.panel {
+  text-align: center;
+  -moz-user-select: none;
+  /*display: inline;*/
+}
+#menu > button {
+  width: 24%;
+}
+.add {
+  text-align: center;
+  display: inline-block;
+  font-size: 1.1rem;
+  border: 1px solid;
+}
+.oframe {
+  display: inline-block;
+  border: none;
+}
+.app-frame {
+  display: block;
+  width: 100%;
+}
+.frame-close-button {
+  float: right;
+  text-align: right;
+  width: 40%;
+  font-size: 1.2rem;
+}
+
+#pages {
+ font-size: 1.2rem;
+  position: absolute;
+  left: 0rem;
+  top: 5rem;
+  bottom: 0rem;
+  right: 0rem;
+  overflow: hidden;
+}
+
+.page-indicator-item {
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 0.2rem;
+  font-size: 120%;
+  opacity: 0.3;
+  transition: opacity 0.2s ease;
+}
+
+.page-indicator-item.focus {
+  opacity: 1;
+}
+
+#panel-container {
+  overflow: visible;
+  width: 100%;
+  height: calc(100% - 5rem);
+  position: relative;
+  white-space: nowrap;
+  transition: left 0.5s ease;
+  background-color: black;
+  background-image: url('FXOS_Violet_Daisy_L.jpg');
+  background-repeat: repeat-x;
+}
+
+.iframe-page {
+  height: 100%;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: top;
+  white-space: normal;
+}
+    </style>
+    <script defer src="js/graphic_tester.js"></script>
+  </head>
+  <body>
+    <div id="menu">
+      <button id="static" class="add">+static</button>
+      <button id="animation-3d" class="add">+animated-3d</button>
+      <button id="animation-2d" class="add">+animated-2d</button>
+      <button id="add-page" class="add">+page</button>
+      <button id="remove-page" class="add">-page</button>
+      <button id="page-up" class="add">page up</button>
+      <button id="page-down" class="add">page down</button>
+    </div>
+    <div id="pages">
+      <div id="page-indicator"></div>
+      <div id="panel-container"></div>
+    </div>
+  </body>
+</html>

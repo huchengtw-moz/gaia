@@ -82,3 +82,6 @@ shared/style/tabs.css 0 1
 shared/style/edit_mode.css 0 2
 shared/style/action_menu.css 0 1
 shared/style/headers.css 0 4
+apps/bunnymark-easel/css/normalize.css 8 9 
+apps/bunnymark-easel/css/main.css 4 9
+apps/mobile-html5-gaming-test/style/MobileHTML5GamingTest.css 0 3
