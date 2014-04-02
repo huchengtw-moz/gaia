@@ -50,7 +50,8 @@
        *
        * @listens webapps-launch
        */
-      if (applications.ready) {
+      if (Applications.ready) {
+        window.addEventListener('mozChromeEvent', this);
         window.addEventListener('webapps-launch', this);
         window.addEventListener('webapps-close', this);
         window.addEventListener('open-app', this);
@@ -58,6 +59,7 @@
         var self = this;
         window.addEventListener('applicationready', function appReady(e) {
           window.removeEventListener('applicationready', appReady);
+          window.addEventListener('mozChromeEvent', self);
           window.addEventListener('webapps-launch', self);
           window.addEventListener('webapps-close', self);
           window.addEventListener('open-app', self);
@@ -92,6 +94,8 @@
       if (!config.manifest) {
         return;
       }
+
+      var type = evt.type === 'mozChromeEvent' ? detail.type : evt.type;
 
       switch (evt.type) {
         case 'webapps-launch':
