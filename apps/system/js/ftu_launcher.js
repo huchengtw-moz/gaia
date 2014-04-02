@@ -135,6 +135,8 @@ var FtuLauncher = {
     var self = this;
     FtuPing.ensurePing();
     window.asyncStorage.getItem('ftu.enabled', function getItem(launchFTU) {
+      // XXX: Force skip FTU launching for TV
+      launchFTU = false;
       if (launchFTU === false) {
         self.skip();
         return;

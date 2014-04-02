@@ -69,6 +69,9 @@ window.addEventListener('load', function startup() {
   window.addEventListener('ftuskip', doneWithFTU);
 
   window.sourceView = new SourceView();
+  window.widgetFactory = new WidgetFactory();
+  window.widgetManager = new WidgetManager();
+
   Shortcuts.init();
   ScreenManager.turnScreenOn();
   Places.init();
@@ -92,9 +95,6 @@ window.addEventListener('load', function startup() {
   navigator.mozL10n.ready(function l10n_ready() {
     window.mediaRecording = new MediaRecording().start();
   });
-
-  window.widgetFactory = new WidgetFactory();
-  window.widgetManager = new WidgetManager();
 
   // We need to be sure to get the focus in order to wake up the screen
   // if the phone goes to sleep before any user interaction.

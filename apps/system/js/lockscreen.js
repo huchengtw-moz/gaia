@@ -312,6 +312,11 @@
    */
   LockScreen.prototype.init =
   function ls_init() {
+    // XXX: Replace this by altering preference setting.
+    setTimeout(function() {
+      this.unlock(true); }
+    .bind(this), 5000);
+
     this.ready = true;
     this._unlocker = new window.LockScreenSlide();
     this.getAllElements();
