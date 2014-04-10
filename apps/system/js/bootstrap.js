@@ -70,7 +70,7 @@ window.addEventListener('load', function startup() {
 
   window.sourceView = new SourceView();
   window.widgetFactory = new WidgetFactory();
-  window.widgetManager = new WidgetManager();
+  window.widgetManager = new WidgetManager().start();
 
   Shortcuts.init();
   ScreenManager.turnScreenOn();

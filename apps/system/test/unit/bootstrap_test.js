@@ -39,6 +39,7 @@ requireApp('system/test/unit/mock_lockscreen_window_manager.js');
 requireApp('system/test/unit/mock_secure_window_factory.js');
 requireApp('system/test/unit/mock_activity_window_factory.js');
 requireApp('system/test/unit/mock_app_window_factory.js');
+requireApp('system/test/unit/mock_widget_manager.js');
 
 mocha.globals([
   'Shortcuts',
@@ -74,6 +75,7 @@ mocha.globals([
   'applications',
   'layoutManager',
   'permissionManager'
+  'widgetManager'
 ]);
 
 var mocksForBootstrap = new MocksHelper([
@@ -107,6 +109,7 @@ var mocksForBootstrap = new MocksHelper([
   'ActivityWindowFactory',
   'LockScreenWindowManager',
   'L10n'
+  'WidgetManager'
 ]).init();
 
 suite('system/Bootstrap', function() {
