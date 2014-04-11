@@ -2,7 +2,8 @@
 
 /* global MocksHelper, MockApplications, WidgetFactory */
 
-mocha.globals(['BrowserConfigHelper', 'WidgetFactory', 'ManifestHelper']);
+mocha.globals(['BrowserConfigHelper', 'WidgetFactory', 'ManifestHelper',
+               'applications']);
 
 require('/shared/test/unit/mocks/mock_manifest_helper.js');
 requireApp('system/test/unit/mock_applications.js');
@@ -36,8 +37,11 @@ suite('system/WidgetFactory', function() {
 
   var mockUI;
   var widgetFactory;
+  var realApplications;
 
   suiteSetup(function(done) {
+    realApplications = window.applications;
+    window.applications = MockApplications;
     mockUI = document.createElement('div');
     mockUI.classList.add('widget-overlay');
     document.body.appendChild(mockUI);
@@ -52,6 +56,7 @@ suite('system/WidgetFactory', function() {
 
   suiteTeardown(function() {
     document.body.removeChild(mockUI);
+    window.applications = realApplications;
   });
 
   test('create widget', function() {

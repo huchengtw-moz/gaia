@@ -7,9 +7,11 @@ mocha.globals(['SettingsListener', 'OrientationManager', 'System',
                'BrowserMixin', 'WidgetWindow']);
 
 requireApp('system/shared/test/unit/mocks/mock_settings_listener.js');
+requireApp('system/shared/test/unit/mocks/mock_manifest_helper.js');
 requireApp('system/test/unit/mock_orientation_manager.js');
 
 var mocksForWidgetWindow = new MocksHelper([
+  'ManifestHelper',
   'SettingsListener',
   'OrientationManager'
 ]).init();

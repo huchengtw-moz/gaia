@@ -5,7 +5,7 @@
           WidgetManager, WidgetFactory, CustomEvent */
 
 mocha.globals(['BrowserConfigHelper', 'widgetFactory', 'ManifestHelper',
-               'HomescreenLauncher']);
+               'homescreenLauncher', 'applications']);
 
 require('/shared/test/unit/mocks/mock_manifest_helper.js');
 requireApp('system/test/unit/mock_applications.js');
@@ -46,6 +46,9 @@ suite('system/WidgetManager', function() {
   var mockHomescreenWin;
   var mockWidgetFactory;
   var realWidgetFactory;
+  var realApplications;
+  var mockHomescreenLauncher;
+  var realHomescreenLauncher;
 
   suiteSetup(function() {
     mockUI = document.createElement('div');
@@ -55,16 +58,26 @@ suite('system/WidgetManager', function() {
     realWidgetFactory = window.widgetFactory;
     mockWidgetFactory = new WidgetFactory();
     window.widgetFactory = mockWidgetFactory;
+
+    realApplications = window.applications;
+    window.applications = MockApplications;
+
+    realHomescreenLauncher = window.homescreenLauncher;
+    mockHomescreenLauncher =  new MockHomescreenLauncher();
+    window.homescreenLauncher = mockHomescreenLauncher;
   });
 
   suiteTeardown(function() {
     document.body.removeChild(mockUI);
     window.widgetFactory = realWidgetFactory;
+    window.applications = realApplications;
+    window.homescreenLauncher = realHomescreenLauncher;
   });
 
   setup(function() {
     mockHomescreenWin = new MockHomescreenWindow();
-    MockHomescreenLauncher.mHomescreenWindow = mockHomescreenWin;
+    mockHomescreenLauncher.mFeedFixtures({ 'mHomescreenWindow':
+                                           mockHomescreenWin });
 
     MockApplications.mRegisterMockApp(fakeWidgetConfig1);
     widgetManager = new WidgetManager();

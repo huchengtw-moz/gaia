@@ -1,4 +1,4 @@
-/* global BrowserConfigHelper, WidgetWindow, Applications */
+/* global BrowserConfigHelper, WidgetWindow, applications */
 'use strict';
 
 (function(exports) {
@@ -9,7 +9,7 @@
   WidgetFactory.prototype = {
     createWidget: function(args) {
       var manifestURL = args.widgetOrigin + '/manifest.webapp';
-      var appInfo = Applications.getByManifestURL(manifestURL);
+      var appInfo = applications.getByManifestURL(manifestURL);
       if (!appInfo.manifest) {
         return;
       }

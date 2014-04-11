@@ -50,7 +50,7 @@
        *
        * @listens webapps-launch
        */
-      if (Applications.ready) {
+      if (applications.ready) {
         window.addEventListener('mozChromeEvent', this);
         window.addEventListener('webapps-launch', this);
         window.addEventListener('webapps-close', this);

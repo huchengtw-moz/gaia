@@ -1,4 +1,4 @@
-/* global widgetFactory, homescreenConnection, HomescreenLauncher */
+/* global widgetFactory, homescreenConnection, homescreenLauncher */
 'use strict';
 
 (function(exports) {
@@ -67,11 +67,11 @@
               command.args.widgetId);
             break;
           case 'hideall':
-            HomescreenLauncher.getHomescreen().hideWidgetLayer();
+            homescreenLauncher.getHomescreen().hideWidgetLayer();
             homescreenConnection.confirm(command.requestId, command.action);
             break;
           case 'showall':
-            HomescreenLauncher.getHomescreen().showWidgetLayer();
+            homescreenLauncher.getHomescreen().showWidgetLayer();
             homescreenConnection.confirm(command.requestId, command.action);
             break;
         }
