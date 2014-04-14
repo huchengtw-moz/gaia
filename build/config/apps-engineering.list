@@ -19,11 +19,14 @@ test_apps/test-receiver-1
 test_apps/test-receiver-2
 test_apps/test-receiver-inline
 test_apps/test-wappush
-test_apps/uitest
-test_apps/uitest-privileged
 test_apps/test-fxa-client
 test_apps/sheet-app-1
 test_apps/sheet-app-2
 test_apps/sheet-app-3
 test_apps/sheet-app-4
 test_apps/test-findmydevice
+test_apps/wtk-crash-page
+test_apps/wtk-keyboard-popup
+test_apps/wtk-mouse-event
+test_apps/wtk-touch-event
+test_apps/wtk-window-open
