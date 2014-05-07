@@ -212,6 +212,7 @@ PreferencesBuilder.prototype.setDeviceDebugPref = function() {
 };
 
 PreferencesBuilder.prototype.writePref = function() {
+  dump('@@@@@@@@@@:' + this.config.PROFILE_DIR);
   var userJs = utils.getFile(this.config.PROFILE_DIR, 'user.js');
   var content = '';
   for (var pref in this.prefs) {
