@@ -9,6 +9,7 @@ after_script: ./node_modules/.bin/travisaction $CI_ACTION after_script
 branches:
   only:
   - master
+  - build/Bug_1006357-build-all-in-travis-test
 env:
   matrix:
   - CI_ACTION=linters
