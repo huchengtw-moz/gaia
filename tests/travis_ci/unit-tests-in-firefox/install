@@ -12,4 +12,4 @@ echo 'Create all app list file'
 echo 'apps/*\ndev_apps/*' > ./all_apps_for_testing.list
 
 echo 'Downloading xulrunner-sdk and making profile for testing (more than 5 minutes)'
-DEBUG=1 DESKTOP=0 WGET_OPTS=-nv GAIA_APP_CONFIG=all_apps_for_testing.list make
+DEBUG=1 DESKTOP=0 WGET_OPTS=-nv GAIA_APP_CONFIG=./all_apps_for_testing.list make
