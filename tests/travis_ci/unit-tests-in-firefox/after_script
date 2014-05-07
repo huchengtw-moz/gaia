@@ -1,0 +1,1 @@
+[ -f "all_apps_for_testing.list" ] && rm all_apps_for_testing.list

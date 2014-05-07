@@ -5,5 +5,8 @@ make b2g
 echo 'Downloading & installing node dependencies'
 make common-install
 
+echo 'Create all app list file'
+echo 'apps/*\ndev_apps/*' > all_apps_for_testing.list
+
 echo 'Downloading xulrunner-sdk and making profile for testing (more than 5 minutes)'
-NO_LOCK_SCREEN=1 DEBUG=1 DESKTOP=0 WGET_OPTS=-nv make
+NO_LOCK_SCREEN=1 DEBUG=1 DESKTOP=0 WGET_OPTS=-nv GAIA_APP_CONFIG=all_apps_for_testing.list make
