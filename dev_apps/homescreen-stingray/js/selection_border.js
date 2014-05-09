@@ -45,14 +45,30 @@
       }
 
       var border = this._requestBorder();
-      var bounding = dom.getBoundingClientRect();
-      this._moveBorderTo(border, {
-                                   left: bounding.left,
-                                   top: bounding.top,
-                                   width: bounding.width,
-                                   height: bounding.height
-                                 });
+      if (border.offsetParent !== dom.offsetParent) {
+        var bounding = dom.offsetParent.getBoundingClientRect();
+        var borderBounding = border.getBoundingClientRect();
+        console.log(borderBounding.left - bounding.left);
+        console.log(borderBounding.top - bounding.top);
+        this._moveBorderTo(border, {
+                                     left: borderBounding.left - bounding.left,
+                                     top: borderBounding.top - bounding.top,
+                                     width: border.offsetWidth,
+                                     height: border.offsetHeight
+                                   });
+        dom.offsetParent.appendChild(border);
+      }
       this.selectedItems.push({ dom: dom, border: border });
+
+      //setTimeout(() => {
+        this._moveBorderTo(border, {
+                                     left: dom.offsetLeft,
+                                     top: dom.offsetTop,
+                                     width: dom.offsetWidth,
+                                     height: dom.offsetHeight
+                                   });
+      //});
+      
     },
     /**
      * select a rectangle area
@@ -131,7 +147,7 @@
       if (this.borders.length < SelectionBorder.MAX_SPARE_BORDERS) {
         this.borders.push(border);
       } else {
-        this.container.removeChild(border);
+        //this.container.removeChild(border);
       }
     },
     _requestBorder: function sb__requestBorder() {
@@ -139,7 +155,7 @@
       if (!border) {
         border = document.createElement('div');
         border.classList.add('selection-border');
-        this.container.appendChild(border);
+        //this.container.appendChild(border);
       } else {
         border.hidden = false;
       }
