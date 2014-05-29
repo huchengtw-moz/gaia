@@ -53,7 +53,9 @@
                 'lockscreen-appclose',
                 'screenchange',
                 'ftuopen',
-                'ftudone'
+                'ftudone',
+                'overlaystart',
+                'showlockscreenwindow'
                ]
     }
   };
@@ -75,6 +77,16 @@
     function lwm_handleEvent(evt) {
       var app = null;
       switch (evt.type) {
+        case 'overlaystart':
+          if (this.states.instance && this.states.instance.isActive()) {
+            this.states.instance.setVisible(false);
+          }
+          break;
+        case 'showlockscreenwindow':
+          if (this.states.instance && this.states.instance.isActive()) {
+            this.states.instance.setVisible(true);
+          }
+          break;
         case 'ftuopen':
           this.states.FTUOccurs = true;
           if (!this.states.instance) {
@@ -143,7 +155,7 @@
    */
   LockScreenWindowManager.prototype.startObserveSettings =
     function lwm_startObserveSettings() {
-      var listener = (val) => {
+      var enabledListener = (val) => {
         if ('false' === val ||
             false   === val) {
           this.states.enabled = false;
@@ -153,8 +165,19 @@
         }
       };
 
+      // FIXME(ggp) this is currently used by Find My Device
+      // to force locking. Should be replaced by a proper
+      // IAC API in the future.
+      var lockListener = (val) => {
+        if (true === val) {
+          this.openApp();
+        }
+      };
+
       window.SettingsListener.observe('lockscreen.enabled',
-          true, listener);
+          true, enabledListener);
+      window.SettingsListener.observe('lockscreen.lock-immediately',
+          false, lockListener);
     };
 
   /**

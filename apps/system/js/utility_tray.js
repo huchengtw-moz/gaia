@@ -12,6 +12,8 @@ var UtilityTray = {
 
   statusbar: document.getElementById('statusbar'),
 
+  statusbarIcons: document.getElementById('statusbar-icons'),
+
   grippy: document.getElementById('utility-tray-grippy'),
 
   screen: document.getElementById('screen'),
@@ -20,7 +22,7 @@ var UtilityTray = {
     var touchEvents = ['touchstart', 'touchmove', 'touchend'];
     touchEvents.forEach(function bindEvents(name) {
       this.overlay.addEventListener(name, this);
-      this.statusbar.addEventListener(name, this);
+      this.statusbarIcons.addEventListener(name, this);
       this.grippy.addEventListener(name, this);
     }, this);
 
@@ -41,6 +43,12 @@ var UtilityTray = {
     // Firing when user selected a new keyboard or canceled it.
     window.addEventListener('keyboardchanged', this);
     window.addEventListener('keyboardchangecanceled', this);
+
+    // Firing when user swipes down with a screen reader when focused on
+    // status bar.
+    window.addEventListener('statusbarwheel', this);
+    // Firing when user swipes up with a screen reader when focused on grippy.
+    this.grippy.addEventListener('wheel', this);
 
     this.overlay.addEventListener('transitionend', this);
 
@@ -80,10 +88,13 @@ var UtilityTray = {
       // When IME switcher shows, prevent the keyboard's focus getting changed.
       case 'keyboardimeswitchershow':
         this.overlay.addEventListener('mousedown', this._pdIMESwitcherShow);
+        this.statusbar.addEventListener('mousedown', this._pdIMESwitcherShow);
         break;
 
       case 'keyboardimeswitcherhide':
         this.overlay.removeEventListener('mousedown', this._pdIMESwitcherShow);
+        this.statusbar.removeEventListener('mousedown',
+                                           this._pdIMESwitcherShow);
         break;
 
       case 'screenchange':
@@ -97,11 +108,11 @@ var UtilityTray = {
         }
 
         if (target !== this.overlay && target !== this.grippy &&
-            evt.currentTarget !== this.statusbar) {
+            evt.currentTarget !== this.statusbarIcons) {
           return;
         }
 
-        if (target === this.statusbar || target === this.grippy) {
+        if (target === this.statusbarIcons || target === this.grippy) {
           evt.preventDefault();
         }
 
@@ -109,7 +120,7 @@ var UtilityTray = {
         break;
 
       case 'touchmove':
-        if (target === this.statusbar || target === this.grippy) {
+        if (target === this.statusbarIcons || target === this.grippy) {
           evt.preventDefault();
         }
 
@@ -117,16 +128,12 @@ var UtilityTray = {
         break;
 
       case 'touchend':
-        if (target === this.statusbar || target === this.grippy) {
+        if (target === this.statusbarIcons || target === this.grippy) {
           evt.preventDefault();
         }
 
         evt.stopImmediatePropagation();
         var touch = evt.changedTouches[0];
-        if (Rocketbar.enabled && !this.shown && !this.active &&
-            touch.pageX < this.screenWidth * Rocketbar.triggerWidth) {
-          Rocketbar.render(true);
-        }
 
         if (!this.active)
           return;
@@ -134,6 +141,16 @@ var UtilityTray = {
         this.active = false;
 
         this.onTouchEnd(touch);
+        break;
+
+      case 'statusbarwheel':
+        this.show();
+        break;
+      case 'wheel':
+        if (evt.deltaMode === evt.DOM_DELTA_PAGE && evt.deltaY &&
+          evt.deltaY > 0) {
+          this.hide();
+        }
         break;
 
       case 'transitionend':
@@ -147,22 +164,8 @@ var UtilityTray = {
     var screenRect = this.overlay.getBoundingClientRect();
     this.screenHeight = screenRect.height;
     this.screenWidth = screenRect.width;
-
-    // Show the rocketbar if it's enabled,
-    // Give a slightly larger left area, than right.
-    if (Rocketbar.enabled && !this.shown &&
-        touch.pageX < this.screenWidth * Rocketbar.triggerWidth) {
-      UtilityTray.hide();
-      return;
-    } else {
-      window.dispatchEvent(new CustomEvent('taskmanagerhide'));
-    }
-
-    Rocketbar.hide();
     this.active = true;
-
     this.startY = touch.pageY;
-
     this.screen.classList.add('utility-tray');
   },
 
@@ -189,7 +192,6 @@ var UtilityTray = {
   },
 
   onTouchEnd: function ut_onTouchEnd(touch) {
-
     // Prevent utility tray shows while the screen got black out.
     if (window.lockScreen && window.lockScreen.locked) {
       this.hide(true);
@@ -216,6 +218,7 @@ var UtilityTray = {
     if (instant || style.MozTransform == '') {
       this.screen.classList.remove('utility-tray');
     }
+    window.dispatchEvent(new CustomEvent('utility-tray-overlayclosed'));
 
     if (!alreadyHidden) {
       var evt = document.createEvent('CustomEvent');
@@ -231,6 +234,7 @@ var UtilityTray = {
     style.MozTransform = 'translateY(100%)';
     this.shown = true;
     this.screen.classList.add('utility-tray');
+    window.dispatchEvent(new CustomEvent('utility-tray-overlayopened'));
 
     if (!alreadyShown) {
       var evt = document.createEvent('CustomEvent');

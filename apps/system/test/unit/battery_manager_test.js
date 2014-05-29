@@ -14,8 +14,6 @@ var mocksForBatteryManager = new MocksHelper([
   'GestureDetector'
 ]).init();
 
-mocha.globals(['dispatchEvent']);
-
 suite('battery manager >', function() {
   var realBattery;
   var screenNode, notifNode, overlayNode;
@@ -117,11 +115,10 @@ suite('battery manager >', function() {
 
       test('should send batteryshutdown when battery is below threshold',
       function() {
-        var dispatchEventStub = this.sinon.stub(window, 'dispatchEvent')
-          .throws('should send batteryshutdown event');
-        dispatchEventStub.withArgs(sinon.match.has('type', 'batteryshutdown'));
+        var dispatchEventStub = this.sinon.stub(window, 'dispatchEvent');
         sendLevelChange(0.00);
-        assert.isTrue(dispatchEventStub.called);
+        sinon.assert.calledWithMatch(window.dispatchEvent,
+                                     { type: 'batteryshutdown' });
       });
     });
 

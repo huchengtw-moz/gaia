@@ -1,10 +1,6 @@
 (function() {
 'use strict';
 
-mocha.globals(['LockScreenWindowManager', 'LockScreen', 'LockScreenWindow',
-               'addEventListener', 'dispatchEvent', 'lockScreenWindowManager',
-               'lockScreen', 'SettingsListener']);
-
 requireApp('system/shared/test/unit/mocks/mock_manifest_helper.js');
 requireApp('system/test/unit/mock_lock_screen.js');
 requireApp('system/test/unit/mock_lockscreen_window.js');
@@ -141,6 +137,27 @@ suite('system/LockScreenWindowManager', function() {
           detail: { screenEnabled: true } });
       assert.isTrue(stubOpenApp.called,
         'the LockScreenWindow is not instantiated after the FTU was closed.');
+    });
+
+    test('Send lockscreen window to background while overlay is there.',
+      function() {
+        var app = new window.MockLockScreenWindow();
+        this.sinon.stub(app, 'isActive').returns(true);
+        window.lockScreenWindowManager.states.instance = app;
+        var stubSetVisible = this.sinon.stub(app, 'setVisible');
+        window.lockScreenWindowManager.handleEvent( { type: 'overlaystart' } );
+        assert.isTrue(stubSetVisible.calledWith(false));
+      });
+
+    test('Send lockscreen window to foreground.', function() {
+      var app = new window.MockLockScreenWindow();
+      this.sinon.stub(app, 'isActive').returns(true);
+      window.lockScreenWindowManager.states.instance = app;
+      var stubSetVisible = this.sinon.stub(app, 'setVisible');
+      window.lockScreenWindowManager.handleEvent({
+        type: 'showlockscreenwindow'
+      });
+      assert.isTrue(stubSetVisible.calledWith(true));
     });
   });
 });

@@ -21,6 +21,9 @@ requireApp('communications/contacts/test/unit/mock_details_dom.js.html');
 
 require('/shared/js/text_normalizer.js');
 require('/shared/js/contacts/import/utilities/misc.js');
+require('/shared/js/contacts/utilities/dom.js');
+require('/shared/js/contacts/utilities/templates.js');
+require('/shared/js/contacts/utilities/event_listeners.js');
 require('/shared/test/unit/mocks/mock_contact_all_fields.js');
 require('/shared/test/unit/mocks/mock_lazy_loader.js');
 require('/shared/test/unit/mocks/mock_multi_sim_action_button.js');
@@ -28,9 +31,6 @@ require('/dialer/test/unit/mock_mmi_manager.js');
 require('/dialer/test/unit/mock_telephony_helper.js');
 
 requireApp('communications/contacts/js/views/details.js');
-requireApp('communications/contacts/js/utilities/event_listeners.js');
-requireApp('communications/contacts/js/utilities/templates.js');
-requireApp('communications/contacts/js/utilities/dom.js');
 requireApp('communications/contacts/test/unit/mock_navigation.js');
 requireApp('communications/contacts/test/unit/mock_contacts.js');
 requireApp('communications/contacts/test/unit/mock_contacts_list_obj.js');
@@ -75,8 +75,6 @@ var SCALE_RATIO = 1;
 if (!window.ActivityHandler) {
   window.ActivityHandler = null;
 }
-
-mocha.globals(['fb', 'mozL10n']);
 
 var mocksHelperForDetailView = new MocksHelper([
   'ContactPhotoHelper',
@@ -441,6 +439,40 @@ suite('Render contact', function() {
       assert.include(container.innerHTML, contactMultTel.tel[1].carrier);
       assert.include(container.innerHTML, subject.defaultTelType);
       assert.equal(-1, container.innerHTML.indexOf('phone-details-template-2'));
+    });
+
+    test('highlight phone number', function() {
+
+      var contact = new MockContactAllFields(true);
+      contact.tel = [
+        {
+          value: '+48225363636',
+          type: ['Personal']
+        }
+      ];
+      subject.setContact(contact);
+      subject.render(null, TAG_OPTIONS);
+      subject.reMark('tel', contact.tel[0].value);
+      var phoneButton = container.querySelector('#call-or-pick-0');
+      assert.isTrue(phoneButton.classList.contains('remark'));
+
+    });
+
+    test('highlight phone number as missed', function() {
+
+      var contact = new MockContactAllFields(true);
+      contact.tel = [
+        {
+          value: '+48225363636',
+          type: ['Personal']
+        }
+      ];
+      subject.setContact(contact);
+      subject.render(null, TAG_OPTIONS);
+      subject.reMark('tel', contact.tel[0].value, 'remark-missed');
+      var phoneButton = container.querySelector('#call-or-pick-0');
+      assert.isTrue(phoneButton.classList.contains('remark-missed'));
+
     });
   });
 

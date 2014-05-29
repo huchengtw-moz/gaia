@@ -2,8 +2,6 @@
 
 /* global MockNavigatormozApps, mockMozActivityInstance */
 
-mocha.globals(['NetError']);
-
 require('/shared/test/unit/mocks/mock_lazy_loader.js');
 require('/shared/test/unit/load_body_html_helper.js');
 require('/shared/test/unit/mocks/mock_navigator_moz_apps.js');
@@ -232,6 +230,44 @@ suite('Net errors', function() {
 
   ensureDnsNotFound('regular');
   ensureDnsNotFound('app');
+
+  function ensureFileNotFound(type) {
+    suite('FileNotFound - Type frame: ' + type, function() {
+      var reloadStub;
+
+      suiteSetup(function() {
+        document.documentURI = 'about:neterror?e=fileNotFound&f=' + type;
+        reloadStub = sinon.stub(window.NetError, 'reload');
+      });
+
+      setup(function() {
+        window.NetError.init();
+      });
+
+      suiteTeardown(function() {
+        reloadStub.restore();
+      });
+
+      test('Styles were initialized correctly ', function() {
+        assert.isTrue(document.body.classList.contains('fileNotFound'));
+      });
+
+      test('Messages were initialized correctly ', function() {
+        assert.equal(document.getElementById('error-title').textContent,
+                    'file-not-found');
+        assert.isTrue(document.getElementById('error-message').textContent.
+                      startsWith('file-not-found-error'));
+      });
+
+      test('Retry action was executed ', function() {
+        getRetryElement(type).click();
+        assert.isTrue(window.NetError.reload.called);
+      });
+    });
+  }
+
+  ensureFileNotFound('regular');
+  ensureFileNotFound('app');
 
   function ensureUnknownError(type) {
     suite('Unknown Error - Type frame: ' + type, function() {

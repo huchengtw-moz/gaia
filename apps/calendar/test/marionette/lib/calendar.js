@@ -1,12 +1,15 @@
 'use strict';
 
 var AdvancedSettings = require('./views/advanced_settings'),
+    CreateAccount = require('./views/create_account'),
     Day = require('./views/day'),
     EditEvent = require('./views/edit_event'),
     Marionette = require('marionette-client'),
+    ModifyAccount = require('./views/modify_account'),
     Month = require('./views/month'),
     MonthDay = require('./views/month_day'),
     ReadEvent = require('./views/read_event'),
+    Settings = require('./views/settings'),
     Week = require('./views/week');
 
 function Calendar(client) {
@@ -15,11 +18,14 @@ function Calendar(client) {
 
   // Initialize our view remotes.
   this.advancedSettings = new AdvancedSettings(client);
+  this.createAccount = new CreateAccount(client);
   this.day = new Day(client);
   this.editEvent = new EditEvent(client);
+  this.modifyAccount = new ModifyAccount(client);
   this.month = new Month(client);
   this.monthDay = new MonthDay(client);
   this.readEvent = new ReadEvent(client);
+  this.settings = new Settings(client);
   this.week = new Week(client);
 }
 module.exports = Calendar;
@@ -28,8 +34,10 @@ Calendar.ORIGIN = 'app://calendar.gaiamobile.org';
 
 Calendar.prototype = {
   launch: function(opts) {
-    this.client.apps.launch(Calendar.ORIGIN);
-    this.client.apps.switchToApp(Calendar.ORIGIN);
+    var client = this.client;
+
+    client.apps.launch(Calendar.ORIGIN);
+    client.apps.switchToApp(Calendar.ORIGIN);
 
     // Wait for the document body to know we're really 'launched'.
     this.client.helper.waitForElement('body');
@@ -51,8 +59,57 @@ Calendar.prototype = {
     return this.client.findElement('#current-month-year');
   },
 
+  get settingsButton() {
+    return this.client.findElement('#time-header button.settings');
+  },
+
+  openSettingsView: function() {
+    this._toggleSettingsView(true);
+    return this;
+  },
+
+  closeSettingsView: function() {
+    this._toggleSettingsView(false);
+    return this;
+  },
+
+  _toggleSettingsView: function(isOpen) {
+    var client = this.client;
+    client.helper
+      .waitForElement(this.settingsButton)
+      .click();
+
+    // Wait for the animation to be complete before trying to click on
+    // items in the drawer.
+    var drawer = this.client.findElement('#settings .settings-drawer');
+
+    this.client.waitFor(function() {
+      return drawer.getAttribute('data-animstate') === 'done';
+    });
+
+    if (!isOpen) {
+      var body = this.client.findElement('body');
+      // Also wait for the UI to be in a non-settings state after
+      // waiting for the animation to finish and the app UI to go
+      // back to non-settings state.
+      this.client.waitFor(function() {
+        return body.getAttribute('data-path') !== '/settings/';
+      });
+    }
+    return this;
+  },
+
   openAdvancedSettingsView: function() {
-    // TODO(gareth)
+    this.openSettingsView();
+    this.settings.setupAdvancedSettings();
+    this.advancedSettings.waitForDisplay();
+    return this;
+  },
+
+  closeAdvancedSettingsView: function() {
+    var advancedSettings = this.advancedSettings;
+    advancedSettings.close();
+    advancedSettings.waitForHide();
   },
 
   openDayView: function() {
@@ -86,16 +143,62 @@ Calendar.prototype = {
     return this;
   },
 
+  setupAccount: function(options) {
+    this.openAdvancedSettingsView();
+    this.advancedSettings.createAccount();
+    this.createAccount.waitForDisplay();
+    this.createAccount.chooseAccountType(options.accountType);
+
+    var modifyAccount = this.modifyAccount;
+    modifyAccount.waitForDisplay();
+    [
+      'user',
+      'password',
+      'fullUrl'
+    ].forEach(function(key) {
+      if (key in options) {
+        modifyAccount[key] = options[key];
+      }
+    });
+
+    modifyAccount.save();
+    this.waitForKeyboardHide();
+    modifyAccount.waitForHide();
+    this.closeSettingsView();
+    return this;
+  },
+
+  teardownAccount: function(username) {
+    this.openAdvancedSettingsView();
+    this.advancedSettings.clickAccount(username);
+    var modifyAccount = this.modifyAccount;
+    modifyAccount.waitForDisplay();
+    modifyAccount.delete();
+    modifyAccount.waitForHide();
+    this.closeAdvancedSettingsView();
+    this.closeSettingsView();
+    return this;
+  },
+
+  sync: function() {
+    this.openSettingsView();
+    this.settings.sync();
+    this.closeSettingsView();
+    return this;
+  },
+
   /**
    * Create an event.
    *
    * Options:
+   *   (String) calendar - calendar name [defaults to "Offline calendar"].
    *   (String) title - event title.
    *   (String) location - event location.
    *   (Date) startDate - event start date.
    *   (Date) endDate - event end date.
    *   (Number) startHour - shortcut for creating an event that starts today.
    *   (Number) duration - length of event in hours.
+   *   (Boolean) allDay - whether this is an all day event.
    *   (Array) reminders - array of strings like '5 minutes before'.
    */
   createEvent: function(opts) {
@@ -125,11 +228,18 @@ Calendar.prototype = {
     editEvent.title = opts.title;
     editEvent.location = opts.location || '';
     editEvent.description = opts.description || '';
+    editEvent.calendar = opts.calendar || 'Offline calendar';
     editEvent.startDate = startDate;
-    editEvent.startTime = startDate;
     editEvent.endDate = endDate;
-    editEvent.endTime = endDate;
-    editEvent.reminders = opts.reminders || [];
+    if (opts.allDay) {
+      editEvent.allDay = opts.allDay;
+    } else {
+      editEvent.startTime = startDate;
+      editEvent.endTime = endDate;
+    }
+    // no reminders by default to avoid triggering notifications by mistake.
+    // see: https://bugzil.la/1012507
+    editEvent.reminders = opts.reminders == null ? [] : opts.reminders;
     editEvent.save();
 
     this.waitForKeyboardHide();
@@ -178,7 +288,10 @@ Calendar.prototype = {
     // need to go back to top most frame before being able to switch to
     // a different app!!!
     client.switchToFrame();
-    client.apps.switchToApp('app://keyboard.gaiamobile.org');
+
+    var keyboardFrame = client.findElement(
+      'iframe[src*="app://keyboard.gaiamobile.org"]');
+    client.switchToFrame(keyboardFrame);
     client.waitFor(function() {
       return client.executeScript(function() {
         return document.hidden;
@@ -227,12 +340,12 @@ Calendar.prototype = {
     // (x1, y1) is swipe start.
     // (x2, y2) is swipe end.
     var x1, x2, y1, y2;
-    y1 = y2 = bodySize.height * 0.2;
+    y1 = y2 = bodySize.height * 0.5;
     if (options.direction === 'left') {
-      x1 = bodySize.width * 0.2;
+      x1 = bodySize.width * 0.8;
       x2 = 0;
     } else if (options.direction === 'right') {
-      x1 = bodySize.width * 0.8;
+      x1 = bodySize.width * 0.2;
       x2 = bodySize.width;
     } else {
       throw new Error('swipe needs a direction');

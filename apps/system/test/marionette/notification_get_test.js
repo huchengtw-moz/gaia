@@ -1,3 +1,5 @@
+'use strict';
+
 var assert = require('assert');
 
 var CALENDAR_APP = 'app://calendar.gaiamobile.org';
@@ -7,7 +9,8 @@ marionette('Notification.get():', function() {
 
   var client = marionette.client({
     settings: {
-      'ftu.manifestURL': null
+      'ftu.manifestURL': null,
+      'lockscreen.enabled': false
     }
   });
 
@@ -153,7 +156,7 @@ marionette('Notification.get():', function() {
       }, function(error) {
         marionetteScriptFinished('promise.then error: ' + error);
       });
-    }, [emailTitle, sharedTag]);
+    }, [systemTitle, sharedTag]);
     assert.equal(error, false, 'system domain error: ' + error);
     done();
   });

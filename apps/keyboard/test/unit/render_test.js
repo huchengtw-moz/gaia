@@ -1,7 +1,20 @@
-/*global requireApp suite test assert setup teardown IMERender */
+/*global requireApp suite test assert setup teardown IMERender sinon */
 requireApp('keyboard/js/render.js');
 
+mocha.globals(['perfTimer']);
+
 suite('Renderer', function() {
+  suiteSetup(function() {
+    window.perfTimer = {
+      printTime: function() {},
+      startTimer: function() {}
+    };
+  });
+
+  suiteTeardown(function() {
+    window.perfTimer = null;
+  });
+
   function makeDescriptor(val) {
     return {
       configurable: true,
@@ -9,6 +22,20 @@ suite('Renderer', function() {
       value: val,
       writable: true
     };
+  }
+
+  function loadKeyboardStyle(callback) {
+    // Dirty trick http://www.phpied.com/when-is-a-stylesheet-really-loaded/
+    var style = document.createElement('style');
+    style.textContent = '@import "../../style/keyboard.css"';
+    var fi = setInterval(function() {
+      try {
+        style.sheet.cssRules;
+        clearInterval(fi);
+        callback();
+      } catch (e) {}
+    }, 10);
+    document.body.appendChild(style);
   }
 
   suite('resizeUI', function() {
@@ -25,14 +52,8 @@ suite('Renderer', function() {
     }
 
     var ime, activeIme;
-    setup(function() {
+    setup(function(next) {
       document.body.innerHTML = '';
-
-      var style = document.createElement('link');
-      style.rel = 'stylesheet';
-      style.type = 'text/css';
-      style.href = '../../style/keyboard.css';
-      document.body.appendChild(style);
 
       ime = document.createElement('div');
       ime.id = 'keyboard';
@@ -45,6 +66,8 @@ suite('Renderer', function() {
 
       IMERender.init();
       IMERender.activeIme = activeIme;
+
+      loadKeyboardStyle(next);
     });
 
     test('Add portrait class to IME in portrait mode', function() {
@@ -135,8 +158,10 @@ suite('Renderer', function() {
           keys[0].clientWidth + keys[1].clientWidth + keys[2].clientWidth,
           'Total width');
 
-        assert.equal(keys[0].classList.contains('float-key-first'), true);
-        assert.equal(keys[2].classList.contains('float-key-last'), true);
+        assert.equal(keys[0].classList.contains('float-key-first'), true,
+          'Has float-key-first');
+        assert.equal(keys[2].classList.contains('float-key-last'), true,
+          'Has float-key-last');
 
         next();
       });
@@ -165,8 +190,10 @@ suite('Renderer', function() {
         assert.equal(400,
           keys[0].clientWidth + keys[1].clientWidth + keys[2].clientWidth);
 
-        assert.equal(keys[0].classList.contains('float-key-first'), true);
-        assert.equal(keys[2].classList.contains('float-key-last'), true);
+        assert.equal(keys[0].classList.contains('float-key-first'), true,
+          'Has float-key-first');
+        assert.equal(keys[2].classList.contains('float-key-last'), true,
+          'Has float-key-last');
 
         next();
       });
@@ -260,14 +287,8 @@ suite('Renderer', function() {
 
   suite('Draw', function() {
     var ime, activeIme;
-    setup(function() {
+    setup(function(next) {
       document.body.innerHTML = '';
-
-      var style = document.createElement('link');
-      style.rel = 'stylesheet';
-      style.type = 'text/css';
-      style.href = '../../style/keyboard.css';
-      document.body.appendChild(style);
 
       ime = document.createElement('div');
       ime.id = 'keyboard';
@@ -279,9 +300,11 @@ suite('Renderer', function() {
 
       IMERender.init(function(key) {
         return key.value.toUpperCase();
-      }, function(key) {
+      }, function() {
         return false; // is special key
       });
+
+      loadKeyboardStyle(next);
     });
 
     test('Should add last-row class to last row', function() {
@@ -411,7 +434,7 @@ suite('Renderer', function() {
       IMERender.init(uppercaseFn, sinon.stub().returns(false));
       IMERender.draw(layout, { uppercase: true });
 
-      var keys = document.querySelectorAll('.keyboard-key');
+      var keys = document.querySelectorAll('.keyboard-key .key-element');
       assert.equal(keys[0].textContent, 'U');
       assert.equal(keys[1].textContent, 'U');
     });
@@ -428,9 +451,9 @@ suite('Renderer', function() {
       IMERender.init(uppercaseFn, sinon.stub().returns(false));
       IMERender.draw(layout, { uppercase: false });
 
-      var keys = document.querySelectorAll('.keyboard-key');
-      assert.equal(keys[0].textContent, 'a');
-      assert.equal(keys[1].textContent, 'b');
+      var keys = document.querySelectorAll('.keyboard-key .key-element');
+      assert.equal(keys[0].firstChild.textContent, 'a');
+      assert.equal(keys[1].firstChild.textContent, 'b');
     });
 
     test('candidate-panel class should be set if flag is set', function() {
@@ -579,5 +602,118 @@ suite('Renderer', function() {
         assert.equal(spans[0].style.transform, 'scale(0.5)');
       });
     });
+
+    suite('Dimensions', function() {
+      function createDimensionTest(rows, orientation, suggest, latin, next) {
+        var layout = {
+          width: (Math.random() * 8 | 0) + 2,
+          keys: [],
+          keyboardName: 'test'
+        };
+
+        for (var ri = 0; ri < rows.length; ri++) {
+          var r = [];
+          for (var ki = 0, kl = (Math.random() * 8 | 0) + 2; ki < kl; ki++) {
+            r.push({ value: (Math.random() * 26 | 0) + 97 });
+          }
+          layout.keys.push(r);
+        }
+
+        if (orientation === 'landscape') {
+          document.querySelector('#keyboard').classList.remove('portrait');
+          document.querySelector('#keyboard').classList.add('landscape');
+        }
+        else {
+          document.querySelector('#keyboard').classList.add('portrait');
+          document.querySelector('#keyboard').classList.remove('landscape');
+        }
+
+        var flags = suggest ?
+          { showCandidatePanel: true } :
+          {};
+
+        IMERender.draw(layout, flags, function() {
+          if (latin) {
+            IMERender.setInputMethodName('latin');
+          }
+
+          assert.equal(
+            IMERender.activeIme.scrollHeight, IMERender.getHeight());
+          next();
+        });
+      }
+
+      var rows = [0, 1, 2, 3, 4, 5];
+      var orientation = ['portrait', 'landscape'];
+      var suggest = [true, false];
+      var latin = [true, false];
+
+      rows.forEach(function(row) {
+        orientation.forEach(function(orientation) {
+          suggest.forEach(function(suggest) {
+            latin.forEach(function(latin) {
+              var name = [
+                'getHeight',
+                row + ' rows',
+                orientation,
+                (suggest ? '' : 'no') + ' suggest',
+                latin ? 'latin' : ''
+              ].join(', ');
+
+              test(name, function(next) {
+                createDimensionTest(row, orientation, suggest, latin, next);
+              });
+            });
+          });
+        });
+      });
+
+      test('Container has a one pixel extra offset', function(next) {
+        var comp = getComputedStyle(document.querySelector('#keyboard'));
+        assert.equal(comp.paddingTop, '0px');
+        assert.equal(comp.marginTop, '0px');
+        assert.equal(comp.borderTopWidth, '1px');
+        next();
+      });
+    });
+  });
+
+  suite('Highlight Keys', function() {
+    test('Highlight a key with uppercase', function() {
+      var key = document.createElement('div');
+
+      IMERender.highlightKey(key, {
+        isUpperCase: true,
+        isUpperCaseLocked: false
+      });
+
+      assert.isTrue(key.classList.contains('highlighted'));
+      assert.isFalse(key.classList.contains('lowercase'));
+    });
+
+    test('Highlight a key with lowercase', function() {
+      var key = document.createElement('div');
+
+      IMERender.highlightKey(key, {
+        isUpperCase: false,
+        isUpperCaseLocked: false
+      });
+
+      assert.isTrue(key.classList.contains('highlighted'));
+      assert.isTrue(key.classList.contains('lowercase'));
+    });
+
+    test('Highlight a key with capslock', function() {
+      var key = document.createElement('div');
+
+      IMERender.highlightKey(key, {
+        isUpperCase: false,
+        isUpperCaseLocked: true
+      });
+
+      assert.isTrue(key.classList.contains('highlighted'));
+      assert.isFalse(key.classList.contains('lowercase'));
+    });
   });
 });
+

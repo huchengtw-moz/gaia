@@ -13,7 +13,7 @@ function updateFile(source, dest) {
 }
 
 exports.execute = function(options) {
-  var srcDir = utils.getFile(options.GAIA_DIR, 'test_apps', 'test-agent',
+  var srcDir = utils.getFile(options.GAIA_DIR, 'dev_apps', 'test-agent',
     'common', 'test', 'boilerplate');
   var proxyFile = srcDir.clone();
   proxyFile.append('_proxy.html');
@@ -21,7 +21,7 @@ exports.execute = function(options) {
   var sandboxFile = srcDir.clone();
   sandboxFile.append('_sandbox.html');
 
-  options.GAIA_APPDIRS.split(' ').forEach(function(appPath) {
+  options.GAIA_ALLAPPDIRS.split(' ').forEach(function(appPath) {
     var testDir = utils.getFile(appPath, 'test');
     var unitDir = testDir.clone();
     unitDir.append('unit');

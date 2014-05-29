@@ -5,11 +5,12 @@ define(function(require, exports, module) {
  * Dependencies
  */
 
-var debug = require('debug')('controller:preview-gallery');
-var bindAll = require('lib/bind-all');
-var PreviewGalleryView = require('views/preview-gallery');
 var createThumbnailImage = require('lib/create-thumbnail-image');
+var debug = require('debug')('controller:preview-gallery');
+var PreviewGalleryView = require('views/preview-gallery');
 var preparePreview = require('lib/prepare-preview-blob');
+var bindAll = require('lib/bind-all');
+var dialog = require('CustomDialog');
 
 /**
  * The size of the thumbnail images we generate.
@@ -31,17 +32,17 @@ function PreviewGalleryController(app) {
   debug('initializing');
   bindAll(this);
   this.app = app;
-  this.storage = this.app.storage;
+  this.dialog = app.dialog || dialog; // test hook
   this.bindEvents();
   this.configure();
   debug('initialized');
 }
 
 PreviewGalleryController.prototype.bindEvents = function() {
-  this.storage.on('itemdeleted', this.onItemDeleted);
+  this.app.on('storage:itemdeleted', this.onItemDeleted);
   this.app.on('preview', this.openPreview);
   this.app.on('newmedia', this.onNewMedia);
-  this.app.on('blur', this.onBlur);
+  this.app.on('hidden', this.onHidden);
   debug('events bound');
 };
 
@@ -53,7 +54,7 @@ PreviewGalleryController.prototype.configure = function() {
 
 PreviewGalleryController.prototype.openPreview = function() {
   // If we're handling a pick activity the preview gallery is not used
-  if (this.app.activity.active) {
+  if (this.app.activity.pick) {
     return;
   }
 
@@ -66,7 +67,8 @@ PreviewGalleryController.prototype.openPreview = function() {
   this.view.on('click:share', this.shareCurrentItem);
   this.view.on('click:delete', this.deleteCurrentItem);
   this.view.on('click:back', this.closePreview);
-  this.view.on('itemChange', this.handleItemChange);
+  this.view.on('swipe', this.handleSwipe);
+  this.view.on('click:options', this.onOptionsClick);
 
   // If lockscreen is locked, hide all control buttons
   var secureMode = this.app.inSecureMode;
@@ -107,7 +109,9 @@ PreviewGalleryController.prototype.onGalleryButtonClick = function() {
   // Can't launch the gallery if the lockscreen is locked.
   // The button shouldn't even be visible in this case, but
   // let's be really sure here.
-  if (this.app.inSecureMode) { return; }
+  if (this.app.inSecureMode) {
+    return;
+  }
 
   var MozActivity = window.MozActivity;
 
@@ -118,8 +122,19 @@ PreviewGalleryController.prototype.onGalleryButtonClick = function() {
   });
 };
 
+PreviewGalleryController.prototype.onOptionsClick = function() {
+  if (this.app.inSecureMode) {
+    return;
+  }
+
+  this.view.showOptionsMenu();
+};
+
+
 PreviewGalleryController.prototype.shareCurrentItem = function() {
-  if (this.app.inSecureMode) { return; }
+  if (this.app.inSecureMode) {
+    return;
+  }
 
   var index = this.currentItemIndex;
   var item = this.items[index];
@@ -144,16 +159,19 @@ PreviewGalleryController.prototype.shareCurrentItem = function() {
 /**
  * Delete the current item
  * when the delete button is pressed.
+ *
  * @private
  */
 PreviewGalleryController.prototype.deleteCurrentItem = function() {
-  // The button should be gone, but hard exit from this function
-  // just in case.
+  // The button should be gone,but
+  // hard exit from this function just in case.
   if (this.app.inSecureMode) { return; }
 
   var index = this.currentItemIndex;
   var item = this.items[index];
   var filepath = item.filepath;
+  var dialog = this.dialog;
+  var self = this;
   var msg;
 
   if (item.isVideo) {
@@ -163,14 +181,29 @@ PreviewGalleryController.prototype.deleteCurrentItem = function() {
     msg = navigator.mozL10n.get('delete-photo?');
   }
 
-  if (window.confirm(msg)) {
-    this.updatePreviewGallery(index);
+  dialog.show('', msg, {
+      title: navigator.mozL10n.get('cancel'),
+      callback: closeDialog
+    }, {
+      title: navigator.mozL10n.get('delete'),
+      callback: deleteItem,
+      recommend: false
+    });
+
+  function closeDialog() {
+    dialog.hide();
+  }
+
+  function deleteItem() {
+    dialog.hide();
+
+    self.updatePreviewGallery(index);
 
     // Actually delete the file
     if (item.isVideo) {
-      this.storage.deleteVideo(filepath);
+      self.app.emit('previewgallery:deletevideo', filepath);
     } else {
-      this.storage.deleteImage(filepath);
+      self.app.emit('previewgallery:deletepicture', filepath);
     }
   }
 };
@@ -204,15 +237,12 @@ PreviewGalleryController.prototype.updatePreviewGallery = function(index) {
 /**
  * To Do: Image Swipe Transition
  */
-PreviewGalleryController.prototype.handleItemChange = function(e) {
-  var direction = e.detail.direction;
-  switch (direction) {
-  case 'left': // go to next image
+PreviewGalleryController.prototype.handleSwipe = function(direction) {
+  if (direction === 'left') {
     this.next();
-    break;
-  case 'right': // go to previous
+  }
+  else if (direction === 'right') {
     this.previous();
-    break;
   }
 };
 
@@ -232,7 +262,7 @@ PreviewGalleryController.prototype.previous = function() {
 
 PreviewGalleryController.prototype.onNewMedia = function(item) {
   // If we're handling a pick activity the preview gallery is not used
-  if (this.app.activity.active) {
+  if (this.app.activity.pick) {
     return;
   }
 
@@ -300,7 +330,7 @@ PreviewGalleryController.prototype.onItemDeleted = function(data) {
  * forget our state.  In practice, it appears that the system app actually
  * kills the camera when this happens, so this code is redundant.
  */
-PreviewGalleryController.prototype.onBlur = function() {
+PreviewGalleryController.prototype.onHidden = function() {
   if (this.app.inSecureMode) {
     this.configure();          // Forget all stored images
     this.updateThumbnail();    // Get rid of any thumbnail

@@ -16,10 +16,30 @@ var CarrierSettings = (function(window, document, undefined) {
   var NETWORK_TYPE_SETTING = 'operatorResources.data.icon';
   var networkTypeMapping = {};
 
-  var _ = window.navigator.mozL10n.get;
-  var _settings = window.navigator.mozSettings;
-  var _mobileConnections = window.navigator.mozMobileConnections;
-  var _iccManager = window.navigator.mozIccManager;
+  var _networkTypeCategory = {
+    'gprs': 'gsm',
+    'edge': 'gsm',
+    'umts': 'gsm',
+    'hsdpa': 'gsm',
+    'hsupa': 'gsm',
+    'hspa': 'gsm',
+    'hspa+': 'gsm',
+    'lte': 'gsm',
+    'gsm': 'gsm',
+    'is95a': 'cdma',
+    'is95b': 'cdma',
+    '1xrtt': 'cdma',
+    'evdo0': 'cdma',
+    'evdoa': 'cdma',
+    'evdob': 'cdma',
+    'ehrpd': 'cdma'
+  };
+
+  var _;
+  var _settings;
+  var _mobileConnections;
+  var _iccManager;
+  var _voiceTypes;
 
   /** mozMobileConnection instance the panel settings rely on */
   var _mobileConnection = null;
@@ -48,6 +68,17 @@ var CarrierSettings = (function(window, document, undefined) {
    * Init function.
    */
   function cs_init() {
+    _ = window.navigator.mozL10n.get;
+    _settings = window.navigator.mozSettings;
+    _mobileConnections = window.navigator.mozMobileConnections;
+    _iccManager = window.navigator.mozIccManager;
+    if (!_ || !_settings || !_mobileConnections || !_iccManager) {
+      return;
+    }
+
+    _voiceTypes = Array.prototype.map.call(_mobileConnections,
+      function() { return null; });
+
     // Get the mozMobileConnection instace for this ICC card.
     _mobileConnection = _mobileConnections[
       DsdsSettings.getIccCardIndexForCellAndDataSettings()
@@ -55,6 +86,10 @@ var CarrierSettings = (function(window, document, undefined) {
     if (!_mobileConnection) {
       return;
     }
+
+    cs_addVoiceTypeChangeListeners();
+    cs_updateNetworkTypeLimitedItemsVisibility(
+      _mobileConnection.voice && _mobileConnection.voice.type);
 
     // Show carrier name.
     cs_showCarrierName();
@@ -79,14 +114,8 @@ var CarrierSettings = (function(window, document, undefined) {
       var content =
         document.getElementById('carrier-operatorSettings-content');
 
-      if (result.gsm) {
-        cs_initOperatorSelector();
-        content.classList.add('gsm');
-      }
-      if (result.cdma) {
-        cs_initRoamingPreferenceSelector();
-        content.classList.add('cdma');
-      }
+      cs_initOperatorSelector();
+      cs_initRoamingPreferenceSelector();
 
       // Init warnings the user sees before enabling data calls and roaming.
       cs_initWarnings();
@@ -103,6 +132,8 @@ var CarrierSettings = (function(window, document, undefined) {
 
         var currentHash = e.detail.current;
         if (currentHash === '#carrier') {
+          cs_updateNetworkTypeLimitedItemsVisibility(
+            _mobileConnection.voice && _mobileConnection.voice.type);
           // Show carrier name.
           cs_showCarrierName();
           cs_disabeEnableDataCallCheckbox();
@@ -140,6 +171,44 @@ var CarrierSettings = (function(window, document, undefined) {
         });
       });
     });
+  }
+
+  /**
+   * Add listeners on 'voicechange' for show/hide network type limited items.
+   */
+  function cs_addVoiceTypeChangeListeners() {
+    Array.prototype.forEach.call(_mobileConnections, function(conn, index) {
+      _voiceTypes[index] = conn.voice.type;
+      conn.addEventListener('voicechange', function() {
+        var newType = conn.voice.type;
+        if (index !== DsdsSettings.getIccCardIndexForCellAndDataSettings() ||
+            _voiceTypes[index] === newType) {
+          return;
+        }
+        _voiceTypes[index] = newType;
+        cs_updateNetworkTypeLimitedItemsVisibility(newType);
+      });
+    });
+  }
+
+  /**
+   * Update the network type limited items' visibility based on the voice type.
+   */
+  function cs_updateNetworkTypeLimitedItemsVisibility(voiceType) {
+    // The following features are limited to GSM types.
+    var autoSelectOperatorItem = document.getElementById('operator-autoSelect');
+    var availableOperatorsHeader =
+      document.getElementById('availableOperatorsHeader');
+    var availableOperators = document.getElementById('availableOperators');
+    // The following feature is limited to CDMA types.
+    var roamingPreferenceItem =
+      document.getElementById('operator-roaming-preference');
+
+    autoSelectOperatorItem.hidden = availableOperatorsHeader.hidden =
+      availableOperators.hidden = (_networkTypeCategory[voiceType] !== 'gsm');
+
+    roamingPreferenceItem.hidden =
+      (_networkTypeCategory[voiceType] !== 'cdma');
   }
 
   /**
@@ -629,10 +698,6 @@ var CarrierSettings = (function(window, document, undefined) {
 
     req.onerror = function() {
       console.warn('carrier: ' + req.error.name);
-      if (req.error.name === 'RequestNotSupported' ||
-          req.error.name === 'GenericFailure') {
-        document.getElementById('operator-roaming-preference').hidden = true;
-      }
     };
 
     selector.addEventListener('blur', function() {
@@ -859,9 +924,25 @@ var CarrierSettings = (function(window, document, undefined) {
   /**
    * Helper function.
    */
-  function cs_rilData(usage, name) {
+  function cs_formInputElement(usage, name) {
     var id = 'ril.' + usage + '.' + name;
     return document.getElementById(id);
+  }
+
+  /**
+   * Helper function. Ensure only one radio button is selected at any time.
+   *
+   * @param {Element} apnList Element list.
+   *
+   * @param {String} target This parameter holds the input element value for the
+   *                        element in the list to switch to. If might be either
+   *                        an id as '_custom_' (when switching to the custom
+   *                        APN or a hash code (when switching to any other
+   *                        APN).
+   */
+  function cs_switchRadioButtons(apnList, target) {
+    var selector = 'input[type="radio"][value="' + target + '"]';
+    apnList.querySelector(selector).checked = true;
   }
 
   /**
@@ -869,8 +950,11 @@ var CarrierSettings = (function(window, document, undefined) {
    *
    * @param {Array} apnItems Array of APNs.
    * @param {String} usage The usage for the APNs in the panel.
+   * @param {Function} callback Callback function to be called once the list
+   *                            gets updated. This callback is useful for unit
+   *                            testing.
    */
-  function cs_updateApnList(apnItems, usage) {
+  function cs_updateApnList(apnItems, usage, callback) {
     var apnPanel = document.getElementById('carrier-' + usage + 'Settings');
     if (!apnPanel) {
       // unsupported APN type
@@ -892,6 +976,7 @@ var CarrierSettings = (function(window, document, undefined) {
 
     /* Keys for the APN properties in the UI elements */
     var UI_KEYS = [
+      'hashCode',
       'carrier',
       'apn',
       'user',
@@ -904,14 +989,18 @@ var CarrierSettings = (function(window, document, undefined) {
     ];
 
     /**
-     * Helper function. Ensure only one radio button is selected at any time.
+     * Helper function. Given a string, return a hash code.
      *
-     * @param {String} carrier Carrier name whose check button element needs to
-     *                         be selected.
+     * @param {String} s Given string.
+     *
+     * @return {Numeric} Hash code.
      */
-    function switchRadioButtons(carrier) {
-      var selector = 'input[type="radio"][value="' + carrier + '"]';
-      apnList.querySelector(selector).checked = true;
+    function _getHashCode(s) {
+      return s.split('').reduce(
+        function(a, b) {
+          a = ((a << 5) - a) + b.charCodeAt(0);
+          return a & a;
+        }, 0);
     }
 
     /**
@@ -920,22 +1009,23 @@ var CarrierSettings = (function(window, document, undefined) {
      * @param {Object} item Object containing APN properties.
      */
     function fillApnForm(item) {
-      cs_rilData(usage, 'carrier').value = item.carrier || '';
-      cs_rilData(usage, 'apn').value = item.apn || '';
-      cs_rilData(usage, 'user').value = item.user || '';
-      cs_rilData(usage, 'passwd').value = item.password || '';
-      cs_rilData(usage, 'httpProxyHost').value = item.proxy || '';
-      cs_rilData(usage, 'httpProxyPort').value = item.port || '';
+      cs_formInputElement(usage, 'hashCode').value = item.hashCode || '';
+      cs_formInputElement(usage, 'carrier').value = item.carrier || '';
+      cs_formInputElement(usage, 'apn').value = item.apn || '';
+      cs_formInputElement(usage, 'user').value = item.user || '';
+      cs_formInputElement(usage, 'passwd').value = item.password || '';
+      cs_formInputElement(usage, 'httpProxyHost').value = item.proxy || '';
+      cs_formInputElement(usage, 'httpProxyPort').value = item.port || '';
       if (usage == 'mms') {
-        cs_rilData(usage, 'mmsc').value = item.mmsc || '';
-        cs_rilData(usage, 'mmsproxy').value = item.mmsproxy || '';
-        cs_rilData(usage, 'mmsport').value = item.mmsport || '';
+        cs_formInputElement(usage, 'mmsc').value = item.mmsc || '';
+        cs_formInputElement(usage, 'mmsproxy').value = item.mmsproxy || '';
+        cs_formInputElement(usage, 'mmsport').value = item.mmsport || '';
       }
-      cs_rilData(usage, 'authType').value =
+      cs_formInputElement(usage, 'authType').value =
         AUTH_TYPES[item.authtype] || 'notDefined';
-      cs_rilData(usage, 'protocol').value =
+      cs_formInputElement(usage, 'protocol').value =
         item.protocol || 'notDefined';
-      cs_rilData(usage, 'roaming_protocol').value =
+      cs_formInputElement(usage, 'roaming_protocol').value =
         item.roaming_protocol || 'notDefined';
     }
 
@@ -943,16 +1033,18 @@ var CarrierSettings = (function(window, document, undefined) {
      * Create a button to apply <apn> data to the current fields.
      *
      */
-    function createAPNItem(item) {
+    function createAPNItem(index, item) {
       // create an <input type="radio"> element
       var input = document.createElement('input');
       input.type = 'radio';
       input.name = currentType + 'Apn';
-      input.value = item.carrier;
-      input.dataset.item = item;
+      var s = item.carrier + index;
+      var hashCode = _getHashCode(s);
+      input.value = hashCode;
+      item.hashCode = hashCode;
       input.onclick = function onClickHandler() {
         fillApnForm(item);
-        switchRadioButtons(item.carrier);
+        cs_switchRadioButtons(apnList, hashCode);
       };
 
       // include the radio button element in a list item
@@ -975,8 +1067,30 @@ var CarrierSettings = (function(window, document, undefined) {
 
     // fill the APN list
     for (var i = 0; i < apnItems.length; i++) {
-      apnList.insertBefore(createAPNItem(apnItems[i]), lastItem);
+      apnList.insertBefore(createAPNItem(i, apnItems[i]), lastItem);
     }
+
+    // fill the APN form in case the user clicks on the 'custom' APN radio
+    lastItem.querySelector('input').addEventListener('click',
+      function() {
+        fillCustomAPNSettingFields();
+        cs_switchRadioButtons(apnList, '_custom_');
+    });
+
+    // set current APN to 'custom' on user modification and sanitize addresses
+    advForm.onchange = function onCustomInput(event) {
+      var addresskeys = ['mmsproxy', 'httpProxyHost'];
+      addresskeys.forEach(function(addresskey) {
+        if (event.target.dataset.setting ==
+            'ril.' + usage + '.' + addresskey) {
+          event.target.value = sanitizeAddress(event.target.value);
+        }
+      });
+
+      storeCustomAPNSettingFields();
+      cs_switchRadioButtons(apnList, '_custom_');
+      fillCustomAPNSettingFields();
+    };
 
     // maps for UI fields(current settings key) to new apn setting keys.
     var kKeyMappings = {
@@ -1000,14 +1114,16 @@ var CarrierSettings = (function(window, document, undefined) {
         asyncStorage.getItem(
           'ril.' + usage + '.custom.ICC' + iccCardIndex + key,
           function(value) {
-            if (key === 'carrier') {
-              cs_rilData(usage, key).value = '_custom_';
+            if (key === 'hashCode') {
+              cs_formInputElement(usage, key).value = _getHashCode('_custom_');
+            } else if (key === 'carrier') {
+              cs_formInputElement(usage, key).value = '_custom_';
             } else if (key === 'authType' ||
                        key === 'protocol' ||
                        key === 'roaming_protocol') {
-              cs_rilData(usage, key).value = value || 'notDefined';
+              cs_formInputElement(usage, key).value = value || 'notDefined';
             } else {
-              cs_rilData(usage, key).value = value || '';
+              cs_formInputElement(usage, key).value = value || '';
             }
         });
       });
@@ -1026,7 +1142,7 @@ var CarrierSettings = (function(window, document, undefined) {
       keys.forEach(function(key) {
         asyncStorage.setItem(
           'ril.' + usage + '.custom.ICC' + iccCardIndex + key,
-          cs_rilData(usage, key).value
+          cs_formInputElement(usage, key).value
         );
       });
     }
@@ -1051,7 +1167,7 @@ var CarrierSettings = (function(window, document, undefined) {
       }
       keys.forEach(function(key) {
         apnToBeMerged[(kKeyMappings[key] || key)] =
-          cs_rilData(usage, key).value;
+          cs_formInputElement(usage, key).value;
       });
 
       var newApnsForIccCards = [[], []];
@@ -1151,47 +1267,25 @@ var CarrierSettings = (function(window, document, undefined) {
         var apnSelected = false;
         var radioApnItems = apnList.querySelectorAll('input[type="radio"]');
         for (var j = 0; (j < radioApnItems.length) && apn; j++) {
-          radioApnItems[j].checked = (radioApnItems[j].value === apn.carrier);
-          apnSelected = apnSelected || radioApnItems[j].checked;
-          if (apnSelected) {
+          var s = apn.carrier + j;
+          var hashCode = apn.hashCode || _getHashCode(s);
+          if (radioApnItems[j].value == hashCode) {
+            apn.hashCode = apn.hashCode || hashCode;
+            fillApnForm(apn);
+            cs_switchRadioButtons(apnList, hashCode);
+            apnSelected = true;
             break;
           }
         }
-        if (apnSelected && (apn.carrier !== '_custom_')) {
-          for (var k = 0; k < apnItems.length; k++) {
-            if (apnItems[k].carrier === apn.carrier) {
-              fillApnForm(apnItems[k]);
-              break;
-            }
-          }
-          switchRadioButtons(apn.carrier);
-        } else {
+
+        if (!apnSelected) {
           fillCustomAPNSettingFields();
-          switchRadioButtons('_custom_');
+          cs_switchRadioButtons(apnList, '_custom_');
         }
 
-        lastItem.querySelector('input').addEventListener('click',
-          function() {
-            fillCustomAPNSettingFields();
-            switchRadioButtons('_custom_');
-        });
-      };
-
-      // set current APN to 'custom' on user modification
-      // and sanitize addresses
-      advForm.onchange = function onCustomInput(event) {
-        lastItem.querySelector('input').checked = true;
-        switchRadioButtons('_custom_');
-
-        var addresskeys = ['mmsproxy', 'httpProxyHost'];
-        addresskeys.forEach(function(addresskey) {
-          if (event.target.dataset.setting ==
-              'ril.' + usage + '.' + addresskey) {
-            event.target.value = sanitizeAddress(event.target.value);
-          }
-        });
-
-        storeCustomAPNSettingFields();
+        if (callback && (typeof callback === 'function')) {
+          callback();
+        }
       };
     }
 
@@ -1245,20 +1339,25 @@ var CarrierSettings = (function(window, document, undefined) {
       // Add the event handler. We might force data connection to restart if
       // changes are validated
       var submitButton = apnPanel.querySelector('button[type=submit]');
+      if (!submitButton) {
+        return;
+      }
       submitButton.addEventListener('click', onSubmit);
       _onSubmitEventListenerAdded[usage] = true;
     }
   } // cs_updateApnList function
 
   return {
-    init: cs_init
+    init: cs_init,
+    switchRadioButtons: cs_switchRadioButtons,
+    updateApnList: cs_updateApnList
   };
 })(this, document);
 
 /**
  * Startup.
  */
-navigator.mozL10n.ready(function loadWhenIdle() {
+navigator.mozL10n.once(function loadWhenIdle() {
   var idleObserver = {
     time: 3,
     onidle: function() {

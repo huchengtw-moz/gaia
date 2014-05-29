@@ -1,7 +1,5 @@
 'use strict';
 
-mocha.globals(['SIMSlotManager', 'SimPinSystemDialog', 'SimPinDialog']);
-
 requireApp('system/test/unit/mock_l10n.js');
 requireApp('system/js/mock_simslot.js');
 requireApp('system/js/mock_simslot_manager.js');
@@ -245,6 +243,81 @@ suite('simcard dialog', function() {
       SimPinDialog._currentSlot = slot;
       slot.simCard = {
         cardState: 'serviceProviderLocked'
+      };
+
+      var stubInputFieldControl =
+        this.sinon.stub(SimPinDialog, 'inputFieldControl');
+      SimPinDialog.handleCardState();
+      assert.isTrue(
+        stubInputFieldControl.calledWith(false, false, true, false));
+    });
+
+    test('network1 locked', function() {
+      var slot = new MockSIMSlot(null, 0);
+      slot.simCard.cardState = 'pinRequired';
+      SimPinDialog._currentSlot = slot;
+      slot.simCard = {
+        cardState: 'network1Locked'
+      };
+
+      var stubInputFieldControl =
+        this.sinon.stub(SimPinDialog, 'inputFieldControl');
+      SimPinDialog.handleCardState();
+      assert.isTrue(
+        stubInputFieldControl.calledWith(false, false, true, false));
+    });
+
+    test('network2 locked', function() {
+      var slot = new MockSIMSlot(null, 0);
+      slot.simCard.cardState = 'pinRequired';
+      SimPinDialog._currentSlot = slot;
+      slot.simCard = {
+        cardState: 'network2Locked'
+      };
+
+      var stubInputFieldControl =
+        this.sinon.stub(SimPinDialog, 'inputFieldControl');
+      SimPinDialog.handleCardState();
+      assert.isTrue(
+        stubInputFieldControl.calledWith(false, false, true, false));
+    });
+
+    test('hrpd network locked', function() {
+      var slot = new MockSIMSlot(null, 0);
+      slot.simCard.cardState = 'pinRequired';
+      SimPinDialog._currentSlot = slot;
+      slot.simCard = {
+        cardState: 'hrpdNetworkLocked'
+      };
+
+      var stubInputFieldControl =
+        this.sinon.stub(SimPinDialog, 'inputFieldControl');
+      SimPinDialog.handleCardState();
+      assert.isTrue(
+        stubInputFieldControl.calledWith(false, false, true, false));
+    });
+
+    test('ruim corporate locked', function() {
+      var slot = new MockSIMSlot(null, 0);
+      slot.simCard.cardState = 'pinRequired';
+      SimPinDialog._currentSlot = slot;
+      slot.simCard = {
+        cardState: 'ruimCorporateLocked'
+      };
+
+      var stubInputFieldControl =
+        this.sinon.stub(SimPinDialog, 'inputFieldControl');
+      SimPinDialog.handleCardState();
+      assert.isTrue(
+        stubInputFieldControl.calledWith(false, false, true, false));
+    });
+
+    test('ruim service provider locked', function() {
+      var slot = new MockSIMSlot(null, 0);
+      slot.simCard.cardState = 'pinRequired';
+      SimPinDialog._currentSlot = slot;
+      slot.simCard = {
+        cardState: 'ruimServiceProviderLocked'
       };
 
       var stubInputFieldControl =

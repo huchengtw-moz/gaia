@@ -1,7 +1,5 @@
 'use strict';
 
-mocha.globals(['SIMSlot']);
-
 suite('SIMSlot', function() {
   suiteSetup(function() {
   });
@@ -54,7 +52,9 @@ suite('SIMSlot', function() {
   });
 
   ['pinRequired', 'pukRequired', 'networkLocked',
-   'corporateLocked', 'serviceProviderLocked'].forEach(function(lockType) {
+   'corporateLocked', 'serviceProviderLocked', 'network1Locked',
+   'network2Locked', 'hrpdNetworkLocked', 'ruimCorporateLocked',
+   'ruimServiceProviderLocked'].forEach(function(lockType) {
     test('isLocked: ' + lockType, function() {
       var card = document.createElement('div');
       card.cardState = lockType;

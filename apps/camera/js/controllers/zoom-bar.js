@@ -32,9 +32,10 @@ function ZoomBarController(app) {
 
 ZoomBarController.prototype.bindEvents = function() {
   this.zoomBar.on('change', this.onChange);
+  this.camera.on('zoomconfigured', this.onZoomConfigured);
   this.camera.on('zoomchanged', this.onZoomChanged);
-  this.viewfinder.on('pinchStart', this.onPinchStart);
-  this.viewfinder.on('pinchEnd', this.onPinchEnd);
+  this.viewfinder.on('pinchstarted', this.onPinchStarted);
+  this.viewfinder.on('pinchended', this.onPinchEnded);
 };
 
 ZoomBarController.prototype.onChange = function(value) {
@@ -45,6 +46,10 @@ ZoomBarController.prototype.onChange = function(value) {
   this.camera.setZoom(zoom);
 };
 
+ZoomBarController.prototype.onZoomConfigured = function() {
+  this.zoomBar.hide();
+};
+
 ZoomBarController.prototype.onZoomChanged = function(zoom) {
   var minimumZoom = this.camera.getMinimumZoom();
   var maximumZoom = this.camera.getMaximumZoom();
@@ -53,11 +58,11 @@ ZoomBarController.prototype.onZoomChanged = function(zoom) {
   this.zoomBar.setValue(percent);
 };
 
-ZoomBarController.prototype.onPinchStart = function() {
+ZoomBarController.prototype.onPinchStarted = function() {
   this.zoomBar.setScrubberActive(true);
 };
 
-ZoomBarController.prototype.onPinchEnd = function() {
+ZoomBarController.prototype.onPinchEnded = function() {
   this.zoomBar.setScrubberActive(false);
 };
 

@@ -4,13 +4,14 @@ require.config({
     'l10n': '../shared/js/l10n',
     'asyncStorage': '../shared/js/async_storage',
     'getVideoRotation': '../shared/js/media/get_video_rotation',
-    'performanceTesting': '../shared/js/performance_testing_helper',
+    'performance-testing-helper': '../shared/js/performance_testing_helper',
     'jpegMetaDataParser': '../shared/js/media/jpeg_metadata_parser',
     'format': '../shared/js/format',
     'GestureDetector': '../shared/js/gesture_detector',
     'VideoPlayer': '../shared/js/media/video_player',
     'MediaFrame': '../shared/js/media/media_frame',
     'BlobView': '../shared/js/blobview',
+    'CustomDialog': '../shared/js/custom_dialog',
     'debug': 'vendor/debug'
   },
   shim: {
@@ -31,7 +32,7 @@ require.config({
     'asyncStorage': {
       exports: 'asyncStorage'
     },
-    'performanceTesting': {
+    'performance-testing-helper': {
       exports: 'PerformanceTestingHelper'
     },
     'jpegMetaDataParser': {
@@ -40,6 +41,9 @@ require.config({
     },
     'GestureDetector': {
       exports: 'GestureDetector'
+    },
+    'CustomDialog': {
+      exports: 'CustomDialog'
     }
   }
 });

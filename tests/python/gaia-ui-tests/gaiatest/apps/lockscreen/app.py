@@ -12,6 +12,8 @@ from gaiatest.apps.lockscreen.regions.passcode_pad import PasscodePad
 
 class LockScreen(Base):
 
+    _lockscreen_window_locator = (By.CLASS_NAME, 'lockScreenWindow')
+
     _lockscreen_locator = (By.ID, 'lockscreen')
     _lockscreen_handle_locator = (By.ID, 'lockscreen-area-slide')
     _lockscreen_passcode_panel_locator = (By.ID, 'lockscreen-panel-passcode')
@@ -27,16 +29,13 @@ class LockScreen(Base):
         return Homescreen(self.marionette)
 
     def unlock_to_camera(self):
-
+        self.wait_for_element_displayed(*self._lockscreen_handle_locator)
         self._slide_to_unlock('camera')
         return Camera(self.marionette)
 
     def unlock_to_passcode_pad(self):
         self.wait_for_element_displayed(*self._lockscreen_handle_locator)
         self._slide_to_unlock('homescreen')
-        elem = self.marionette.find_element(*self._lockscreen_passcode_panel_locator)
-        while False == elem.is_displayed():
-          self._slide_to_unlock('homescreen')
         self.wait_for_element_displayed(*self._lockscreen_passcode_panel_locator)
         return PasscodePad(self.marionette)
 

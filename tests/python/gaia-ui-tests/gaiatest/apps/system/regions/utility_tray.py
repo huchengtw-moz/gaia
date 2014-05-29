@@ -15,7 +15,7 @@ class UtilityTray(Base):
 
     def wait_for_notification_container_displayed(self):
         # Marionette cannot read the displayed state of the notification container so we wait for its location
-        self.wait_for_condition(lambda m: m.find_element(*self._notification_container_locator).location['y'] == 50)
+        self.wait_for_condition(lambda m: m.find_element(*self._notification_container_locator).location['y'] == 54)
 
     @property
     def notifications(self):
@@ -30,7 +30,13 @@ class UtilityTray(Base):
 
 class Notification(PageRegion):
     _body_locator = (By.CSS_SELECTOR, 'div.detail')
+    _title_locator = (By.CSS_SELECTOR, 'div.title')
 
     @property
     def content(self):
         return self.root_element.find_element(*self._body_locator).text
+
+    def tap_notification(self):
+        self.root_element.find_element(*self._title_locator).tap()
+        from gaiatest.apps.email.regions.read_email import ReadEmail
+        return ReadEmail(self.marionette)

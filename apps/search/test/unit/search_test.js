@@ -1,14 +1,16 @@
 'use strict';
-/* global MockNavigatormozApps, MockNavigatormozSetMessageHandler, Search */
+/* global MockNavigatormozApps, MockNavigatormozSetMessageHandler,
+          MockMozActivity, Search */
 
 require('/shared/test/unit/mocks/mock_navigator_moz_apps.js');
 require('/shared/test/unit/mocks/mock_navigator_moz_set_message_handler.js');
-require('/shared/js/url_helper.js');
+require('/shared/test/unit/mocks/mock_moz_activity.js');
 
-mocha.globals(['Search', 'open']);
+require('/shared/js/url_helper.js');
 
 suite('search/search', function() {
   var realMozApps;
+  var realMozActivity;
   var realSetMessageHandler;
   var clock;
 
@@ -19,6 +21,9 @@ suite('search/search', function() {
     realMozApps = navigator.mozApps;
     navigator.mozApps = MockNavigatormozApps;
 
+    realMozActivity = window.MozActivity;
+    window.MozActivity = MockMozActivity;
+
     clock = sinon.useFakeTimers();
 
     requireApp('search/js/search.js', done);
@@ -27,14 +32,17 @@ suite('search/search', function() {
   suiteTeardown(function() {
     navigator.mozSetMessageHandler = realSetMessageHandler;
     navigator.mozApps = realMozApps;
+    window.MozActivity = realMozActivity;
     clock.restore();
   });
 
   setup(function() {
+    MockMozActivity.mSetup();
     MockNavigatormozSetMessageHandler.mSetup();
   });
 
   teardown(function() {
+    MockMozActivity.mTeardown();
     MockNavigatormozSetMessageHandler.mTeardown();
     MockNavigatormozApps.mTeardown();
   });
@@ -70,6 +78,11 @@ suite('search/search', function() {
         name: 'Foo'
       });
       assert.equal(count + 1, numProviders());
+
+      Search.removeProvider({
+        name: 'Foo'
+      });
+      assert.equal(count, numProviders());
     });
   });
 
@@ -190,22 +203,11 @@ suite('search/search', function() {
   });
 
   suite('navigate', function() {
-    test('window.open is called', function() {
+    test('Open activity is fired', function() {
       var url = 'http://mozilla.org';
-      var stub = this.sinon.stub(window, 'open');
+      assert.equal(MockMozActivity.calls.length, 0);
       Search.navigate(url);
-      assert.ok(stub.calledWith(url));
-    });
-
-    test('parses features', function() {
-      var url = 'http://mozilla.org';
-      var stub = this.sinon.stub(window, 'open');
-      Search.navigate(url, {
-        a: 1,
-        b: 2
-      });
-      assert.ok(stub.calledWith(url, '_blank',
-        'remote=true,useAsyncPanZoom=true,a=1,b=2'));
+      assert.equal(MockMozActivity.calls.length, 1);
     });
   });
 
@@ -215,7 +217,8 @@ suite('search/search', function() {
         WebResults: {
           clear: function() {},
           abort: function() {},
-          search: function() {}
+          search: function() {},
+          fullscreen: function() {}
         },
         BGImage: {
           clear: function() {},
@@ -227,9 +230,9 @@ suite('search/search', function() {
     });
 
     test('calls search for WebResults', function() {
-      var searchStub = this.sinon.stub(Search.providers.WebResults, 'search');
+      var stub = this.sinon.stub(Search.providers.WebResults,'fullscreen');
       Search.expandSearch();
-      assert.ok(searchStub.calledOnce);
+      assert.ok(stub.calledOnce);
     });
 
     test('calls fetchImage for BGImage', function() {
@@ -245,7 +248,7 @@ suite('search/search', function() {
       var stub = this.sinon.stub(Search._port, 'postMessage');
       this.sinon.stub(Search, 'expandSearch');
       Search.setInput('foo');
-      assert.ok(stub.calledWith({input: 'foo'}));
+      assert.ok(stub.calledWith({action: 'input', input: 'foo'}));
     });
   });
 

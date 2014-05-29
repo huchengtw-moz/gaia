@@ -1,8 +1,6 @@
 /* global PermissionManager, MocksHelper, MockL10n*/
 'use strict';
 
-mocha.globals(['PermissionManager', 'dispatchEvent']);
-
 require('/shared/test/unit/load_body_html_helper.js');
 require('/shared/js/template.js');
 require('/shared/test/unit/mocks/mock_lazy_loader.js');
@@ -441,6 +439,8 @@ suite('system/permission manager', function() {
         });
         assert.isTrue(spyToggleInfo.called);
         assert.isFalse(spyHidePermissionPrompt.called);
+        assert.isFalse(
+          permissionManager.moreInfoBox.classList.contains('hidden'));
       });
 
       test('should toggle info when hide info is clicked', function() {
@@ -449,6 +449,8 @@ suite('system/permission manager', function() {
         });
         assert.isTrue(spyToggleInfo.called);
         assert.isFalse(spyHidePermissionPrompt.called);
+        assert.isTrue(
+          permissionManager.moreInfoBox.classList.contains('hidden'));
       });
   });
 

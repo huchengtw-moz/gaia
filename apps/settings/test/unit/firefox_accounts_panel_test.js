@@ -3,14 +3,6 @@
 
 'use strict';
 
-mocha.globals([
-  'FxaPanel',
-  'loadBodyHTML',
-  'HtmlImports',
-  'MockFxAccountsIACHelper',
-  'MockL10n'
-]);
-
 // require helpers for managing html
 require('/shared/test/unit/load_body_html_helper.js');
 require('/shared/js/html_imports.js');
@@ -74,7 +66,7 @@ suite('firefox accounts panel > ', function() {
   test('show the correct panel and email on FxaPanel init', function() {
     // set the state in the mock
     MockFxAccountsIACHelper.setCurrentState({
-      accountId: 'init@ialization.com',
+      email: 'init@ialization.com',
       verified: true
     });
     // init FxaPanel
@@ -104,7 +96,7 @@ suite('firefox accounts panel > ', function() {
 
   test('show the correct panel and email after onlogin event', function() {
     MockFxAccountsIACHelper.setCurrentState({
-      accountId: 'on@log.in',
+      email: 'on@log.in',
       verified: false
     });
     FxaPanel.init(MockFxAccountsIACHelper);
@@ -116,7 +108,7 @@ suite('firefox accounts panel > ', function() {
     // test localize was called with correct args
     assert.deepEqual(localizeSpy.args[0], [
       document.getElementById('fxa-unverified-text'),
-      'fxa-verification-email-sent',
+      'fxa-verification-email-sent-msg',
       { email: 'on@log.in' }
     ]);
   });
@@ -124,7 +116,7 @@ suite('firefox accounts panel > ', function() {
   test('show the correct panel and email after onverifiedlogin event',
     function() {
       MockFxAccountsIACHelper.setCurrentState({
-        accountId: 'on@verifiedlog.in',
+        email: 'on@verifiedlog.in',
         verified: true
       });
       FxaPanel.init(MockFxAccountsIACHelper);

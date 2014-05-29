@@ -12,7 +12,6 @@ require('/shared/js/lazy_loader.js');
 require('/shared/js/l10n.js');
 require('/shared/js/l10n_date.js');
 require('/shared/js/gesture_detector.js');
-require('/shared/js/async_storage.js');
 require('/shared/js/sticky_header.js');
 
 require('/shared/test/unit/mocks/mock_gesture_detector.js');
@@ -23,7 +22,10 @@ requireApp('sms/test/unit/mock_navigatormoz_sms.js');
 requireApp('sms/test/unit/mock_attachment_menu.js');
 requireApp('sms/test/unit/mock_information.js');
 require('/shared/test/unit/mocks/mock_contact_photo_helper.js');
+require('/shared/test/unit/mocks/mock_async_storage.js');
+require('/test/unit/mock_settings.js');
 
+require('/js/navigation.js');
 requireApp('sms/js/link_helper.js');
 requireApp('sms/js/drafts.js');
 requireApp('sms/js/contacts.js');
@@ -43,6 +45,8 @@ require('/shared/js/performance_testing_helper.js');
 requireApp('sms/js/startup.js');
 
 var MocksHelperForSmsUnitTest = new MocksHelper([
+  'asyncStorage',
+  'Settings',
   'AttachmentMenu',
   'TimeHeaders',
   'Information',
@@ -73,7 +77,6 @@ suite('SMS App Unit-Test', function() {
 
   var nativeMozL10n = navigator.mozL10n;
   var realMozMobileMessage;
-  var boundOnHashChange;
   var realGestureDetector;
 
   suiteSetup(function() {
@@ -120,10 +123,6 @@ suite('SMS App Unit-Test', function() {
     // ...And render
     ThreadUI.init();
     ThreadListUI.init();
-    boundOnHashChange = MessageManager.onHashChange.bind(MessageManager);
-    window.addEventListener(
-      'hashchange', boundOnHashChange
-    );
     realMozMobileMessage = ThreadUI._mozMobileMessage;
     ThreadUI._mozMobileMessage = MockNavigatormozMobileMessage;
   });
@@ -132,7 +131,6 @@ suite('SMS App Unit-Test', function() {
     ThreadUI._mozMobileMessage = realMozMobileMessage;
     // cleanup
     window.document.body.innerHTML = '';
-    window.removeEventListener('hashchange', boundOnHashChange);
   });
 
   setup(function() {

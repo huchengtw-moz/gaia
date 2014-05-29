@@ -7,11 +7,12 @@
  */
 .attachment-container {
   position: relative;
+  margin-bottom: 0.5rem;
 
   display: block;
   border: none;
-  height: 82px; /* default size = 80 px + border */
-  width: 82px;
+  height: 84px; /* default size = 80 px + border */
+  width: 124px;
 }
 
 .attachment-draft {
@@ -28,13 +29,13 @@
 }
 
 .attachment-container.nopreview { /* 80x80 px placeholder + filename below */
-  height: calc(82px + 2.7rem); /* font-size = 1.7rem + 1rem margin */
-  width: 122px;
+  height: calc(80px + 2.7rem); /* font-size = 1.7rem + 1rem margin */
+  width: 120px;
 }
 
 /*.attachment-container.preview {
  * 80x80 px thumbnail, no filename shown
- * thumbnail size is defined dynamically, extensible to 80x120 or 120x80 
+ * thumbnail size is defined dynamically, extensible to 80x120 or 120x80
  *}
  */
 
@@ -63,10 +64,8 @@
   top: 0;
   left: 0;
 
-  width: 80px;
+  width: 120px;
   height: 80px;
-  border: 1px solid #018eac;
-  border-radius: 2px;
 }
 
 .outgoing .attachment {
@@ -75,17 +74,17 @@
 }
 
 .preview .attachment {
-  -moz-box-sizing: border-box;
-       box-sizing: border-box;
+  box-sizing: border-box;
   width: 100%;
   height: 100%;
 
-  background-color: rgba(0, 170, 205, 0.45);
+  background-color: #ececec;
+  border: 2px solid #fff;
 }
 
 .preview .attachment:active,
 .preview .attachment:hover {
-  background-color: rgba(0, 140, 170, 1);
+  background-color: #b2f2ff;
 }
 
 .size-indicator {
@@ -97,8 +96,8 @@
   padding: 0 0.4rem;
   display: none;
 
-  background: rgba(0, 0, 0, 0.6);
-  color: rgb(255, 255, 255);
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
   font-size: 1.5rem;
 }
 
@@ -112,15 +111,16 @@
   right: 0;
   left: 0;
 
-  height: 1.7rem;
+  height: 2rem;
   display: none;
 
-  line-height: 1.7rem;
-  font-size: 1.7rem;
+  line-height: 2rem;
+  font-size: 1.6rem;
+  font-style: italic;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #474747;
+  color: #4a4a4a;
 }
 
 .outgoing .file-name {
@@ -144,10 +144,10 @@
   width: 100%;
   height: 100%;
 
-  background-image: url('icons/attachments.png');
+  background-image: url('images/attachments.png');
   background-repeat: no-repeat;
   background-position: left top;
-  background-size: 160px;
+  background-size: 12rem;
 }
 
 .attachment-container .thumbnail,
@@ -160,40 +160,41 @@
 .attachment-draft:active .thumbnail-placeholder,
 .attachment-container:hover .thumbnail-placeholder,
 .attachment-container:active .thumbnail-placeholder {
-  background-position: right top;
+  background-color: #33cccc;
+  background-blend-mode: luminosity;
 }
 
 .img-placeholder {
-  background-position: left -80px;
+  background-position: left -8rem;
 }
 
 .attachment-draft:hover .img-placeholder,
 .attachment-draft:active .img-placeholder,
 .attachment-container:hover .img-placeholder,
 .attachment-container:active .img-placeholder {
-  background-position: right -80px;
+  background-position: right -8rem;
 }
 
 .audio-placeholder {
-  background-position: left -160px;
+  background-position: left -16rem;
 }
 
 .attachment-draft:hover .audio-placeholder,
 .attachment-draft:active .audio-placeholder,
 .attachment-container:hover .audio-placeholder,
 .attachment-container:active .audio-placeholder {
-  background-position: right -160px;
+  background-position: right -16rem;
 }
 
 .video-placeholder {
-  background-position: left -240px;
+  background-position: left -24rem;
 }
 
 .attachment-draft:hover .video-placeholder,
 .attachment-draft:active .video-placeholder,
 .attachment-container:hover .video-placeholder,
 .attachment-container:active .video-placeholder  {
-  background-position: right -240px;
+  background-position: right -24rem;
 }
 
 .corrupted {

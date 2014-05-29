@@ -1,7 +1,7 @@
 /* global MocksHelper, MockAttachment, MockL10n, loadBodyHTML,
          Compose, Attachment, MockMozActivity, Settings, Utils,
          AttachmentMenu, Draft, document, XMLHttpRequest, Blob, navigator,
-         setTimeout, ThreadUI, SMIL */
+         ThreadUI, SMIL */
 
 /*jshint strict:false */
 /*jslint node: true */
@@ -11,8 +11,6 @@
 requireApp('sms/js/compose.js');
 requireApp('sms/js/utils.js');
 requireApp('sms/js/drafts.js');
-// Storage automatically called on Drafts.add()
-require('/shared/js/async_storage.js');
 
 requireApp('sms/test/unit/mock_l10n.js');
 requireApp('sms/test/unit/mock_attachment.js');
@@ -23,8 +21,10 @@ requireApp('sms/test/unit/mock_utils.js');
 requireApp('sms/test/unit/mock_moz_activity.js');
 requireApp('sms/test/unit/mock_thread_ui.js');
 require('/test/unit/mock_smil.js');
+require('/shared/test/unit/mocks/mock_async_storage.js');
 
 var mocksHelperForCompose = new MocksHelper([
+  'asyncStorage',
   'AttachmentMenu',
   'Settings',
   'Recipients',
@@ -88,16 +88,15 @@ suite('compose_test.js', function() {
   });
 
   suite('Message Composition', function() {
-    var message,
-        subject,
-        sendButton;
+    var message, subject, sendButton, attachButton;
 
     setup(function() {
       loadBodyHTML('/index.html');
       Compose.init('messages-compose-form');
-      message = document.querySelector('[contenteditable]');
+      message = document.getElementById('messages-input');
       subject = document.getElementById('messages-subject-input');
       sendButton = document.getElementById('messages-send-button');
+      attachButton = document.getElementById('messages-attach-button');
     });
 
     suite('Subject', function() {
@@ -117,7 +116,7 @@ suite('compose_test.js', function() {
 
       test('Get content from subject field', function() {
         var content = 'Title';
-        subject.value = content;
+        subject.textContent = content;
         // We need to show the subject to get content
         Compose.toggleSubject();
         assert.equal(Compose.getSubject(), content);
@@ -139,11 +138,45 @@ suite('compose_test.js', function() {
 
       test('Sent subject doesnt have line breaks (spaces instead)', function() {
         // Set the value
-        subject.value = 'Line 1\nLine 2\n\n\n\nLine 3';
+        subject.innerHTML = 'Line 1<br>Line 2<br><br><br><br>Line 3<br>';
         // We need to show the subject to get content
         Compose.toggleSubject();
         var text = Compose.getSubject();
         assert.equal(text, 'Line 1 Line 2 Line 3');
+      });
+
+      suite('Subject methods in Compose object', function() {
+        setup(function() {
+          Compose.clear();
+        });
+
+        test('> isSubjectMaxLength:false', function() {
+          subject.textContent = 'foo text';
+          Compose.toggleSubject();
+          assert.isFalse(Compose.isSubjectMaxLength());
+        });
+
+        test('> isSubjectMaxLength:true', function() {
+          subject.textContent = '1234567890123456789012345678901234567890' +
+          '123456789012345678901234567890123456789012345678901234567890' +
+          '123456789012345678901234567890123456789012345678901234567890' +
+          '123456789012345678901234567890123456789012345678901234567890' +
+          '123456789012345678901234567890123456789012345678901234567890';
+          Compose.toggleSubject();
+          assert.isTrue(Compose.isSubjectMaxLength());
+        });
+
+        test('> isSubjectEmpty:true', function() {
+          subject.innerHTML = '<br><br><br>';
+          Compose.toggleSubject();
+          assert.isTrue(Compose.isSubjectEmpty());
+        });
+
+        test('> isSubjectEmpty:false', function() {
+          subject.innerHTML = '<br><br><br>foo';
+          Compose.toggleSubject();
+          assert.isFalse(Compose.isSubjectEmpty());
+        });
       });
     });
 
@@ -198,7 +231,7 @@ suite('compose_test.js', function() {
         assert.equal(txt.length, 0, 'No lines in the txt');
       });
       test('Clear removes subject', function() {
-        subject.value = 'Title';
+        subject.textContent = 'Title';
         Compose.toggleSubject();
         var txt = Compose.getSubject();
         assert.equal(txt, 'Title', 'Something in the txt');
@@ -216,9 +249,7 @@ suite('compose_test.js', function() {
       });
 
       test('Message appended with html', function() {
-        var message = document.querySelector(
-          '#messages-compose-form [contenteditable]'
-        );
+        var message = document.getElementById('messages-input');
 
         Compose.append('<b>hi!</b>\ntest');
         var txt = Compose.getContent();
@@ -723,7 +754,7 @@ suite('compose_test.js', function() {
         function() {
         expectType = 'mms';
         Compose.toggleSubject();
-        subject.value = 'foo';
+        subject.textContent = 'foo';
         subject.dispatchEvent(new CustomEvent('input'));
         assert.equal(typeChange.called, 1);
 
@@ -783,6 +814,44 @@ suite('compose_test.js', function() {
         Compose.fromMessage({type: 'sms', body: null});
         sinon.assert.calledWith(Compose.append, '');
         sinon.assert.called(message.focus);
+      });
+    });
+
+    suite('attach button', function() {
+      var request;
+      setup(function() {
+        request = {};
+        this.sinon.stub(Compose, 'requestAttachment').returns(request);
+        this.sinon.stub(window, 'alert');
+        this.sinon.stub(Compose, 'append');
+        this.sinon.stub(console, 'warn');
+
+        attachButton.click();
+      });
+
+      test('request an attachment', function() {
+        sinon.assert.called(Compose.requestAttachment);
+      });
+
+      test('onsuccess', function() {
+        var attachment = mockAttachment();
+        request.onsuccess(attachment);
+        sinon.assert.calledWith(Compose.append, attachment);
+      });
+
+      suite('onerror,', function() {
+        test('file too large', function() {
+          request.onerror('file too large');
+
+          sinon.assert.calledWith(window.alert, 'files-too-large{"n":1}');
+        });
+
+        test('other errors are logged', function() {
+          var err = 'other error';
+          request.onerror(err);
+          sinon.assert.notCalled(window.alert);
+          sinon.assert.calledWith(console.warn, sinon.match.string, err);
+        });
       });
     });
   });
@@ -847,48 +916,74 @@ suite('compose_test.js', function() {
       });
 
       suite('replace', function() {
-        setup(function(done) {
+        var request;
+
+        setup(function() {
           this.replacement = mockImgAttachment(true);
-          this.sinon.stub(Compose, 'requestAttachment', function() {
-            var mockResult = {};
-            setTimeout(function() {
-              mockResult.onsuccess(this.replacement);
-              this.replacementSize = Compose.size;
-              done();
-            }.bind(this));
-            return mockResult;
-          }.bind(this));
+          request = {};
+          this.sinon.stub(Compose, 'requestAttachment').returns(request);
           this.sinon.stub(Utils, 'getResizedImgBlob');
 
           // trigger click on replace
           document.getElementById('attachment-options-replace').click();
         });
-        test('clicking on replace requests an attachment', function() {
-          assert.isTrue(Compose.requestAttachment.called);
-        });
-        test('removes the original attachment', function() {
-          assert.ok(!this.attachment.mNextRender.parentNode);
-        });
-        test('inserts the new attachment', function() {
-          assert.ok(this.replacement.mNextRender.parentNode);
-        });
-        test('closes the menu', function() {
-          assert.isTrue(AttachmentMenu.close.called);
-        });
-        test('recalculates size', function() {
-          assert.notEqual(this.replacementSize, this.attachmentSize,
-            'Size was recalculated to be the new size');
-        });
-        test('resizes image', function() {
-          assert.ok(Utils.getResizedImgBlob.called);
-        });
-        suite('after resize', function() {
+
+        suite('onsuccess', function() {
           setup(function() {
-            Utils.getResizedImgBlob.args[0][2](smallImageBlob);
+            request.onsuccess(this.replacement);
           });
 
-          test('recalculates size again', function() {
-            assert.notEqual(Compose.size, this.replacementSize);
+          test('clicking on replace requests an attachment', function() {
+            assert.isTrue(Compose.requestAttachment.called);
+          });
+          test('removes the original attachment', function() {
+            assert.ok(!this.attachment.mNextRender.parentNode);
+          });
+          test('inserts the new attachment', function() {
+            assert.ok(this.replacement.mNextRender.parentNode);
+          });
+          test('closes the menu', function() {
+            assert.isTrue(AttachmentMenu.close.called);
+          });
+          test('recalculates size', function() {
+            assert.notEqual(Compose.size, this.attachmentSize,
+              'Size was recalculated to be the new size');
+          });
+          test('resizes image', function() {
+            assert.ok(Utils.getResizedImgBlob.called);
+          });
+          suite('after resize', function() {
+            var replacementSize;
+            setup(function() {
+              replacementSize = Compose.size;
+              Utils.getResizedImgBlob.yield(smallImageBlob);
+            });
+
+            test('recalculates size again', function() {
+              assert.notEqual(Compose.size, replacementSize);
+            });
+          });
+        });
+
+        suite('onerror,', function() {
+          setup(function() {
+            this.sinon.stub(window, 'alert');
+            this.sinon.stub(console, 'warn');
+          });
+
+          test('file too large', function() {
+            request.onerror('file too large');
+            sinon.assert.calledWith(
+              window.alert,
+              'files-too-large{"n":1}'
+            );
+          });
+
+          test('other errors are logged', function() {
+            var err = 'other error';
+            request.onerror(err);
+            sinon.assert.notCalled(window.alert);
+            sinon.assert.calledWith(console.warn, sinon.match.string, err);
           });
         });
       });

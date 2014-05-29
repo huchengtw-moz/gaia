@@ -5,13 +5,7 @@ var Homescreen = (function() {
   var mode = 'normal';
   var origin = document.location.protocol + '//homescreen.' +
     document.location.host.replace(/(^[\w\d]+.)?([\w\d]+.[a-z]+)/, '$2');
-  setLocale();
   var iconGrid = document.getElementById('icongrid');
-
-  navigator.mozL10n.ready(function localize() {
-    setLocale();
-    GridManager.localize();
-  });
 
   var initialized = false;
   onConnectionChange(navigator.onLine);
@@ -38,6 +32,8 @@ var Homescreen = (function() {
     };
 
     GridManager.init(options, function gm_init() {
+      navigator.mozL10n.ready(GridManager.localize.bind(GridManager));
+
       window.addEventListener('hashchange', function() {
         if (!window.location.hash.replace('#', '')) {
           return;
@@ -71,6 +67,11 @@ var Homescreen = (function() {
   }
 
   function onContextMenu(evt) {
+    // See Bug 1011389 - [APZ] Click events are fired after a long press, even
+    // if the user has moved the finger
+    evt.preventDefault();
+    evt.stopPropagation();
+
     var target = evt.target;
 
     if ('isIcon' in target.dataset) {
@@ -121,9 +122,6 @@ var Homescreen = (function() {
     if (typeof ConfirmDialog !== 'undefined') {
       ConfirmDialog.hide();
     }
-    if (typeof EditDialog !== 'undefined') {
-      EditDialog.hide();
-    }
   }
 
   document.addEventListener('visibilitychange', function mozVisChange() {
@@ -138,12 +136,6 @@ var Homescreen = (function() {
       });
     }
   });
-
-  function setLocale() {
-    // set the 'lang' and 'dir' attributes to <html> when the page is translated
-    document.documentElement.lang = navigator.mozL10n.language.code;
-    document.documentElement.dir = navigator.mozL10n.language.direction;
-  }
 
   function onConnectionChange(isOnline) {
     var mode = isOnline ? 'online' : 'offline';
@@ -166,9 +158,18 @@ var Homescreen = (function() {
      *
      */
     showAppDialog: function h_showAppDialog(icon) {
-      LazyLoader.load(['shared/style_unstable/buttons.css',
-                       'shared/style/headers.css',
-                       'shared/style/confirm.css',
+      if (icon.app.type === GridItemsFactory.TYPE.BOOKMARK) {
+        new MozActivity({
+          name: 'remove-bookmark',
+          data: {
+            type: 'url',
+            url: icon.app.id
+          }
+        });
+        return;
+      }
+
+      LazyLoader.load(['shared/style/confirm.css',
                        'style/request.css',
                        document.getElementById('confirm-dialog'),
                        'js/request.js'], function loaded() {
@@ -177,15 +178,12 @@ var Homescreen = (function() {
     },
 
     showEditBookmarkDialog: function h_showEditBookmarkDialog(icon) {
-      var dialog = document.getElementById('edit-dialog');
-      LazyLoader.load(['style/edit_dialog.css',
-                       'shared/style/headers.css',
-                       'shared/style_unstable/input_areas.css',
-                       'shared/js/url_helper.js',
-                       dialog,
-                       'js/edit_dialog.js'], function loaded() {
-        navigator.mozL10n.translate(dialog);
-        EditDialog.show(icon);
+      new MozActivity({
+        name: 'save-bookmark',
+        data: {
+          type: 'url',
+          url: icon.app.id
+        }
       });
     },
 

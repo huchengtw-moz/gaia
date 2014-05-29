@@ -160,8 +160,9 @@ Icon.prototype = {
     }
   },
 
-  appendOptions: function icon_appendOptions() {
-    var options = this.container.querySelector('.options');
+  appendOptions: function icon_appendOptions(container) {
+    container = container || this.container;
+    var options = container.querySelector('.options');
     if (options) {
       return;
     }
@@ -170,7 +171,7 @@ Icon.prototype = {
     options = document.createElement('span');
     options.className = 'options';
     options.dataset.isIcon = true;
-    this.container.appendChild(options);
+    container.appendChild(options);
   },
 
   removeOptions: function icon_removeOptions() {
@@ -490,39 +491,6 @@ Icon.prototype = {
   },
 
   /*
-   * Returns the url icon
-   */
-  getURL: function icon_getURL() {
-    return this.app.url || this.descriptor.manifestURL;
-  },
-
-  /*
-   * Sets the new URL
-   *
-   * @param{string} url
-   */
-  setURL: function icon_setURL(url) {
-    var descriptor = this.descriptor;
-    // The only kind of icons that supports changes in the URL are the bookmarks
-    if (descriptor.type !== GridItemsFactory.TYPE.BOOKMARK ||
-        descriptor.bookmarkURL === url) {
-      return;
-    }
-
-    // The grid manager will remove its reference when the URL changes
-    GridManager.forgetIcon(this);
-
-    this.app.setURL(url);
-    this.descriptor.bookmarkURL = this.container.dataset.bookmarkURL =
-                                  this.app.bookmarkURL;
-
-    // The grid manager will update the bookmark with its new url
-    GridManager.rememberIcon(this);
-
-    GridManager.markDirtyState();
-  },
-
-  /*
    * Sets the icon's image
    *
    * @param{string} the new icon
@@ -602,6 +570,10 @@ Icon.prototype = {
       img.style.visibility = 'visible';
     };
     draggableElem.appendChild(icon);
+
+    if (this.descriptor.removable === true) {
+      this.appendOptions(icon);
+    }
 
     var container = this.container;
     container.dataset.dragging = 'true';

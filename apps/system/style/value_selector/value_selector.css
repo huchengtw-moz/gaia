@@ -1,6 +1,6 @@
 #value-selector {
   width: 100%;
-  top: 2rem;
+  top: 2.4rem;
   bottom: 0;
   left: 0;
   position: absolute;
@@ -24,6 +24,6 @@
   top: 0;
 }
 
-#value-selector-container li > label {
+.value-selector-container li > label {
   pointer-events: none;
 }

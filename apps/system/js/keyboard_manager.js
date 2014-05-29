@@ -132,12 +132,14 @@ var KeyboardManager = {
     // since it would take a longer round-trip to receive focuschange
     // Also in Bug 856692 we realise that we need to close the keyboard
     // when an inline activity goes away.
+    window.addEventListener('activityrequesting', this);
     window.addEventListener('activityopening', this);
     window.addEventListener('activityclosing', this);
     window.addEventListener('attentionscreenshow', this);
     window.addEventListener('mozbrowsererror', this);
     window.addEventListener('applicationsetupdialogshow', this);
     window.addEventListener('mozmemorypressure', this);
+    window.addEventListener('sheetstransitionstart', this);
 
     // To handle keyboard layout switching
     window.addEventListener('mozChromeEvent', function(evt) {
@@ -350,7 +352,7 @@ var KeyboardManager = {
       layoutFrame = this.loadKeyboardLayout(layout);
       // TODO make sure setLayoutFrameActive function is ready
       this.setLayoutFrameActive(layoutFrame, false);
-      layoutFrame.hidden = true;
+      layoutFrame.classList.add('hide');
       layoutFrame.dataset.frameManifestURL = layout.manifestURL;
     }
 
@@ -452,6 +454,7 @@ var KeyboardManager = {
         }, 0);
         break;
       case 'applicationsetupdialogshow':
+      case 'activityrequesting':
       case 'activityopening':
       case 'activityclosing':
         this.hideKeyboardImmediately();
@@ -469,6 +472,9 @@ var KeyboardManager = {
           this.runningLayouts = {};
           this._debug('mozmemorypressure event; keyboard removed');
         }
+        break;
+      case 'sheetstransitionstart':
+        this.hideKeyboard();
         break;
     }
   },
@@ -528,7 +534,7 @@ var KeyboardManager = {
       delete this.keyboardFrameContainer.dataset.transitionOut;
     }
 
-    this.showingLayout.frame.hidden = false;
+    this.showingLayout.frame.classList.remove('hide');
     this.setLayoutFrameActive(this.showingLayout.frame, true);
     this.showingLayout.frame.addEventListener(
          'mozbrowserresize', this, true);
@@ -623,7 +629,7 @@ var KeyboardManager = {
       return;
     }
 
-    frame.hidden = true;
+    frame.classList.add('hide');
     this.setLayoutFrameActive(frame, false);
     frame.removeEventListener('mozbrowserresize', this, true);
   },
@@ -722,7 +728,7 @@ var KeyboardManager = {
     var showed = this.showingLayout;
     var activeLayout = this.keyboardLayouts[showed.type].activeLayout;
     var _ = navigator.mozL10n.get;
-    var actionMenuTitle = _('layout-selection');
+    var actionMenuTitle = _('choose-option');
 
     this.switchChangeTimeout = setTimeout(function keyboardLayoutList() {
       var items = [];
@@ -730,17 +736,14 @@ var KeyboardManager = {
         var label = layout.appName + ' ' + layout.name;
         var item = {
           label: label,
-          value: index
+          value: index,
+          selected: (index === activeLayout)
         };
-        if (index === activeLayout) {
-          item.iconClass = 'tail-icon';
-          item.icon = 'style/icons/checkmark.png';
-        }
         items.push(item);
       });
       self.hideKeyboard();
 
-      var menu = new ActionMenu(items, actionMenuTitle,
+      var menu = new ImeMenu(items, actionMenuTitle,
         function(selectedIndex) {
         if (!self.keyboardLayouts[showed.type])
           showed.type = 'text';
@@ -767,7 +770,7 @@ var KeyboardManager = {
         // Hide the tray to show the app directly after
         // user canceled.
         window.dispatchEvent(new CustomEvent('keyboardchangecanceled'));
-      }, true /* preventFocusChange */);
+      });
       menu.start();
     }, SWITCH_CHANGE_DELAY);
   },

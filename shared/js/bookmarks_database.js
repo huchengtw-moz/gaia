@@ -36,13 +36,15 @@
       if (!navigator.getDataStores) {
         console.error('Bookmark store: DataStore API is not working');
         reject({ name: 'NO_DATASTORE' });
+        readyState = 'failed';
         return;
       }
 
       navigator.getDataStores(DATASTORE_NAME).then(function(ds) {
         if (ds.length < 1) {
           console.error('Bookmark store: Cannot get access to the Store');
-          reject({ message: 'NO_ACCESS_TO_DATASTORE' });
+          reject({ name: 'NO_ACCESS_TO_DATASTORE' });
+          readyState = 'failed';
           return;
         }
 
@@ -104,33 +106,31 @@
     var callbacks = listeners[operation];
     callbacks && callbacks.forEach(function iterCallback(callback) {
       datastore.get(event.id).then(function got(result) {
-        callback({
+        callback.method.call(callback.context || this, {
           type: operation,
-          target: result
-        });
-      }, function notExists() {
-        callback({
-          type: operation,
-          target: {
-            id: event.id
-          }
+          target: result || event
         });
       });
     });
   }
 
   function addEventListener(type, callback) {
+    var context;
     if (!(type in listeners)) {
       listeners[type] = [];
     }
 
     var cb = callback;
     if (typeof cb === 'object') {
+      context = cb;
       cb = cb.handleEvent;
     }
 
     if (cb) {
-      listeners[type].push(cb);
+      listeners[type].push({
+        method: cb,
+        context: context
+      });
       init();
     }
   }
@@ -143,7 +143,13 @@
     var callbacks = listeners[type];
     var length = callbacks.length;
     for (var i = 0; i < length; i++) {
-      if (callbacks[i] && callbacks[i] === callback) {
+
+      var thisCallback = callback;
+      if (typeof thisCallback === 'object') {
+        thisCallback = callback.handleEvent;
+      }
+
+      if (callbacks[i] && callbacks[i].method === thisCallback) {
         callbacks.splice(i, 1);
         return true;
       }
@@ -155,7 +161,7 @@
   function add(data) {
     return new Promise(function doAdd(resolve, reject) {
       init().then(function onInitialized() {
-        var id = data.bookmarkURL;
+        var id = data.url;
 
         Object.defineProperty(data, 'id', {
           enumerable: true,
@@ -179,6 +185,24 @@
     return new Promise(function doGet(resolve, reject) {
       init().then(function onInitialized() {
         resolve(datastore.revisionId);
+      }, reject);
+    });
+  }
+
+  function put(data) {
+    return new Promise(function doAdd(resolve, reject) {
+      init().then(function onInitialized() {
+        datastore.put(data, data.id).then(function success() {
+          resolve(); // Bookmark was updated
+        }, reject);
+      }, reject);
+    });
+  }
+
+  function remove(id) {
+    return new Promise(function doRemove(resolve, reject) {
+      init().then(function onInitialized() {
+        datastore.remove(id).then(resolve, reject);
       }, reject);
     });
   }
@@ -228,7 +252,21 @@
      *
      * @param{Object} The bookmark's data
      */
-    add: add
+    add: add,
+
+    /*
+     * This method updates a bookmark in the datastore
+     *
+     * @param{Object} The bookmark's data
+     */
+     put: put,
+
+    /*
+     * This method removes a bookmark from the datastore
+     *
+     * @param{String} The bookmark's id
+     */
+     remove: remove
   };
 
 }(window));
