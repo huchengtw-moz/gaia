@@ -6,8 +6,9 @@
 
 (function(exports) {
 
+  var instanceDT = new Date();
   var _ = window.navigator.mozL10n.get;
-  var _debug = false;
+  var _debug = true;
 
   /*
    * PairManager is responsible for:
@@ -239,7 +240,7 @@
 
     debug: function(msg) {
       if (_debug) {
-        console.log('PairManager(): ' + msg);
+        console.log('PairManager(): ' + instanceDT + ' => ' + msg);
       }
     }
   };

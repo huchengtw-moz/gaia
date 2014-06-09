@@ -595,6 +595,7 @@
      * @memberOf module:AppWindowManager
      */
     launch: function awm_launch(config) {
+      console.log('config.changeURL:' + config.changeURL + ', ' + config.url);
       if (config.changeURL && this.getApp(config.origin)) {
         // XXX: Potential problems here:
         // there may be more than one app window instances

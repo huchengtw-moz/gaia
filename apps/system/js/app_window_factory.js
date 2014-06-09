@@ -162,6 +162,7 @@
       if (config.manifest.role === 'search') {
         return;
       }
+      console.log('launch: ' + config.origin);
       var app = AppWindowManager.getApp(config.origin);
       if (app) {
         app.reviveBrowser();
