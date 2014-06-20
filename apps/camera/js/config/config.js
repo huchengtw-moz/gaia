@@ -287,6 +287,16 @@ module.exports = {
         key: 'secs10',
         value: 10,
         title: 'self-timer-10-seconds'
+      },
+      {
+        key: 'secs30',
+        value: 30,
+        title: 'self-timer-30-seconds'
+      },
+      {
+        key: 'secs60',
+        value: 60,
+        title: 'self-timer-60-seconds'
       }
     ],
     persistent: false,

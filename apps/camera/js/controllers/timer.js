@@ -62,8 +62,12 @@ TimerController.prototype.bindEvents = function() {
  */
 TimerController.prototype.start = function() {
   if (this.app.get('timerActive')) { return; }
+  this.interval = this.settings.timer.selected('value');
+  this.reset();
+};
 
-  this.seconds = this.settings.timer.selected('value');
+TimerController.prototype.reset = function() {
+  this.seconds = this.interval;
   this.view.set(this.seconds).show();
   setTimeout(this.bindTimerEvents);
   this.scheduleTick();
@@ -105,6 +109,7 @@ TimerController.prototype.tick = function() {
   if (--this.seconds <= 0) {
     this.app.emit('timer:ended');
     this._clear();
+    this.reset();
     return;
   }
 
