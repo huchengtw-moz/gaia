@@ -69,6 +69,7 @@
 
     stop: function HS_Stop() {
       // Video
+      $('static-video-container').removeEventListener('transitionend', this);
       $('static-video').removeEventListener('loadedmetadata', this);
 
       // Static Elements
@@ -122,12 +123,24 @@
                 this._updateWidgets(savedConfigs);
               }
               break;
+            case 'static-video-container':
             case 'static-video':
-              evt.target.classList.toggle('fullscreen');
+              var videoContainer = $('static-video-container');
+              if (videoContainer.classList.contains('fullscreen')) {
+                document.mozCancelFullScreen();
+                videoContainer.classList.remove('fullscreen');
+                videoContainer.classList.remove('fullscreen-controls');
+              } else {
+                videoContainer.classList.add('fullscreen');
+                // requestFullScreen will be made at the end of transition.
+              }
               break;
             case 'static-bookmark':
               window.open('http://www.mozilla.org', '_blank',
                           'remote=true,useAsyncPanZoom=true');
+              break;
+            case 'show-image-button':
+              $('extra-image').classList.toggle('hidden');
               break;
           }
           break;
@@ -144,6 +157,13 @@
           } else {
             this.appList.hide();
             this.widgetManager.hideAll();
+          }
+          break;
+        case 'transitionend':
+          var videoContainer = $('static-video-container');
+          if (videoContainer.classList.contains('fullscreen')) {
+            videoContainer.mozRequestFullScreen();
+            videoContainer.classList.add('fullscreen-controls');
           }
           break;
       }
@@ -237,6 +257,14 @@
       this.currentWidgetList = newCfgs;
     },
 
+    _initFullscreenControls: function HS_initFullscreenControls() {
+      var controls = document.importNode(
+                                $('fullscren-overlays-template').content, true);
+      var showImageBtn = controls.querySelector('#show-image-button');
+      showImageBtn.addEventListener('click', this);
+      return controls;
+    },
+
     _createStaticElement: function HS_createStaticElement(type, rect) {
       var dom = document.createElement(type);
       dom.classList.add('static-element');
@@ -251,19 +279,28 @@
         return e.static;
       });
 
-      var video = this._createStaticElement('video', staticPlaces[0].rect);
+      var videoContainer = this._createStaticElement('div',
+                                                     staticPlaces[0].rect);
+      videoContainer.id = 'static-video-container';
+      var video = document.createElement('video');
       video.id = 'static-video';
+      video.classList.add('static-video');
+      video.classList.add('static-video');
       video.mozAudioChannelType = 'content';
       video.loop = true;
       video.controls = false;
       video.addEventListener('click', this);
       video.addEventListener('loadedmetadata', this);
-      container.appendChild(video);
+      videoContainer.addEventListener('transitionend', this);
+      videoContainer.appendChild(video);
+      videoContainer.appendChild(this._initFullscreenControls());
+      container.appendChild(videoContainer);
       this._videoPlayedTime = 0;
       this._toggleVideo();
 
       var dom = this._createStaticElement('div', staticPlaces[1].rect);
       dom.id = 'static-bookmark';
+      dom.classList.add('static-bookmark');
       dom.style.backgroundImage = 'url(' + BOOKMARK_URL + ')';
       dom.addEventListener('click', this);
       container.appendChild(dom);
