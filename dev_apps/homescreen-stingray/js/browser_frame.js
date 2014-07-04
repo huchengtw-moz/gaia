@@ -49,7 +49,7 @@
       browser.setAttribute('remote', 'true');
 
     if (config.manifestURL) {
-      browser.setAttribute('mozapp', config.manifestURL);
+      browser.setAttribute('mozwidget', config.manifestURL);
     }
 
     if (config.parentApp) {
