@@ -16,6 +16,12 @@ var App = {
    * Load the Tabs and Panels, attach events and navigate to the default view.
    */
   init: function() {
+    if (window.location.hash === '#analog-clock' ||
+        window.location.hash === '#stop-watch' ||
+        window.location.hash === '#digital-clock') {
+      document.getElementById('clock-tabs').classList.add('hide');
+      document.getElementById('main-panel-wrapper').classList.add('full');
+    }
     this.tabs = new Tabs(document.getElementById('clock-tabs'));
 
     window.addEventListener('hashchange', this);
@@ -42,7 +48,10 @@ var App = {
 
     this.dispatchPerformanceEvent('moz-chrome-dom-loaded');
 
-    this.navigate({ hash: '#alarm-panel' }, function() {
+    var panelHash = (window.location.hash === '#stop-watch') ?
+                    '#stopwatch-panel' : '#alarm-panel';
+
+    this.navigate({ hash: panelHash }, function() {
       // Dispatch an event to mark when we've finished loading.
       // At this point, the navigation is usable, and the primary
       // alarm list tab has begun loading.

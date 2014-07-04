@@ -47,6 +47,16 @@
         "189": "/contacts/style/icons/contacts_189.png",
         "284": "/contacts/style/icons/contacts_284.png"
       },
+      "widgets": {
+        "contactWidget": {
+          "name": "Short Contact List",
+          "href": "/contacts/index.html",
+          "description": "This is a Contact List"
+        }
+      },
+      "widgetPages": [
+        "/contacts/index.html"
+      ],
       "locales": {
         "ar": {
           "name": "اتصالات",

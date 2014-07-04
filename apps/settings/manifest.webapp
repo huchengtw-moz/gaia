@@ -7,6 +7,16 @@
     "name": "The Gaia Team",
     "url": "https://github.com/mozilla-b2g/gaia"
   },
+  "widgets": {
+    "normalClock": {
+      "name": "Settings Widget",
+      "href": "/index.html#root",
+      "description": "This is a clock widget"
+    }
+  },
+  "widgetPages": [
+    "/index.html#root"
+  ],
   "permissions": {
     "storage":{},
     "browser": {},
