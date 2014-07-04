@@ -1,4 +1,4 @@
-#app-list {
+#app-list, #widget-list {
   font-size: 1.2rem;
   position: absolute;
   left: 1rem;
@@ -11,14 +11,14 @@
   overflow: hidden;
 }
 
-#app-list-header {
+#app-list-header, #widget-list-header {
   font-size: 2rem;
   line-height: 3rem;
   height: 3rem;
   color: white;
 }
 
-#app-list-close-button {
+#app-list-close-button, #widget-list-header {
   margin-right: 1rem;
   display: inline-block;
   width: 3rem;
@@ -30,7 +30,7 @@
   vertical-align: middle;
 }
 
-#app-list-page-indicator {
+#app-list-page-indicator, #widget-list-page-indicator {
   position: absolute;
   width: 100%;
   height: 2rem;
@@ -39,7 +39,7 @@
   text-align: center;
 }
 
-.app-list-page-indicator-item {
+.app-list-page-indicator-item, .widget-list-page-indicator-item {
   display: inline-block;
   vertical-align: top;
   margin: 0 0.2rem;
@@ -49,11 +49,11 @@
   transition: opacity 0.2s ease;
 }
 
-.app-list-page-indicator-item.focus {
+.app-list-page-indicator-item.focus, .widget-list-page-indicator-item.focus {
   opacity: 1;
 }
 
-#app-list-container {
+#app-list-container, #widget-list-container {
   overflow: visible;
   width: 100%;
   height: calc(100% - 3rem);
@@ -62,7 +62,7 @@
   transition: transform 0.2s ease-out;
 }
 
-.app-list-page {
+.app-list-page, .widget-list-page {
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -71,7 +71,7 @@
   white-space: normal;
 }
 
-.app-list-icon {
+.app-list-icon, .widget-list-icon {
   display: inline-block;
   vertical-align: top;
   width: 8rem;
@@ -85,7 +85,7 @@
   cursor: pointer;
 }
 
-.app-list-icon:hover {
+.app-list-icon:hover, .widget-list-icon:hover {
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 0.5rem;
 }

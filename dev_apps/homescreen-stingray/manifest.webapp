@@ -10,7 +10,7 @@
   },
   "permissions": {
     "webapps-manage":{},
-    "embed-apps":{},
+    "embed-widgets": {},
     "open-remote-window":{},
     "systemXHR":{},
     "settings":{ "access": "readwrite" },
