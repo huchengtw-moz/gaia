@@ -21,6 +21,7 @@
      * @param {String} args.app.entryPoint - (optional) entry point name that
      *                 need to be used. The name specified must consist with
      *                 the manifest file.
+     * @param {String} args.app.id - widget id
      * @param {integer} args.rect.left - left position of widget
      * @param {integer} args.rect.top - top position of widget
      * @param {integer} args.rect.width - width of widget
@@ -29,16 +30,17 @@
     createWidget: function(args) {
       var manifestURL = args.app.manifestURL;
       var origin = manifestURL.split('/').slice(0,3).join('/');
-      var manifest = Applications.getEntryManifest(manifestURL);
-      if (!manifest) {
-        return;
+
+      var widget = Applications.getWidgetEntry(args.app.manifestURL,
+                                               args.app.entryPoint,
+                                               args.app.id);
+      if (!widget) {
+        return null;
       }
 
-      var appURL = origin + (args.app.entryPoint ?
-        manifest.entry_points[args.app.entryPoint].launch_path :
-        manifest.launch_path);
+      var appURL = origin + widget.href;
 
-      var config = new BrowserConfigHelper(appURL, manifestURL);
+      var config = new BrowserConfigHelper(appURL, manifestURL, origin);
       var widgetOverlay = document.getElementById('widget-container');
       var app = new WidgetWindow(config, widgetOverlay);
       // XXX: Separate styles.

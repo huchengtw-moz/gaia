@@ -39,6 +39,13 @@
       });
       this.appList.init();
 
+      this.widgetList = new WidgetList({
+        widgetList: $('widget-list'),
+        container: $('widget-list-container'),
+        pageIndicator: $('widget-list-page-indicator')
+      });
+      this.widgetList.init();
+
       // Layout Editor
       this._initLayoutEditor(widgetContainer, widgetEditorUI, layoutContainer);
 
@@ -46,12 +53,13 @@
       this.widgetEditor = new WidgetEditor();
       this.widgetEditor.start(widgetEditorUI,
                               layoutContainer,
-                              this.appList,
+                              this.widgetList,
                               this.layoutEditor);
 
       // Event listeners for buttons
       $('app-list-open-button').addEventListener('click', this);
       $('app-list-close-button').addEventListener('click', this);
+      $('widget-list-close-button').addEventListener('click', this);
       $('widget-editor-open-button').addEventListener('click', this);
       $('widget-editor-close-button').addEventListener('click', this);
 
@@ -81,12 +89,16 @@
       // Event listeners for buttons
       $('app-list-close-button').removeEventListener('click', this);
       $('app-list-open-button').removeEventListener('click', this);
+      $('widget-list-close-button').removeEventListener('click', this);
       $('widget-editor-open-button').removeEventListener('click', this);
       $('widget-editor-close-button').removeEventListener('click', this);
 
       // App List
       this.appList.uninit();
       this.appList = null;
+
+      this.widgetList.uninit();
+      this.widgetList = null;
 
       // Widget Editor
       this.widgetEditor.stop();
@@ -110,6 +122,9 @@
               break;
             case 'app-list-close-button':
               this.appList.hide();
+              break;
+            case 'widget-list-close-button':
+              this.widgetList.hide();
               break;
             case 'widget-editor-open-button':
               this.widgetEditor.show();
@@ -215,9 +230,10 @@
         } else if (oldCfgs[oldIdx].positionId === newCfgs[newIdx].positionId) {
           var oldApp = oldCfgs[oldIdx].app;
           var newApp = newCfgs[newIdx].app;
-          // index the same compare manifestURL and entryPoint
+          // index the same compare manifestURL, entryPoint and id
           if (oldApp.manifestURL !== newApp.manifestURL ||
-              oldApp.entryPoint !== newApp.entryPoint) {
+              oldApp.entryPoint !== newApp.entryPoint ||
+              oldApp.id !== newApp.id) {
             this.widgetManager.remove(oldCfgs[oldIdx].widget.instanceID);
             newCfgs[newIdx].widget = this.widgetFactory.createWidget(
                                                                newCfgs[newIdx]);
