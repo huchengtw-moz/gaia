@@ -17,6 +17,17 @@
    */
 
   /**
+   * Widget Definition
+   *
+   * @property {String} manifestURL The widget's manifestURL.
+   * @property {String} name widget name.
+   * @property {String} href widget href.
+   * @property {String} description description.
+   * @property {String} screenshot screenshot.
+   * @typedef {Object} WidgetDefinition
+   */
+
+  /**
    * Applications is a helper for mozApps.mgmt. It is responsible for:
    *
    * - get all installed apps
@@ -288,6 +299,70 @@
     },
 
     /**
+     * Get all "widgets" from the specified app.
+     *
+     * @param {String} manifestURL The app's manifestURL.
+     * @return {Array} An array contains all {@link WidgetDefinition} of the
+     *                 specified app.
+     * @memberof Applications
+     */
+    getWidgetEntries: function appGetWidgetEntries(manifestURL, entryPoint) {
+      if (!manifestURL || !this.installedApps[manifestURL]) {
+        return [];
+      }
+
+      var manifest = this.getEntryManifest(manifestURL, entryPoint);
+      var widgets = manifest.widgets;
+      var ret = [];
+
+      if (widgets) {
+        var widget;
+        for (var id in widgets) {
+          widget = widgets[id];
+          // TODO localization
+          ret.push({
+            manifestURL: manifestURL,
+            entryPoint: entryPoint,
+            id: id,
+            name: widget.name,
+            href: widget.href,
+            description: widget.description,
+            screenshot: widget.screenshot
+          });
+        }
+      }
+
+      return ret;
+    },
+
+    _getWidgetEntriesByAppEntry: function appGetWidgetEntriesByApp(appEntry) {
+      if (!appEntry) {
+        return [];
+      }
+
+      var widgets = appEntry.widgets;
+      var ret = [];
+
+      if (widgets) {
+        var widget;
+        for (var id in widgets) {
+          widget = widgets[id];
+          // TODO localization
+          ret.push({
+            manifestURL: manifestURL,
+            id: id,
+            name: widget.name,
+            href: widget.href,
+            description: widget.description,
+            screenshot: widget.screenshot
+          });
+        }
+      }
+
+      return ret;
+    },
+
+    /**
      * Get all "entry_point"s from all installed apps.
      *
      * @return {Array} An array contains all {@link AppEntryPoint} of the
@@ -303,6 +378,26 @@
       for (var manifestURL in this.installedApps) {
         entries.push.apply(entries, this.getAppEntries(manifestURL));
       }
+      return entries;
+    },
+
+    /**
+     * Get all "widgets" from all installed apps.
+     *
+     * @return {Array} An array contains all {@link WidgetDefinition} of the
+     *                 installed apps.
+     * @memberof Applications
+     */
+    getAllWidgets: function appGetAllWidgets() {
+      if (!this._ready) {
+        return null;
+      }
+
+      var entries = [];
+      var appEntries = this.getAllAppEntries();
+      appEntries.forEach(function(appEntry) {
+        entries.push.apply(entries, this._getWidgetEntriesByAppEntry(appEntry));
+      });
       return entries;
     },
 
@@ -357,6 +452,35 @@
     },
 
     /**
+     * Get manifest object by specified manifestURL and entryPoint.
+     *
+     * @param {String} manifestURL The app's manifestURL.
+     * @param {String} [entryPoint] Specify an "entry_point" if you want to get
+     *                              its part only. Otherwise, the whole manifest
+     *                              object will be returned.
+     * @return {Object} A manifest object or "null" if the app doesn't exist.
+     * @memberof Applications
+     */
+    getWidgetEntry: function appGetWidgetEntry(manifestURL, entryPoint, id) {
+      var manifest = this.getEntryManifest(manifestURL, entryPoint);
+
+      if ((manifest.widgets && manifest.widgets[id])) {
+        var widget = manifest.widgets[id];
+        return {
+          manifestURL: manifestURL,
+          entryPoint: entryPoint,
+          id: id,
+          name: widget.name,
+          href: widget.href,
+          description: widget.description,
+          screenshot: widget.screenshot
+        };
+      } else {
+        return null;
+      }
+    },
+
+    /**
      * Get app/entry's name.
      *
      * @param {String} manifestURL An app's manifestURL.
@@ -400,6 +524,65 @@
 
       var url = this._bestMatchingIcon(
         this.installedApps[manifestURL], entry_manifest, preferredSize);
+
+      if (!url) {
+        if (callback) {
+          setTimeout(callback);
+        }
+        return true;
+      }
+
+      this._loadIcon({
+        url: url,
+        onsuccess: function(blob) {
+          if (callback) {
+            callback(blob);
+          }
+        },
+        onerror: function() {
+          if (callback) {
+            callback();
+          }
+        }
+      });
+
+      return true;
+    },
+    /**
+     * Get blob data of the app/entry's icon.
+     *
+     * @param {String} manifestURL An app's manifestURL.
+     * @param {String} [entryPoint] Specify an "entry_point".
+     * @param {Number} [preferredSize=Number.MAX_VALUE]
+     *        In pixels. This method will choose the smallest icon that its
+     *        width greater than this value or the biggest one if all the icons'
+     *        width are smaller than this value.
+     * @param {Function} [callback] The callback will contains blob data as the
+     *                            first argument if succeed or "undefined" if
+     *                            something failed.
+     * @return {Boolean} true if the process is started or false if no valid
+     *                   icon url can be found or the app doesn't exist.
+     * @memberof Applications
+     */
+    getWidgetScreenShot: function appGetWidgetScreenShot(manifestURL,
+                                                         entryPoint,
+                                                         widgetId,
+                                                         callback) {
+
+      var widget = this.getWidgetEntry(manifestURL, entryPoint, widgetId);
+      if (!widget) {
+        return false;
+      }
+
+      var app = this.installedApps[manifestURL];
+      var url = widget.screenshot;
+
+      if (!url) {
+        var entry_manifest = this.getEntryManifest(manifestURL, entryPoint);
+        url = this._bestMatchingIcon(app, entry_manifest, -1);
+      } else {
+        url = app.origin + url;
+      }
 
       if (!url) {
         if (callback) {
