@@ -85,8 +85,15 @@ var ClockView = {
 
     document.addEventListener('visibilitychange', handler);
 
-    this.analog.addEventListener('click', handler, false);
-    this.digital.addEventListener('click', handler, false);
+    if (window.location.hash === '#analog-clock') {
+      this.mode = 'analog';
+    } else if (window.location.hash === '#digital-clock') {
+      this.mode = 'digital';
+    } else {
+      this.analog.addEventListener('click', handler, false);
+      this.digital.addEventListener('click', handler, false);
+    }
+    
     window.addEventListener('alarm-list-changed',
                             this.resizeAnalogClock.bind(this));
     window.addEventListener('timeformatchange', this.update.bind(this));
