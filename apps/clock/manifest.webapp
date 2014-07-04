@@ -7,6 +7,24 @@
     "name": "The Gaia Team",
     "url": "https://github.com/mozilla-b2g/gaia"
   },
+  "widgets": {
+    "digital-clock": {
+      "name": "Digital Clock",
+      "href": "/index.html#digital-clock",
+      "description": "This is a digital clock widget",
+      "screenshot": "/style/widgets/digital-clock.png"
+    },
+    "stop-watch": {
+      "name": "Stop Watch",
+      "href": "/index.html#stop-watch",
+      "description": "This is a stop watch widget",
+      "screenshot": "/style/widgets/stop-watch.png"
+    }
+  },
+  "widgetPages": [
+    "/index.html#digital-clock",
+    "/index.html#stop-watch"
+  ],
   "permissions": {
     "storage":{},
     "alarms":{},
