@@ -21,7 +21,10 @@ define(function(require) {
       window.location.origin + '/onring.html');
 
     // Handle the system's alarm event.
-    navigator.mozSetMessageHandler('alarm', this.onMozAlarm.bind(this));
+    if (window.location.hash !== '#analog-clock' &&
+        window.location.hash !== '#digital-clock') {
+      navigator.mozSetMessageHandler('alarm', this.onMozAlarm.bind(this));
+    }
     window.addEventListener('test-alarm', this.onMozAlarm.bind(this));
 
     // Handle events transparently from the child window.
