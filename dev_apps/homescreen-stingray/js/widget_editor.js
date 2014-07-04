@@ -25,21 +25,21 @@
      * @property {DOMElement} cellContainer - the container of the cells created
      *                        by layout editor.
      *
-     * @property {AppList} appList - the AppList object for showing the app
+     * @property {WidgetList} wdgList - the AppList object for showing the app
      *                               icons
      * @property {LayoutEditor} layoutEditor the LayoutEditor which creates the
      *                                       cells.
      *
      * @memberof WidgetEditor.prototype
      */
-    start: function we_start(container, cellContainer, appList, layoutEditor) {
-      if (!appList || !container || !cellContainer || !layoutEditor) {
+    start: function we_start(container, cellContainer, wdgList, layoutEditor) {
+      if (!wdgList || !container || !cellContainer || !layoutEditor) {
         throw new Error('WidgetEditor needs a valid options to work.');
       }
       // init variables
       this.container = container;
       this.cellContainer = cellContainer;
-      this.appList = appList;
+      this.widgetList = wdgList;
       this.editor = layoutEditor;
 
       // create selection border with single selection.
@@ -70,7 +70,7 @@
       this.currentFocus = null;
       this.container = null;
       this.cellContainer = null;
-      this.appList = null;
+      this.widgetList = null;
       this.editor = null;
       this._boundHandleAppRemoved = null;
       this._boundHandleAppUpdate = null;
@@ -158,13 +158,16 @@
     _fillAppIcon: function we__fillAppIcon(cfg, callback) {
       cfg.app.name = Applications.getName(cfg.app.manifestURL,
                                           cfg.app.entryPoint);
-      Applications.getIconBlob(cfg.app.manifestURL, cfg.app.entryPoint, 0,
-        (blob) => {
-          cfg.app.iconUrl = blob ? URL.createObjectURL(blob) : DEFAULT_ICON;
-          if (callback && (typeof callback) === 'function') {
-            callback(cfg);
-          }
-        });
+      Applications.getWidgetScreenShot(cfg.app.manifestURL,
+                                       cfg.app.entryPoint,
+                                       cfg.app.id,
+                                       function(blob) {
+        // callback function of getWidgetScreenShot
+        cfg.app.iconUrl = blob ? URL.createObjectURL(blob) : DEFAULT_ICON;
+        if (callback && (typeof callback) === 'function') {
+          callback(cfg);
+        }
+      });
     },
     /**
      * handle user press OK/Enter or click on the selected place. When the place
@@ -183,14 +186,14 @@
         this.editor.removeWidget(place);
       } else {
         // show app list for selecting app.
-        if (this.appList.show()) {
+        if (this.widgetList.show()) {
           // put event listeners when app is shown
           var handleAppChosen = this._handleAppChosen.bind(this);
-          this.appList.on('iconclick', handleAppChosen);
-          this.appList.once('closed', () => {
+          this.widgetList.on('iconclick', handleAppChosen);
+          this.widgetList.once('closed', () => {
             // We need to remove iconClick event listener because users may
             // press "close" without click any app icon.
-            this.appList.off('iconclick', handleAppChosen);
+            this.widgetList.off('iconclick', handleAppChosen);
           });
         }
       }
@@ -215,18 +218,22 @@
      * @memberof WidgetEditor.prototype
      */
     _handleAppChosen: function we__handleAppChosen(data) {
-      Applications.getIconBlob(data.manifestURL, data.entryPoint, 0,
-        (blob) => {
-          var iconUrl = blob ? URL.createObjectURL(blob) : DEFAULT_ICON;
+      Applications.getWidgetScreenShot(data.manifestURL,
+                                       data.entryPoint,
+                                       data.id,
+                                      (blob) => {
+        // callback function of getWidgetScreenShot
+        var iconUrl = blob ? URL.createObjectURL(blob) : DEFAULT_ICON;
 
-          this.editor.addWidget({ name: data.name,
-                                  iconUrl: iconUrl,
-                                  manifestURL: data.manifestURL,
-                                  entryPoint: data.entryPoint},
-                                this.currentFocus);
-        });
+        this.editor.addWidget({ name: data.name,
+                                iconUrl: iconUrl,
+                                manifestURL: data.manifestURL,
+                                entryPoint: data.entryPoint,
+                                id: data.id},
+                              this.currentFocus);
+      });
       // once user click an app, we should close the app list.
-      this.appList.hide();
+      this.widgetList.hide();
       data.preventDefault();
     },
     /**
@@ -237,15 +244,21 @@
      * @memberof WidgetEditor.prototype
      */
     _handleAppRemoved: function we__handleAppRemoved(apps) {
+      // TODO change entryPoint to widget href
       apps.forEach((app) => {
-        this.editor.removeWidgets((place, resultCallback) => {
-          if (place.app.manifestURL === app.manifestURL &&
-            place.app.entryPoint === app.entryPoint) {
-            this._revokeUrl(place.app.iconUrl);
-            resultCallback(true, place);
-          } else {
-            resultCallback(false, place);
-          }
+        var widgets = Applications.getWidgetEntries(app.manifestURL,
+                                                    app.entryPoint);
+        widgets.forEach((widget) => {
+          this.editor.removeWidgets((place, resultCallback) => {
+            if (place.app.manifestURL === widget.manifestURL &&
+                place.app.entryPoint === widget.entryPoint &&
+                place.app.id === widget.id) {
+              this._revokeUrl(place.app.iconUrl);
+              resultCallback(true, place);
+            } else {
+              resultCallback(false, place);
+            }
+          });
         });
       });
     },
@@ -258,21 +271,29 @@
      */
     _handleAppUpdated: function we__handleAppUpdated(apps) {
       apps.forEach((app) => {
-        this.editor.updateWidgets((place, resultCallback) => {
-          if (place.app.manifestURL === app.manifestURL &&
-              place.app.entryPoint === app.entryPoint) {
+        var widgets = Applications.getWidgetEntries(app.manifestURL,
+                                                    app.entryPoint);
+        widgets.forEach((widget) => {
+          this.editor.updateWidgets((place, resultCallback) => {
+            if (place.app.manifestURL === widget.manifestURL &&
+                place.app.entryPoint === widget.entryPoint &&
+                place.app.id === widget.id) {
 
-            place.app.name = app.name;
-            this._revokeUrl(place.app.iconUrl);
-            Applications.getIconBlob(app.manifestURL, app.entryPoint, 0,
-              (b) => {
+              place.app.name = widget.name;
+              this._revokeUrl(place.app.iconUrl);
+              Applications.getWidgetScreenShot(widget.manifestURL,
+                                               widget.entryPoint,
+                                               widget.id,
+                                               (b) => {
+                // callback function of getWidgetScreenShot
                 var iconUrl = b ? URL.createObjectURL(b) : DEFAULT_ICON;
                 place.app.iconUrl = iconUrl;
                 resultCallback(true, place);
               });
-          } else {
-            resultCallback(false, place);
-          }
+            } else {
+              resultCallback(false, place);
+            }
+          });
         });
       });
     },
