@@ -17,6 +17,15 @@
   overflow-x: hidden;
 }
 
+#clock-tabs.hide * {
+  display: none;
+}
+
+#main-panel-wrapper.full {
+  height: 100%;
+}
+
+
 .panel {
   position: absolute;
   z-index: 2;
