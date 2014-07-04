@@ -36,7 +36,7 @@
    *
    * @class BrowserConfigHelper
    */
-  window.BrowserConfigHelper = function(appURL, manifestURL) {
+  window.BrowserConfigHelper = function(appURL, manifestURL, origin) {
     var manifest = Applications.getEntryManifest(manifestURL);
     if (!manifest) {
       this.name = '';
@@ -47,40 +47,6 @@
     }
     this.url = appURL;
     var name = new ManifestHelper(manifest).name;
-    var origin = appURL;
-
-    // Check if it's a virtual app from a entry point.
-    // If so, change the app name and origin to the
-    // entry point.
-    var entryPoints = manifest.entry_points;
-    if (entryPoints && manifest.type == 'certified') {
-      // Do deep copy to avoid reference to be overwritten
-      // only when we're entry points.
-      manifest = JSON.parse(JSON.stringify(manifest));
-      var givenPath = this.url.substr(origin.length);
-
-      // Workaround here until the bug (to be filed) is fixed
-      // Basicly, gecko is sending the URL without launch_path sometimes
-      for (var ep in entryPoints) {
-        var currentEp = entryPoints[ep];
-        var path = givenPath;
-        if (path.indexOf('?') != -1) {
-          path = path.substr(0, path.indexOf('?'));
-        }
-
-        //Remove the origin and / to find if if the url is the entry point
-        if (path.indexOf('/' + ep) == 0 &&
-            (currentEp.launch_path == path)) {
-          origin = origin + currentEp.launch_path;
-          name = new ManifestHelper(currentEp).name;
-          for (var key in currentEp) {
-            if (key !== 'locale' && key !== 'name') {
-              manifest[key] = currentEp[key];
-            }
-          }
-        }
-      }
-    }
 
     // These apps currently have bugs preventing them from being
     // run out of process. All other apps will be run OOP.

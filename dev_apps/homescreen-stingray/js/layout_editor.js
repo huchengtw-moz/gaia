@@ -37,7 +37,8 @@
    * layout editor.
    *
    * @property {String} manifestURL the manifestURL of widget.
-   * @property {String} [entryPoint=''] the entrypoint of this widget.
+   * @property {String} entryPoint the entryPoint of this widget.
+   * @property {String} href the href of this widget.
    * @property {String} name the name of this widget.
    * @property {String} iconUrl the icon url of this widget.
    * @typedef {Object} LayoutAppInfo
@@ -163,7 +164,8 @@
             },
             app: {
               manifestURL: place.app ? place.app.manifestURL : '',
-              entryPoint: place.app ? place.app.entryPoint : ''
+              entryPoint: place.app ? place.app.entryPoint : '',
+              id: place.app ? place.app.id : ''
             }
           });
         }
