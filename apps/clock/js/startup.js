@@ -2,6 +2,8 @@
 
 define('startup_init', function(require) {
 
+console.log('navigator.mozAlarms: ' + navigator.mozAlarms);
+
 var App = require('app');
 var mozL10n = require('l10n');
 mozL10n.once(App.init.bind(App));

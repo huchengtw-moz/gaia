@@ -19,6 +19,11 @@
       "href": "/index.html#stop-watch",
       "description": "This is a stop watch widget",
       "screenshot": "/style/widgets/stop-watch.png"
+    },
+    "onring": {
+      "name": "Test Page",
+      "href": "/test.html",
+      "description": "This is a stop watch widget"
     }
   },
   "widgetPages": [
