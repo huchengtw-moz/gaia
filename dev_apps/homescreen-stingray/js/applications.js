@@ -278,18 +278,20 @@
       var entries = [];
 
       if (!entryPoints || manifest.type !== 'certified') {
+        var helper = new ManifestHelper(manifest);
         entries.push({
           manifestURL: manifestURL,
           entryPoint: '',
-          name: manifest.name
+          name: helper.name
         });
       } else {
         for (var entryPoint in entryPoints) {
           if (entryPoints[entryPoint].icons) {
+            var helper = new ManifestHelper(entryPoints[entryPoint]);
             entries.push({
               manifestURL: manifestURL,
               entryPoint: entryPoint,
-              name: entryPoints[entryPoint].name
+              name: helper.name
             });
           }
         }
@@ -312,47 +314,20 @@
       }
 
       var manifest = this.getEntryManifest(manifestURL, entryPoint);
-      var widgets = manifest.widgets;
+      // use ManifestHelper to localize the information.
+      manifest = new ManifestHelper(manifest);
+
       var ret = [];
 
-      if (widgets) {
-        var widget;
-        for (var id in widgets) {
-          widget = widgets[id];
-          // TODO localization
+      if (manifest.widgets) {
+        for (var id in manifest.widgets) {
+          var widget = new ManifestHelper(manifest.widgets[id]);
           ret.push({
             manifestURL: manifestURL,
             entryPoint: entryPoint,
             id: id,
-            name: widget.name,
             href: widget.href,
-            description: widget.description,
-            screenshot: widget.screenshot
-          });
-        }
-      }
-
-      return ret;
-    },
-
-    _getWidgetEntriesByAppEntry: function appGetWidgetEntriesByApp(appEntry) {
-      if (!appEntry) {
-        return [];
-      }
-
-      var widgets = appEntry.widgets;
-      var ret = [];
-
-      if (widgets) {
-        var widget;
-        for (var id in widgets) {
-          widget = widgets[id];
-          // TODO localization
-          ret.push({
-            manifestURL: manifestURL,
-            id: id,
             name: widget.name,
-            href: widget.href,
             description: widget.description,
             screenshot: widget.screenshot
           });
@@ -396,7 +371,8 @@
       var entries = [];
       var appEntries = this.getAllAppEntries();
       appEntries.forEach(function(appEntry) {
-        entries.push.apply(entries, this._getWidgetEntriesByAppEntry(appEntry));
+        entries.push.apply(entries, this.getWidgetEntries(appEntry.manifestURL,
+                                                          appEntry.entryPoint));
       });
       return entries;
     },
@@ -463,15 +439,22 @@
      */
     getWidgetEntry: function appGetWidgetEntry(manifestURL, entryPoint, id) {
       var manifest = this.getEntryManifest(manifestURL, entryPoint);
+      if (!manifest) {
+        return null;
+      }
 
-      if ((manifest.widgets && manifest.widgets[id])) {
-        var widget = manifest.widgets[id];
+      // use ManifestHelper to localize the information.
+      manifest = new ManifestHelper(manifest);
+
+      if (manifest.widgets && manifest.widgets[id]) {
+        // read localized info
+        var widget = new ManifestHelper(manifest.widgets[id]);
         return {
           manifestURL: manifestURL,
           entryPoint: entryPoint,
           id: id,
-          name: widget.name,
           href: widget.href,
+          name: widget.name,
           description: widget.description,
           screenshot: widget.screenshot
         };
@@ -496,7 +479,7 @@
       if (!entry_manifest) {
         return '';
       }
-      return entry_manifest.name;
+      return new ManifestHelper(entry_manifest).name;
     },
 
     /**
