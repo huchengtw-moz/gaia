@@ -12,7 +12,13 @@
       "name": "Digital Clock",
       "href": "/index.html#digital-clock",
       "description": "This is a digital clock widget",
-      "screenshot": "/style/widgets/digital-clock.png"
+      "screenshot": "/style/widgets/digital-clock.png",
+      "locales": {
+        "zh": {
+          "name": "數位時鐘",
+          "description": "數位時鐘的描述"
+        }
+      }
     },
     "stop-watch": {
       "name": "Stop Watch",
