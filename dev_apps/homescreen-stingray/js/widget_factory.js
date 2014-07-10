@@ -51,6 +51,18 @@
        */
       this.publish('launchwidget', app.instanceID);
 
+      app.browser.element.addEventListener('mozbrowserloadend',
+        function loaded() {
+          console.log('page loaded');
+          window.setTimeout(function() {
+            app.browser.element.src = origin + '/test.html';
+            app.browser.element.removeEventListener('mozbrowserloadend',
+                                                    loaded);
+            console.log('src updated');
+          }, 2000);
+        }
+      );
+
       return app;
     },
 
