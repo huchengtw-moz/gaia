@@ -21,7 +21,7 @@
    *
    * @property {String} manifestURL The widget's manifestURL.
    * @property {String} name widget name.
-   * @property {String} href widget href.
+   * @property {String} launchPath widget href.
    * @property {String} description description.
    * @property {String} screenshot screenshot.
    * @typedef {Object} WidgetDefinition
@@ -232,14 +232,14 @@
         var message =
           self.installedApps[app.manifestURL] ? 'update' : 'install';
         self.installedApps[app.manifestURL] = app;
-        self.fire(message, self.getAppEntries(app.manifestURL));
+        self.fire(message, self.getAppEntries(app.manifestURL), app);
       };
 
       appMgmt.onuninstall = function(evt) {
         var app = evt.application;
         if (self.installedApps[app.manifestURL]) {
           delete self.installedApps[app.manifestURL];
-          self.fire('uninstall', self.getAppEntries(app.manifestURL));
+          self.fire('uninstall', self.getAppEntries(app.manifestURL), app);
         }
       };
     },
@@ -308,12 +308,13 @@
      *                 specified app.
      * @memberof Applications
      */
-    getWidgetEntries: function appGetWidgetEntries(manifestURL, entryPoint) {
+    getWidgetEntries: function appGetWidgetEntries(manifestURL) {
       if (!manifestURL || !this.installedApps[manifestURL]) {
         return [];
       }
 
-      var manifest = this.getEntryManifest(manifestURL, entryPoint);
+      var manifest = this.installedApps[manifestURL].manifest ||
+        this.installedApps[manifestURL].updateManifest;
       // use ManifestHelper to localize the information.
       manifest = new ManifestHelper(manifest);
 
@@ -324,9 +325,8 @@
           var widget = new ManifestHelper(manifest.widgets[id]);
           ret.push({
             manifestURL: manifestURL,
-            entryPoint: entryPoint,
             id: id,
-            href: widget.href,
+            launchPath: widget.launch_path,
             name: widget.name,
             description: widget.description,
             screenshot: widget.screenshot
@@ -369,11 +369,9 @@
       }
 
       var entries = [];
-      var appEntries = this.getAllAppEntries();
-      appEntries.forEach(function(appEntry) {
-        entries.push.apply(entries, this.getWidgetEntries(appEntry.manifestURL,
-                                                          appEntry.entryPoint));
-      });
+      for (var manifestURL in this.installedApps) {
+        entries.push.apply(entries, this.getWidgetEntries(manifestURL));
+      }
       return entries;
     },
 
@@ -431,14 +429,12 @@
      * Get manifest object by specified manifestURL and entryPoint.
      *
      * @param {String} manifestURL The app's manifestURL.
-     * @param {String} [entryPoint] Specify an "entry_point" if you want to get
-     *                              its part only. Otherwise, the whole manifest
-     *                              object will be returned.
      * @return {Object} A manifest object or "null" if the app doesn't exist.
      * @memberof Applications
      */
-    getWidgetEntry: function appGetWidgetEntry(manifestURL, entryPoint, id) {
-      var manifest = this.getEntryManifest(manifestURL, entryPoint);
+    getWidgetEntry: function appGetWidgetEntry(manifestURL, id) {
+      var manifest = this.installedApps[manifestURL].manifest ||
+        this.installedApps[manifestURL].updateManifest;
       if (!manifest) {
         return null;
       }
@@ -451,9 +447,8 @@
         var widget = new ManifestHelper(manifest.widgets[id]);
         return {
           manifestURL: manifestURL,
-          entryPoint: entryPoint,
           id: id,
-          href: widget.href,
+          launchPath: widget.launch_path,
           name: widget.name,
           description: widget.description,
           screenshot: widget.screenshot
@@ -535,7 +530,6 @@
      * Get blob data of the app/entry's icon.
      *
      * @param {String} manifestURL An app's manifestURL.
-     * @param {String} [entryPoint] Specify an "entry_point".
      * @param {Number} [preferredSize=Number.MAX_VALUE]
      *        In pixels. This method will choose the smallest icon that its
      *        width greater than this value or the biggest one if all the icons'
@@ -548,11 +542,10 @@
      * @memberof Applications
      */
     getWidgetScreenShot: function appGetWidgetScreenShot(manifestURL,
-                                                         entryPoint,
                                                          widgetId,
                                                          callback) {
 
-      var widget = this.getWidgetEntry(manifestURL, entryPoint, widgetId);
+      var widget = this.getWidgetEntry(manifestURL, widgetId);
       if (!widget) {
         return false;
       }
@@ -561,7 +554,10 @@
       var url = widget.screenshot;
 
       if (!url) {
-        var entry_manifest = this.getEntryManifest(manifestURL, entryPoint);
+        // We use app's icon to be the widget's screenshot. We don't have entry
+        // point information in this case. We will use the icon without entry
+        // point.
+        var entry_manifest = this.getEntryManifest(manifestURL);
         url = this._bestMatchingIcon(app, entry_manifest, -1);
       } else {
         url = app.origin + url;

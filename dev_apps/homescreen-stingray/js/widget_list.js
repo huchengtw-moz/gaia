@@ -46,7 +46,6 @@
 
       Applications.getWidgetScreenShot(
         widget.manifestURL,
-        widget.entryPoint,
         widget.id,
         function(blob) {
           if (!blob) {
@@ -96,7 +95,6 @@
       var icon = document.createElement('div');
       icon.className = 'widget-list-icon';
       icon.dataset.manifestURL = widget.manifestURL;
-      icon.dataset.entryPoint = widget.entryPoint;
       icon.dataset.widgetId = widget.id;
       icon.dataset.name = widget.name;
       icon.appendChild(img);
@@ -151,7 +149,6 @@
 
       for (var i = 0; i < icons.length; i++) {
         if (icons[i].dataset.manifestURL == widget.manifestURL &&
-            icons[i].dataset.entryPoint === widget.entryPoint &&
             icons[i].dataset.widgetId == widget.id) {
           return i;
         }
@@ -313,7 +310,6 @@
 
       var data = {
         manifestURL: icon.dataset.manifestURL,
-        entryPoint: icon.dataset.entryPoint,
         id: icon.dataset.widgetId,
         name: icon.dataset.name,
         preventDefault: function() {
@@ -327,10 +323,11 @@
      * The handler for the app "install" event from {@link Applications}.
      *
      * @access private
-     * @param {Array} entries An array contains {@link AppEntryPoint}.
+     * @param {Array} entries An array contains {@link WidgetDefinition}.
+     * @param {mozApp} app the app which is installed.
      * @memberof WidgetList.prototype
      */
-    _handleAppInstall: function widgetListHandleAppInstall(entries) {
+    _handleAppInstall: function widgetListHandleAppInstall(entries, app) {
       var page;
       if (!this._pages.length) {
         page = this._createPage();
@@ -339,15 +336,12 @@
       }
 
       var self = this;
-      entries.forEach(function(entry) {
-        var widgets = Applications.getWidgetEntries(entry.manifestURL,
-                                                    entry.entryPoint);
-        widgets.forEach(function(widget) {
-          if (page.isFull()) {
-            page = self._createPage();
-          }
-          page.addIcon(widget, self._iconTapHandler);
-        });
+      var widgets = Applications.getWidgetEntries(app.manifestURL);
+      widgets.forEach(function(widget) {
+        if (page.isFull()) {
+          page = self._createPage();
+        }
+        page.addIcon(widget, self._iconTapHandler);
       });
     },
 
@@ -355,23 +349,21 @@
      * The handler for the app "update" event from {@link Applications}.
      *
      * @access private
-     * @param {Array} entries An array contains {@link AppEntryPoint}.
+     * @param {Array} entries An array contains {@link WidgetDefinition}.
+     * @param {mozApp} app the app which is installed.
      * @memberof WidgetList.prototype
      */
-    _handleAppUpdate: function widgetListHandleAppUpdate(entries) {
+    _handleAppUpdate: function widgetListHandleAppUpdate(entries, app) {
       var pages = this._pages;
       var page_count = pages.length;
 
-      entries.forEach(function(entry) {
-        var widgets = Applications.getWidgetEntries(entry.manifestURL,
-                                                    entry.entryPoint);
-        widgets.forEach(function(widget) {
-          for (var i = 0; i < page_count; i++) {
-            if (pages[i].updateIcon(widget)) {
-              break;
-            }
+      var widgets = Applications.getWidgetEntries(app.manifestURL);
+      widgets.forEach(function(widget) {
+        for (var i = 0; i < page_count; i++) {
+          if (pages[i].updateIcon(widget)) {
+            break;
           }
-        });
+        }
       });
     },
 
@@ -379,10 +371,11 @@
      * The handler for the app "uninstall" event from {@link Applications}.
      *
      * @access private
-     * @param {Array} entries An array contains {@link AppEntryPoint}.
+     * @param {Array} entries An array contains {@link WidgetDefinition}.
+     * @param {mozApp} app the app which is installed.
      * @memberof WidgetList.prototype
      */
-    _handleAppUninstall: function widgetListHandleAppUninstall(entries) {
+    _handleAppUninstall: function widgetListHandleAppUninstall(entries, app) {
       var self = this;
       function updateWidgetIcon(widget) {
         var pages = self._pages;
@@ -418,11 +411,8 @@
           self._reducePage();
         }
       }
-      entries.forEach(function(entry) {
-        var widgets = Applications.getWidgetEntries(entry.manifestURL,
-                                                    entry.entryPoint);
-        widgets.forEach(updateWidgetIcon);
-      });
+      var widgets = Applications.getWidgetEntries(entry.manifestURL);
+      widgets.forEach(updateWidgetIcon);
     },
 
     /**
@@ -602,7 +592,9 @@
           evt.preventDefault();
         };
 
-        self._handleAppInstall(Applications.getAllAppEntries());
+        for (var key in Applications.installedApps) {
+          self._handleAppInstall([], Applications.installedApps[key]);
+        }
         self.setPage(0);
 
         self.fire('ready');
