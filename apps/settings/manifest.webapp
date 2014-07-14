@@ -8,10 +8,10 @@
     "url": "https://github.com/mozilla-b2g/gaia"
   },
   "widgets": {
-    "normalClock": {
+    "settings": {
       "name": "Settings Widget",
-      "href": "/index.html#root",
-      "description": "This is a clock widget"
+      "launch_path": "/index.html#root",
+      "description": "This is a settings widget"
     }
   },
   "widgetPages": [
