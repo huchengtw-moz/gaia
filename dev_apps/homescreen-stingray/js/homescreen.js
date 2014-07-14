@@ -230,9 +230,8 @@
         } else if (oldCfgs[oldIdx].positionId === newCfgs[newIdx].positionId) {
           var oldApp = oldCfgs[oldIdx].app;
           var newApp = newCfgs[newIdx].app;
-          // index the same compare manifestURL, entryPoint and id
+          // index the same compare manifestURL and id
           if (oldApp.manifestURL !== newApp.manifestURL ||
-              oldApp.entryPoint !== newApp.entryPoint ||
               oldApp.id !== newApp.id) {
             this.widgetManager.remove(oldCfgs[oldIdx].widget.instanceID);
             newCfgs[newIdx].widget = this.widgetFactory.createWidget(

@@ -10,7 +10,7 @@
   "widgets": {
     "digital-clock": {
       "name": "Digital Clock",
-      "href": "/index.html#digital-clock",
+      "launch_path": "/index.html#digital-clock",
       "description": "This is a digital clock widget",
       "screenshot": "/style/widgets/digital-clock.png",
       "locales": {
@@ -22,7 +22,7 @@
     },
     "stop-watch": {
       "name": "Stop Watch",
-      "href": "/index.html#stop-watch",
+      "launch_path": "/index.html#stop-watch",
       "description": "This is a stop watch widget",
       "screenshot": "/style/widgets/stop-watch.png"
     }
