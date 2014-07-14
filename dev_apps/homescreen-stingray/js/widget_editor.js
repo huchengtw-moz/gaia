@@ -147,7 +147,7 @@
     },
 
     /**
-     * This is a convenient function to convert {@link AppEntryPoint} to
+     * This is a convenient function to convert {@link WidgetDefinition} to
      * {@link LayoutAppInfo}. It queries the app icon.
      *
      * @param {WidgetConfig} cfg - the widget config.
@@ -156,10 +156,10 @@
      * @memberof WidgetEditor.prototype
      */
     _fillAppIcon: function we__fillAppIcon(cfg, callback) {
-      cfg.app.name = Applications.getName(cfg.app.manifestURL,
-                                          cfg.app.entryPoint);
+      var widgetDef = Applications.getWidgetEntry(cfg.app.manifestURL,
+                                                  cfg.app.id);
+      cfg.app.name = widgetDef.name;
       Applications.getWidgetScreenShot(cfg.app.manifestURL,
-                                       cfg.app.entryPoint,
                                        cfg.app.id,
                                        function(blob) {
         // callback function of getWidgetScreenShot
@@ -213,13 +213,12 @@
     },
     /**
      * handles app selected event.
-     * @param {AppEntryPoint} data - the app info.
+     * @param {WidgetDefinition} data - the app info.
      * @private
      * @memberof WidgetEditor.prototype
      */
     _handleAppChosen: function we__handleAppChosen(data) {
       Applications.getWidgetScreenShot(data.manifestURL,
-                                       data.entryPoint,
                                        data.id,
                                       (blob) => {
         // callback function of getWidgetScreenShot
@@ -228,8 +227,7 @@
         this.editor.addWidget({ name: data.name,
                                 iconUrl: iconUrl,
                                 manifestURL: data.manifestURL,
-                                entryPoint: data.entryPoint,
-                                id: data.id},
+                                id: data.id },
                               this.currentFocus);
       });
       // once user click an app, we should close the app list.
@@ -239,61 +237,53 @@
     /**
      * handles apps removed by user. We need to remove the bound app with widget
      * layout cell.
-     * @param {Array} apps - the array of {@link AppEntryPoint}.
+     * @param {Array} entries - the array of {@link AppEntryPoint}.
+     * @param {App} app - the mozApp object.
      * @private
      * @memberof WidgetEditor.prototype
      */
-    _handleAppRemoved: function we__handleAppRemoved(apps) {
-      // TODO change entryPoint to widget href
-      apps.forEach((app) => {
-        var widgets = Applications.getWidgetEntries(app.manifestURL,
-                                                    app.entryPoint);
-        widgets.forEach((widget) => {
-          this.editor.removeWidgets((place, resultCallback) => {
-            if (place.app.manifestURL === widget.manifestURL &&
-                place.app.entryPoint === widget.entryPoint &&
-                place.app.id === widget.id) {
-              this._revokeUrl(place.app.iconUrl);
-              resultCallback(true, place);
-            } else {
-              resultCallback(false, place);
-            }
-          });
+    _handleAppRemoved: function we__handleAppRemoved(entries, app) {
+      var widgets = Applications.getWidgetEntries(app.manifestURL);
+      widgets.forEach((widget) => {
+        this.editor.removeWidgets((place, resultCallback) => {
+          if (place.app.manifestURL === widget.manifestURL &&
+              place.app.id === widget.id) {
+            this._revokeUrl(place.app.iconUrl);
+            resultCallback(true, place);
+          } else {
+            resultCallback(false, place);
+          }
         });
       });
     },
     /**
      * handles apps updated. We need to updated the icon of bound app with
      * widget layout cell.
-     * @param {Array} apps - the array of {@link AppEntryPoint}.
+     * @param {Array} entries - the array of {@link AppEntryPoint}.
+     * @param {App} app - the mozApp object.
      * @private
      * @memberof WidgetEditor.prototype
      */
-    _handleAppUpdated: function we__handleAppUpdated(apps) {
-      apps.forEach((app) => {
-        var widgets = Applications.getWidgetEntries(app.manifestURL,
-                                                    app.entryPoint);
-        widgets.forEach((widget) => {
-          this.editor.updateWidgets((place, resultCallback) => {
-            if (place.app.manifestURL === widget.manifestURL &&
-                place.app.entryPoint === widget.entryPoint &&
-                place.app.id === widget.id) {
+    _handleAppUpdated: function we__handleAppUpdated(entries, app) {
+      var widgets = Applications.getWidgetEntries(app.manifestURL);
+      widgets.forEach((widget) => {
+        this.editor.updateWidgets((place, resultCallback) => {
+          if (place.app.manifestURL === widget.manifestURL &&
+              place.app.id === widget.id) {
 
-              place.app.name = widget.name;
-              this._revokeUrl(place.app.iconUrl);
-              Applications.getWidgetScreenShot(widget.manifestURL,
-                                               widget.entryPoint,
-                                               widget.id,
-                                               (b) => {
-                // callback function of getWidgetScreenShot
-                var iconUrl = b ? URL.createObjectURL(b) : DEFAULT_ICON;
-                place.app.iconUrl = iconUrl;
-                resultCallback(true, place);
-              });
-            } else {
-              resultCallback(false, place);
-            }
-          });
+            place.app.name = widget.name;
+            this._revokeUrl(place.app.iconUrl);
+            Applications.getWidgetScreenShot(widget.manifestURL,
+                                             widget.id,
+                                             (b) => {
+              // callback function of getWidgetScreenShot
+              var iconUrl = b ? URL.createObjectURL(b) : DEFAULT_ICON;
+              place.app.iconUrl = iconUrl;
+              resultCallback(true, place);
+            });
+          } else {
+            resultCallback(false, place);
+          }
         });
       });
     },
