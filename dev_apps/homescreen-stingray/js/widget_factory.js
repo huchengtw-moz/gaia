@@ -18,9 +18,6 @@
      * @fires WidgetFactory#launchwidget
      * @param {Object} args - Arguments for creating widget.
      * @param {String} args.app.manifestURL - manifest URL for widget
-     * @param {String} args.app.entryPoint - (optional) entry point name that
-     *                 need to be used. The name specified must consist with
-     *                 the manifest file.
      * @param {String} args.app.id - widget id
      * @param {integer} args.rect.left - left position of widget
      * @param {integer} args.rect.top - top position of widget
@@ -32,13 +29,12 @@
       var origin = manifestURL.split('/').slice(0,3).join('/');
 
       var widget = Applications.getWidgetEntry(args.app.manifestURL,
-                                               args.app.entryPoint,
                                                args.app.id);
       if (!widget) {
         return null;
       }
 
-      var appURL = origin + widget.href;
+      var appURL = origin + widget.launchPath;
 
       var config = new BrowserConfigHelper(appURL, manifestURL, origin);
       var widgetOverlay = document.getElementById('widget-container');
