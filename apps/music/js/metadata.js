@@ -851,8 +851,8 @@ function parseAudioMetadata(blob, metadataCallback, errorCallback) {
 }
 
 // When we generate our own thumbnails, aim for this size
-var THUMBNAIL_WIDTH = 300;
-var THUMBNAIL_HEIGHT = 300;
+var THUMBNAIL_WIDTH = Math.round(window.innerWidth * 2 / 3);
+var THUMBNAIL_HEIGHT = THUMBNAIL_WIDTH;
 var offscreenImage = new Image();
 var thumbnailCache = {};  // maps keys to blob urls
 
@@ -860,7 +860,7 @@ var thumbnailCache = {};  // maps keys to blob urls
 // cache if possible and storing to the cache if necessary) and pass a
 // blob URL for it it to the specified callback. fileinfo is an object
 // with metadata from the MediaDB.
-function getThumbnailURL(fileinfo, callback) {
+function getThumbnailURL(fileinfo, callback, customSize) {
   function cacheThumbnail(key, blob, url) {
     asyncStorage.setItem(key, blob);
     thumbnailCache[key] = url;
@@ -887,6 +887,8 @@ function getThumbnailURL(fileinfo, callback) {
   else {
     key = 'thumbnail.' + (fileinfo.name || fileinfo.blob.name);
   }
+
+  key += '.' + (customSize || THUMBNAIL_WIDTH);
 
   // If we have the thumbnail url locally, just call the callback
   var url = thumbnailCache[key];
@@ -946,8 +948,8 @@ function getThumbnailURL(fileinfo, callback) {
       offscreenImage.onload = function() {
         // We've loaded the image, now copy it to a canvas
         var canvas = document.createElement('canvas');
-        canvas.width = THUMBNAIL_WIDTH;
-        canvas.height = THUMBNAIL_HEIGHT;
+        canvas.width = customSize || THUMBNAIL_WIDTH;
+        canvas.height = customSize || THUMBNAIL_HEIGHT;
         var context = canvas.getContext('2d', { willReadFrequently: true });
         var scalex = canvas.width / offscreenImage.width;
         var scaley = canvas.height / offscreenImage.height;
@@ -966,14 +968,14 @@ function getThumbnailURL(fileinfo, callback) {
 
         // Calculate the region of the image that will be copied to the
         // canvas to create the thumbnail
-        var w = Math.round(THUMBNAIL_WIDTH / scale);
-        var h = Math.round(THUMBNAIL_HEIGHT / scale);
+        var w = Math.round(canvas.width / scale);
+        var h = Math.round(canvas.height / scale);
         var x = Math.round((offscreenImage.width - w) / 2);
         var y = Math.round((offscreenImage.height - h) / 2);
 
         // Draw that region of the image into the canvas, scaling it down
         context.drawImage(offscreenImage, x, y, w, h,
-                          0, 0, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT);
+                          0, 0, canvas.width, canvas.height);
 
         // We're done with the image now
         offscreenImage.removeAttribute('src');

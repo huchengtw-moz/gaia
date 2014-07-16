@@ -259,7 +259,7 @@ var PlayerView = {
       url = url || generateDefaultThumbnailURL(fileinfo.metadata);
       this.offscreenImage.addEventListener('load', pv_showImage.bind(this));
       this.offscreenImage.src = url;
-    }.bind(this));
+    }.bind(this), 300);
 
     function pv_showImage(evt) {
       evt.target.removeEventListener('load', pv_showImage);
