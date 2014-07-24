@@ -1,0 +1,15 @@
+
+#osd-keyboard {
+  position: absolute;
+  top: auto;
+  bottom: 0;
+  width: 100%;
+}
+
+#osd-keyboard .osd-button {
+  height: 3rem;
+}
+
+.osd-button.focused {
+  background-color: green;
+}
