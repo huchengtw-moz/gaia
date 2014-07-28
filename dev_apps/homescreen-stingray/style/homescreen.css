@@ -76,3 +76,9 @@ menu[type="toolbar"] button:before {
   width: 100% !important;
   height: calc(100% + 5rem) !important;
 }
+
+#api-controllers {
+  position: relative;
+  z-index: 20000;
+  background-color: rgba(255, 255, 255, 0.5);
+}

@@ -76,27 +76,6 @@
     this.config = config;
 
     this.element = browser;
-
-    function dumpAllEvents(e) {
-      console.log(e.type + ' received');
-    }
-
-    browser.addEventListener('mozbrowserclose', dumpAllEvents);
-    browser.addEventListener('mozbrowsererror', dumpAllEvents);
-    browser.addEventListener('mozbrowserloadend', dumpAllEvents);
-    browser.addEventListener('mozbrowserloadstart', dumpAllEvents);
-
-    // sensitive events
-    browser.addEventListener('mozbrowserusernameandpasswordrequired',
-                             dumpAllEvents);
-    browser.addEventListener('mozbrowseropenwindow', dumpAllEvents);
-    browser.addEventListener('mozbrowsershowmodalprompt', dumpAllEvents);
-    browser.addEventListener('mozbrowsercontextmenu', dumpAllEvents);
-    browser.addEventListener('mozbrowsersecuritychange', dumpAllEvents);
-    browser.addEventListener('mozbrowserlocationchange', dumpAllEvents);
-    browser.addEventListener('mozbrowsericonchange', dumpAllEvents);
-    browser.addEventListener('mozbrowsertitlechange', dumpAllEvents);
-    browser.addEventListener('mozbrowseropensearch', dumpAllEvents);
   };
 
 }(this));

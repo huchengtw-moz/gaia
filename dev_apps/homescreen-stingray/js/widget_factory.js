@@ -1,4 +1,4 @@
-/* global BrowserConfigHelper, WidgetWindow, Applications */
+/* global BrowserConfigHelper, WidgetWindow, Applications, WidgetAPITester */
 'use strict';
 
 (function(exports) {
@@ -46,7 +46,7 @@
        * @event WidgetFactory#launchwidget
        */
       this.publish('launchwidget', app.instanceID);
-
+      WidgetAPITester.watchEvents(app);
       return app;
     },
 

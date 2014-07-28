@@ -1,6 +1,6 @@
 'use strict';
 /* global Applications, AppList, WidgetEditor, LayoutEditor, WidgetFactory,
-          WidgetManager */
+          WidgetManager, WidgetAPITester */
 
 (function(exports) {
   const VIDEO_URL = 'resources/demo.webm';
@@ -30,6 +30,9 @@
       // Widget lifecycle management
       this.widgetFactory = new WidgetFactory();
       this.widgetManager = new WidgetManager().start();
+
+      WidgetAPITester.widgetManager = this.widgetManager;
+      WidgetAPITester.init();
 
       // App List
       this.appList = new AppList({
