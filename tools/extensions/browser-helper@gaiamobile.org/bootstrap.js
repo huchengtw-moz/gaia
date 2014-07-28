@@ -117,7 +117,7 @@ function initResponsiveDesign(browserWindow) {
   });
 
   // Automatically toggle responsive design mode
-  let width = 320, height = 480;
+  let width = 1280, height = 800;
   // We have to take into account padding and border introduced with the
   // device look'n feel:
   width += 15*2; // Horizontal padding

@@ -3,7 +3,7 @@
           WidgetManager, WidgetAPITester */
 
 (function(exports) {
-  const VIDEO_URL = 'resources/demo.webm';
+  const VIDEO_URL = null;//'resources/demo.webm';
   const BOOKMARK_URL = 'style/images/static-element.jpg';
 
   function $(id) {
