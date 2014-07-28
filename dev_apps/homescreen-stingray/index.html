@@ -32,6 +32,8 @@
     <script defer type="text/javascript" src="js/widget_factory.js"></script>
     <script defer type="text/javascript" src="js/widget_manager.js"></script>
     <script defer type="text/javascript" src="js/widget_window.js"></script>
+
+    <script defer type="text/javascript" src="js/widget_api_tester.js"></script>
   </head>
   <body>
     <section role="region" class="skin-dark" id="main-section">
@@ -41,7 +43,12 @@
           <button id="widget-editor-open-button">Layout Widget</button>
         </menu>
       </header>
-      <div id="widget-container"></div>
+      <div id="widget-container">
+        <div id="api-controllers">
+          Calls: <input type="text" id="api-call">
+          <button id="invoke-button">Invoke</button>
+        </div>
+      </div>
     </section>
     <section id="app-list" hidden>
       <div id="app-list-header">

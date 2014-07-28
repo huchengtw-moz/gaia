@@ -16,6 +16,7 @@
     "systemXHR":{},
     "settings":{ "access": "readwrite" },
     "device-storage:videos":{ "access": "readonly" },
+    "device-storage:pictures":{ "access": "readwrite" },
     "audio-channel-content":{}
   },
   "locales": {
