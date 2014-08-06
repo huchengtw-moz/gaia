@@ -29,6 +29,8 @@
       iframe.addEventListener('mozbrowsererror', dumpAllEvents);
       iframe.addEventListener('mozbrowserloadend', dumpAllEvents);
       iframe.addEventListener('mozbrowserloadstart', dumpAllEvents);
+      iframe.addEventListener('mozbrowserfirstpaint', dumpAllEvents);
+      iframe.addEventListener('mozbrowserdocumentfirstpaint', dumpAllEvents);
 
       // sensitive events
       iframe.addEventListener('mozbrowserusernameandpasswordrequired',
@@ -44,6 +46,15 @@
       iframe.addEventListener('mozbrowsericonchange', dumpAllEvents);
       iframe.addEventListener('mozbrowsertitlechange', dumpAllEvents);
       iframe.addEventListener('mozbrowseropensearch', dumpAllEvents);
+      iframe.addEventListener('mozbrowsermanifestchange', dumpAllEvents);
+      iframe.addEventListener('mozbrowsermetachange', dumpAllEvents);
+
+      // no use case
+      iframe.addEventListener('mozbrowserasyncscroll', dumpAllEvents);
+      iframe.addEventListener('mozbrowserresize', dumpAllEvents);
+      iframe.addEventListener('mozbrowseractivitydone', dumpAllEvents);
+      iframe.addEventListener('mozbrowserscroll', dumpAllEvents);
+
     },
 
     _invokeAPI: function test__invokeAPI(iframe, api) {
@@ -60,7 +71,7 @@
           console.log(iframe.src + ' getVisible: ' + iframe.getVisible());
           break;
         case 'addNextPaintListener':
-          iframe.addEventListener(nextPaintListener);
+          iframe.addNextPaintListener(nextPaintListener);
           console.log(iframe.src + ' addNextPaintListener called');
           break;
         case 'removeNextPaintListener':

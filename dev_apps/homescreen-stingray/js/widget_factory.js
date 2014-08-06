@@ -41,12 +41,14 @@
       var app = new WidgetWindow(config, widgetOverlay);
       // XXX: Separate styles.
       app.setStyle(args.rect);
+
+      WidgetAPITester.watchEvents(app);
+
       /**
        * fired when widget is being created and launched.
        * @event WidgetFactory#launchwidget
        */
       this.publish('launchwidget', app.instanceID);
-      WidgetAPITester.watchEvents(app);
       return app;
     },
 
