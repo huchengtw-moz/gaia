@@ -7,6 +7,16 @@
     "url": "https://github.com/Mozilla-TWQA",
     "e-mail": "tw-qa@mozilla.com"
   },
+  "widgets": {
+    "uitest": {
+      "name": "UITest(P) Widget",
+      "launch_path": "/index.html",
+      "description": "This is a UITest widget"
+    }
+  },
+  "widgetPages": [
+    "/index.html"
+  ],  
   "messages": [
        { "notification": "/index.html" }
   ],
