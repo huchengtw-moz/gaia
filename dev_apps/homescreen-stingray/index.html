@@ -45,7 +45,16 @@
       </header>
       <div id="widget-container">
         <div id="api-controllers">
-          Calls: <input type="text" id="api-call">
+          Calls:
+          <select id="api-call">
+            <option value="setVisible">setVisible</option>
+            <option value="getVisible">getVisible</option>
+            <option value="addNextPaintListener">addNextPaintListener</option>
+            <option value="removeNextPaintListener">removeNextPaintListener</option>
+            <option value="sendMouseEvent">sendMouseEvent</option>
+            <option value="sendTouchEvent">sendTouchEvent</option>
+            <option value="getScreenshot">getScreenshot</option>
+          </select>
           <button id="invoke-button">Invoke</button>
         </div>
       </div>

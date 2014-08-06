@@ -64,11 +64,17 @@
 
       switch(api) {
         case 'setVisible':
-          iframe.setVisible(!iframe.getVisible());
-          console.log(iframe.src + ' setVisible called');
+          iframe.getVisible().onsuccess = function(e) {
+            iframe.setVisible(!e.target.result);
+            console.log(iframe.src + ' setVisible: ' + !e.target.result +
+                        ' called');
+          };
           break;
         case 'getVisible':
-          console.log(iframe.src + ' getVisible: ' + iframe.getVisible());
+          iframe.getVisible().onsuccess = function(e) {
+            console.log(iframe.src + ' getVisible: ' + e.target.result);
+          };
+
           break;
         case 'addNextPaintListener':
           iframe.addNextPaintListener(nextPaintListener);
