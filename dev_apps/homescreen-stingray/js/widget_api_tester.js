@@ -59,7 +59,7 @@
 
     _invokeAPI: function test__invokeAPI(iframe, api) {
       function nextPaintListener(e) {
-        console.log(iframe.src + ': ' + e.type + ' received');
+        console.log(iframe.src + ': next paint');
       }
 
       switch(api) {
