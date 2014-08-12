@@ -1,0 +1,19 @@
+{
+  "name": "Touch Surface",
+  "description": "Touch Surface draws a firefox icon at touching place",
+  "launch_path": "/index.html",
+  "developer": {
+    "name": "The Gaia Team",
+    "url": "https://github.com/mozilla-b2g/gaia"
+  },
+  "locales": {
+    "en-US": {
+      "name": "Touch Surface",
+      "description": "Touch Surface draws a firefox icon at touching place"
+    }
+  },
+  "default_locale": "en-US",
+  "icons": {
+    "68": "/style/icons/icon.png"
+  }
+}
