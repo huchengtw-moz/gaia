@@ -12,7 +12,7 @@
       "name": "Digital Clock",
       "launch_path": "/index.html#digital-clock",
       "description": "This is a digital clock widget",
-      "screenshot": "/style/widgets/digital-clock.png",
+      "preview_image": "/style/widgets/digital-clock.png",
       "locales": {
         "zh": {
           "name": "數位時鐘",
@@ -24,7 +24,7 @@
       "name": "Stop Watch",
       "launch_path": "/index.html#stop-watch",
       "description": "This is a stop watch widget",
-      "screenshot": "/style/widgets/stop-watch.png"
+      "preview_image": "/style/widgets/stop-watch.png"
     }
   },
   "widgetPages": [

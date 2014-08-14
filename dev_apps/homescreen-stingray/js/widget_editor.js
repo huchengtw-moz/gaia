@@ -159,10 +159,10 @@
       var widgetDef = Applications.getWidgetEntry(cfg.app.manifestURL,
                                                   cfg.app.id);
       cfg.app.name = widgetDef.name;
-      Applications.getWidgetScreenShot(cfg.app.manifestURL,
-                                       cfg.app.id,
-                                       function(blob) {
-        // callback function of getWidgetScreenShot
+      Applications.getWidgetPreviewImage(cfg.app.manifestURL,
+                                         cfg.app.id,
+                                         function(blob) {
+        // callback function of getWidgetPreviewImage
         cfg.app.iconUrl = blob ? URL.createObjectURL(blob) : DEFAULT_ICON;
         if (callback && (typeof callback) === 'function') {
           callback(cfg);
@@ -218,10 +218,10 @@
      * @memberof WidgetEditor.prototype
      */
     _handleAppChosen: function we__handleAppChosen(data) {
-      Applications.getWidgetScreenShot(data.manifestURL,
-                                       data.id,
-                                      (blob) => {
-        // callback function of getWidgetScreenShot
+      Applications.getWidgetPreviewImage(data.manifestURL,
+                                         data.id,
+                                         (blob) => {
+        // callback function of getWidgetPreviewImage
         var iconUrl = blob ? URL.createObjectURL(blob) : DEFAULT_ICON;
 
         this.editor.addWidget({ name: data.name,
@@ -273,10 +273,10 @@
 
             place.app.name = widget.name;
             this._revokeUrl(place.app.iconUrl);
-            Applications.getWidgetScreenShot(widget.manifestURL,
-                                             widget.id,
-                                             (b) => {
-              // callback function of getWidgetScreenShot
+            Applications.getWidgetPreviewImage(widget.manifestURL,
+                                               widget.id,
+                                               (b) => {
+              // callback function of getWidgetPreviewImage
               var iconUrl = b ? URL.createObjectURL(b) : DEFAULT_ICON;
               place.app.iconUrl = iconUrl;
               resultCallback(true, place);

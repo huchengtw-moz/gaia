@@ -329,7 +329,7 @@
             launchPath: widget.launch_path,
             name: widget.name,
             description: widget.description,
-            screenshot: widget.screenshot
+            preview_image: widget.preview_image
           });
         }
       }
@@ -451,7 +451,7 @@
           launchPath: widget.launch_path,
           name: widget.name,
           description: widget.description,
-          screenshot: widget.screenshot
+          preview_image: widget.preview_image
         };
       } else {
         return null;
@@ -541,9 +541,9 @@
      *                   icon url can be found or the app doesn't exist.
      * @memberof Applications
      */
-    getWidgetScreenShot: function appGetWidgetScreenShot(manifestURL,
-                                                         widgetId,
-                                                         callback) {
+    getWidgetPreviewImage: function appGetWidgetPreview(manifestURL,
+                                                        widgetId,
+                                                        callback) {
 
       var widget = this.getWidgetEntry(manifestURL, widgetId);
       if (!widget) {
@@ -551,12 +551,12 @@
       }
 
       var app = this.installedApps[manifestURL];
-      var url = widget.screenshot;
+      var url = widget.preview_image;
 
       if (!url) {
-        // We use app's icon to be the widget's screenshot. We don't have entry
-        // point information in this case. We will use the icon without entry
-        // point.
+        // We use app's icon to be the widget's preview image. We don't have
+        // entry point information in this case. We will use the icon without
+        // entry point.
         var entry_manifest = this.getEntryManifest(manifestURL);
         url = this._bestMatchingIcon(app, entry_manifest, -1);
       } else {
