@@ -24,8 +24,55 @@
       document.addEventListener('contextmenu', this);
       document.addEventListener('visibilitychange', this);
 
-      // Applications
-      Applications.init();
+      if (navigator.mozApps.mgmt) {
+        // Applications
+        Applications.init();
+      } else {
+        Applications = MockApplications;
+        var dummyApp = {
+          'manifestURL': 'app://uitest.gaiamobile.org/manifest.webapp',
+          'entryPoint': '',
+          'launch_path': '/index.html',
+          'type': 'certified',
+          'name': 'UI Test',
+          'widgets': {
+            'uitest': {
+              'name': 'UITest Widget',
+              'launch_path': '/index.html',
+              'description': 'This is a UITest widget'
+            }
+          },
+          'widgetPages': [
+            '/index.html'
+          ]
+        };
+        Applications.installedApps = Applications.mApps;
+        Applications.mApps[dummyApp.manifestURL] = dummyApp;
+        Applications.mEntries.push(dummyApp);
+        Applications.getWidgetEntries = function(manifestURL) {
+          return [this.getWidgetEntry()];
+        };
+
+        Applications.getWidgetEntry = function() {
+          return {
+            'manifestURL': 'app://uitest.gaiamobile.org/manifest.webapp',
+            'id': 'uitest',
+            'launchPath': '/index.html',
+            'name': 'UITest Widget',
+            'description': 'This is a UITest widget'
+          };
+        };
+
+        Applications.getAllWidgets = function() {
+          return this.getWidgetEntries();
+        };
+
+        Applications.getWidgetPreviewImage = function(manifestURL,
+                                                     widgetId,
+                                                     callback) {
+          setTimeout(callback);
+        };
+      }
 
       // Widget lifecycle management
       this.widgetFactory = new WidgetFactory();
@@ -76,6 +123,9 @@
 
       // Static Elements
       this._initStaticElements(widgetContainer);
+      if (!navigator.mozApps.mgmt) {
+        MockApplications.trigger('ready');
+      }
     },
 
     stop: function HS_Stop() {
