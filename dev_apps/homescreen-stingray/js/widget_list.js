@@ -44,7 +44,7 @@
       img.src = Applications.DEFAULT_ICON_URL;
       text.innerHTML = icon.dataset.name = widget.name;
 
-      Applications.getWidgetScreenShot(
+      Applications.getWidgetPreviewImage(
         widget.manifestURL,
         widget.id,
         function(blob) {
