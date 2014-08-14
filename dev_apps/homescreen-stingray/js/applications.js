@@ -329,7 +329,7 @@
             launchPath: widget.launch_path,
             name: widget.name,
             description: widget.description,
-            preview_image: widget.preview_image
+            previewImage: widget.preview_image
           });
         }
       }
@@ -451,7 +451,7 @@
           launchPath: widget.launch_path,
           name: widget.name,
           description: widget.description,
-          preview_image: widget.preview_image
+          previewImage: widget.preview_image
         };
       } else {
         return null;
@@ -551,7 +551,7 @@
       }
 
       var app = this.installedApps[manifestURL];
-      var url = widget.preview_image;
+      var url = widget.previewImage;
 
       if (!url) {
         // We use app's icon to be the widget's preview image. We don't have

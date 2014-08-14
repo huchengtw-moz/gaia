@@ -1,7 +1,6 @@
 'use strict';
 
 (function(exports) {
-  alert('aaaa');
   exports.MockApplications = {
     mCallbacks: {},
     mEntries: [],
