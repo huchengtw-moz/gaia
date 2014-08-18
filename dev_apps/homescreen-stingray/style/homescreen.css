@@ -76,3 +76,9 @@ menu[type="toolbar"] button:before {
   width: 100% !important;
   height: calc(100% + 5rem) !important;
 }
+
+#hash-example {
+  position: relative;
+  z-index: 10000;
+  display: inline-block;
+}

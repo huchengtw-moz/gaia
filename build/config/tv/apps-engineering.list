@@ -20,3 +20,4 @@ outoftree_apps/*
 dev_apps/test-agent
 dev_apps/homescreen-stingray
 dev_apps/uitest
+dev_apps/template

@@ -12,7 +12,7 @@
 
   function Homescreen(options) {
     options = options || {};
-    this._videoURL = options.demoVideo || VIDEO_URL;
+    this._videoURL = null;//options.demoVideo || VIDEO_URL;
   }
 
   Homescreen.prototype = {
@@ -72,7 +72,42 @@
       this._inited = true;
 
       // Static Elements
-      this._initStaticElements(widgetContainer);
+      //this._initStaticElements(widgetContainer);
+      this.initHashTest();
+    },
+
+    initHashTest: function HS_hashTest() {
+      var textToSend = $('send-text');
+      var self = this;
+      $('send-button').addEventListener('click', function() {
+        for (var k in self.widgetManager.runningWidgetsById) {
+          var widget = self.widgetManager.runningWidgetsById[k];
+          var iframe = widget.browser.element;
+          if (iframe.src.indexOf('#') > -1) {
+            iframe.src = iframe.src.substring(0, iframe.src.indexOf('#'));
+          }
+          iframe.src += '#parent:' + encodeURIComponent(textToSend.value);
+        }
+      });
+    },
+
+    listenLocationChange: function HS_hashTest2(widget) {
+      var received = $('received-message');
+      widget.browser.element.addEventListener('mozbrowserlocationchange',
+        function(e) {
+          var sharpIndex = e.detail.indexOf('#');
+          if (sharpIndex === -1) {
+            return;
+          }
+          var hashData = e.detail.substring(sharpIndex);
+          if ('#parent:' === hashData.substring(0, 8)) {
+            return;
+          }
+          // trim #parent:
+
+          var data = hashData.substring(5);
+          received.textContent = decodeURIComponent(data);
+        });
     },
 
     stop: function HS_Stop() {
@@ -222,6 +257,7 @@
           // no more oldCfgs, all newCfgs should be added
           newCfgs[newIdx].widget = this.widgetFactory.createWidget(
                                                                newCfgs[newIdx]);
+          this.listenLocationChange(newCfgs[newIdx].widget);
           newIdx++;
         } else if (oldCfgs[oldIdx].positionId < newCfgs[newIdx].positionId) {
           // oldCfgs[oldIdx] should be removed
@@ -236,6 +272,7 @@
             this.widgetManager.remove(oldCfgs[oldIdx].widget.instanceID);
             newCfgs[newIdx].widget = this.widgetFactory.createWidget(
                                                                newCfgs[newIdx]);
+            this.listenLocationChange(newCfgs[newIdx].widget);
           } else {
             newCfgs[newIdx] = oldCfgs[oldIdx];
           }
@@ -245,6 +282,7 @@
           // newCfgs[newIdx] should be added.
           newCfgs[newIdx].widget = this.widgetFactory.createWidget(
                                                                newCfgs[newIdx]);
+          this.listenLocationChange(newCfgs[newIdx].widget);
           newIdx++;
         }
       }
