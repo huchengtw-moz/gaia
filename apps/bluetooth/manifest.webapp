@@ -1,13 +1,22 @@
 {
   "name": "Bluetooth Manager",
   "type": "certified",
-  "role": "system",
   "launch_path": "/settings.html",
   "description": "Gaia Bluetooth Manager",
   "developer": {
     "name": "The Gaia Team",
     "url": "https://github.com/mozilla-b2g/gaia"
   },
+  "widgets": {
+    "uitest": {
+      "name": "BT Onpair Widget",
+      "launch_path": "/message.html",
+      "description": "This is a UITest widget"
+    }
+  },
+  "widgetPages": [
+    "/message.html"
+  ],
   "locales": {
     "en-US": {
       "name": "Bluetooth",
