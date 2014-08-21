@@ -226,7 +226,7 @@
       for(var appId in this.widgetManager.runningWidgetsById) {
         var app = this.widgetManager.runningWidgetsById[appId];
         var pageUrl = app.browser.element.src;
-        Applications._loadIcon({
+        this._loadIcon({
           'url': pageUrl,
           'onerror': function() {
             alert('xhr error');
@@ -240,6 +240,54 @@
 
       if (!hasApp) {
         alert('no widget shown in screen');
+      }
+    },
+
+    _loadIcon: function appLoadIcon(request) {
+      if (!request.url) {
+        if (request.onerror) {
+          request.onerror();
+        }
+        return;
+      }
+
+      var xhr = new XMLHttpRequest({
+        mozAnon: true,
+        mozSystem: true
+      });
+
+      var icon = request.url;
+
+      xhr.open('GET', icon, true);
+      xhr.responseType = 'blob';
+
+      xhr.onload = function onload(evt) {
+        var status = xhr.status;
+
+        if (status !== 0 && status !== 200) {
+          if (request.onerror) {
+            request.onerror();
+          }
+          return;
+        }
+
+        if (request.onsuccess) {
+          request.onsuccess(xhr.response);
+        }
+      };
+
+      xhr.ontimeout = xhr.onerror = function onerror(evt) {
+        if (request.onerror) {
+          request.onerror();
+        }
+      };
+
+      try {
+        xhr.send(null);
+      } catch (evt) {
+        if (request.onerror) {
+          request.onerror();
+        }
       }
     },
 
