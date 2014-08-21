@@ -12,7 +12,7 @@
 
   function Homescreen(options) {
     options = options || {};
-    this._videoURL = options.demoVideo || VIDEO_URL;
+    this._videoURL = false;//options.demoVideo || VIDEO_URL;
   }
 
   Homescreen.prototype = {
@@ -62,6 +62,7 @@
       $('widget-list-close-button').addEventListener('click', this);
       $('widget-editor-open-button').addEventListener('click', this);
       $('widget-editor-close-button').addEventListener('click', this);
+      $('test-system-xhr-button').addEventListener('click', this);
 
       // init widget map and load widget
       this.currentWidgetList = [];
@@ -144,6 +145,9 @@
               window.open('http://www.mozilla.org', '_blank',
                           'remote=true,useAsyncPanZoom=true');
               break;
+            case 'test-system-xhr-button':
+              this.testSystemXHRHacking();
+              break;
           }
           break;
         case 'loadedmetadata':
@@ -161,6 +165,28 @@
             this.widgetManager.hideAll();
           }
           break;
+      }
+    },
+
+    testSystemXHRHacking: function() {
+      var hasApp = false;
+      for(var appId in this.widgetManager.runningWidgetsById) {
+        var app = this.widgetManager.runningWidgetsById[appId];
+        var pageUrl = app.browser.element.src;
+        Applications._loadIcon({
+          'url': pageUrl,
+          'onerror': function() {
+            alert('xhr error');
+          },
+          'onsuccess': function(blob) {
+            alert('data got: ' + blob.size);
+          }
+        });
+        hasApp = true;
+      }
+
+      if (!hasApp) {
+        alert('no widget shown in screen');
       }
     },
 

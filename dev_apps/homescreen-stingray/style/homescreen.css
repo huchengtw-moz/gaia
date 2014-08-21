@@ -35,6 +35,10 @@ menu[type="toolbar"] button:before {
   background-color: #E33;
 }
 
+#test-system-xhr-button:before {
+  background-color: yellow;
+}
+
 #widget-container {
   position: absolute;
   top: 5rem;
