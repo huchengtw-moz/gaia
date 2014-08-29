@@ -350,7 +350,12 @@ var NotificationScreen = {
     this.toasterDetail.dir = dir;
   },
 
+  notifyRemote: function ns_notifyRemote(detail) {
+    // TODO: implement this with presentation API.
+  },
+
   addNotification: function ns_addNotification(detail) {
+    this.notifyRemote(detail);
     // LockScreen window may not opened while this singleton got initialized.
     this.lockScreenContainer = this.lockScreenContainer ||
       document.getElementById('notifications-lockscreen-container');

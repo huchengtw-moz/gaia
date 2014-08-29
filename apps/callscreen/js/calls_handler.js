@@ -1,6 +1,6 @@
 /* globals BluetoothHelper, CallScreen, Contacts, HandledCall, KeypadManager,
            LazyL10n, SimplePhoneMatcher, TonePlayer, Utils,
-           AudioCompetingHelper */
+           AudioCompetingHelper, InfoBridge */
 
 'use strict';
 
@@ -113,6 +113,14 @@ var CallsHandler = (function callsHandler() {
                       telephony.conferenceGroup.calls.some(hcIterator);
 
       if (!stillHere) {
+        var number;
+        var call = hc.call;
+        if (call.id) {
+          number = call.secondId ? call.secondId.number : call.id.number;
+        } else {
+          number = call.secondNumber ? call.secondNumber : call.number;
+        }
+        InfoBridge.notifyCallEnd(number);
         removeCall(index);
       }
     }
@@ -274,9 +282,11 @@ var CallsHandler = (function callsHandler() {
           CallScreen.incomingNumber.textContent = contact.name;
           CallScreen.incomingNumberAdditionalInfo.textContent =
             Utils.getPhoneNumberAndType(matchingTel);
+          InfoBridge.notifyIncomingCall(number, contact.name);
         } else {
           CallScreen.incomingNumber.textContent = number;
           CallScreen.incomingNumberAdditionalInfo.textContent = '';
+          InfoBridge.notifyIncomingCall(number);
         }
 
         FontSizeManager.adaptToSpace(
@@ -429,6 +439,14 @@ var CallsHandler = (function callsHandler() {
     }
 
     handledCalls[0].call.answer();
+    var call = handledCalls[0].call;
+    var number;
+    if (call.id) {
+      number = call.secondId ? call.secondId.number : call.id.number;
+    } else {
+      number = call.secondNumber ? call.secondNumber : call.number;
+    }
+    InfoBridge.notifyCallAnswered(number);
 
     CallScreen.render('connected');
   }
@@ -630,6 +648,14 @@ var CallsHandler = (function callsHandler() {
     }
 
     var lastCallIndex = handledCalls.length - 1;
+    var call = handledCalls[lastCallIndex].call;
+    var number;
+    if (call.id) {
+      number = call.secondId ? call.secondId.number : call.id.number;
+    } else {
+      number = call.secondNumber ? call.secondNumber : call.number;
+    }
+    InfoBridge.notifyUserRejected(number);
     handledCalls[lastCallIndex].call.hangUp();
   }
 

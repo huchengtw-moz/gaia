@@ -1,6 +1,6 @@
 /* globals CallsHandler, CallScreen, Contacts, ContactPhotoHelper,
            FontSizeManager, LazyL10n, Utils, Voicemail, TonePlayer,
-           AudioCompetingHelper */
+           AudioCompetingHelper, InfoBridge */
 
 'use strict';
 
@@ -184,6 +184,7 @@ HandledCall.prototype.updateCallNumber = function hc_updateCallNumber() {
       return;
     }
     if (contact) {
+      InfoBridge.notifyIncomingCall(number, contact.name);
       var primaryInfo = Utils.getPhoneNumberPrimaryInfo(matchingTel, contact);
       var contactCopy = {
         id: contact.id,
@@ -214,6 +215,8 @@ HandledCall.prototype.updateCallNumber = function hc_updateCallNumber() {
       }
 
       return;
+    } else {
+      InfoBridge.notifyIncomingCall(number);
     }
 
     self._cachedInfo = number;

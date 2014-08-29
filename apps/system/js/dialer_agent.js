@@ -151,7 +151,7 @@
 
   DialerAgent.prototype._startAlerting = function da_startAlerting() {
     this._alerting = true;
-
+    console.log('@@@@@@@@@@@@ start alerting...');
     if ('vibrate' in navigator && this._shouldVibrate) {
       this._vibrateInterval = window.setInterval(function vibrate() {
         navigator.vibrate([200]);
@@ -166,7 +166,7 @@
 
   DialerAgent.prototype._stopAlerting = function da_stopAlerting() {
     var player = this._player;
-
+    console.log('@@@@@@@@@@@@ stop alerting...');
     this._alerting = false;
     if (player && player.readyState > player.HAVE_NOTHING) {
       player.pause();

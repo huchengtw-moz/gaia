@@ -104,6 +104,10 @@
       "description": "Communication with media apps for now playing info",
       "rules": {}
     },
+    "tvbridge": {
+      "description": "Communication with other apps for sending info to tv",
+      "rules": {}
+    },
     "search-results": {
       "description": "Communicate between search results and search app",
       "rules": {}
