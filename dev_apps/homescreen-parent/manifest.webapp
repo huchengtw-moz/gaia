@@ -1,0 +1,27 @@
+{
+  "name": "Stingray Homescreen Parent",
+  "description": "Homescreen Prent",
+  "launch_path": "/index.html",
+  "type": "certified",
+  "role": "homescreen",
+  "developer": {
+    "name": "The Gaia Team",
+    "url": "https://github.com/mozilla-b2g/gaia"
+  },
+  "permissions": {
+    "browser":{},
+    "webapps-manage":{},
+    "embed-apps": {}
+  },
+  "locales": {
+    "en-US": {
+      "name": "Stingray Homescreen Parent",
+      "description": "Homescreen Parent"
+    }
+  },
+  "default_locale": "en-US",
+  "icons": {
+    "60": "/style/icons/homescreen.png"
+  },
+  "orientation": "default"
+}

@@ -87,7 +87,7 @@
         protocol + 'browser.' + domain + '/manifest.webapp';
       var outOfProcessBlackList = [
         browserManifestUrl,
-        protocol + 'homescreen-stingray.' + domain + '/manifest.webapp'
+        protocol + 'homescreen-parent.' + domain + '/manifest.webapp'
         // Requires nested content processes (bug 761935).  This is not
         // on the schedule for v1.
       ];
