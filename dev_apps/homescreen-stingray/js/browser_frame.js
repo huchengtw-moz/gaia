@@ -45,8 +45,8 @@
     // window.open method.
     browser.name = config.window_name || 'main';
 
-    if (config.oop)
-      browser.setAttribute('remote', 'true');
+    // if (config.oop)
+    //   browser.setAttribute('remote', 'true');
 
     if (config.manifestURL) {
       browser.setAttribute('mozwidget', config.manifestURL);
