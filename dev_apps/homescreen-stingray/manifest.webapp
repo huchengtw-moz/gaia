@@ -2,7 +2,7 @@
   "name": "Stingray Homescreen",
   "description": "Homescreen with Widgets",
   "launch_path": "/index.html",
-  "type": "certified",
+  "type": "privileged",
   "role": "homescreen",
   "developer": {
     "name": "The Gaia Team",
@@ -10,7 +10,7 @@
   },
   "permissions": {
     "browser":{},
-    "webapps-manage":{},
+    "homescreen-webapps-manage":{},
     "embed-widgets": {},
     "open-remote-window":{},
     "systemXHR":{},

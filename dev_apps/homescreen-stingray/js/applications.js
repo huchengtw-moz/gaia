@@ -140,32 +140,11 @@
         }
       }
 
-      if (! closestSize) {
+      if (!closestSize) {
         closestSize = max;
       }
 
-      var url = manifest.icons[closestSize];
-      if (!url) {
-        return;
-      }
-      if (url.indexOf('data:') === 0 ||
-          url.indexOf('app://') === 0 ||
-          url.indexOf('http://') === 0 ||
-          url.indexOf('https://') === 0) {
-        return url;
-      }
-      if (url.charAt(0) != '/') {
-        console.warn('`' + manifest.name + '` app icon is invalid. ' +
-                     'Manifest `icons` attribute should contain URLs -or- ' +
-                     'absolute paths from the origin field.');
-        return '';
-      }
-
-      if (app.origin.slice(-1) === '/') {
-        return app.origin.slice(0, -1) + url;
-      }
-
-      return app.origin + url;
+      return closestSize;
     },
 
     /**
@@ -500,28 +479,14 @@
         return false;
       }
 
-      var url = this._bestMatchingIcon(
+      var appMgmt = navigator.mozApps.mgmt;
+      var iconSize = this._bestMatchingIcon(
         this.installedApps[manifestURL], entry_manifest, preferredSize);
 
-      if (!url) {
-        if (callback) {
-          setTimeout(callback);
-        }
-        return true;
-      }
-
-      this._loadIcon({
-        url: url,
-        onsuccess: function(blob) {
-          if (callback) {
-            callback(blob);
-          }
-        },
-        onerror: function() {
-          if (callback) {
-            callback();
-          }
-        }
+      var app = this.installedApps[manifestURL];
+      appMgmt.getIcon(app, iconSize, entryPoint).then(callback, function(err) {
+        console.error('Get Icon error: ' + err);
+        callback();
       });
 
       return true;
@@ -550,41 +515,7 @@
         return false;
       }
 
-      var app = this.installedApps[manifestURL];
-      var url = widget.previewImage;
-
-      if (!url) {
-        // We use app's icon to be the widget's preview image. We don't have
-        // entry point information in this case. We will use the icon without
-        // entry point.
-        var entry_manifest = this.getEntryManifest(manifestURL);
-        url = this._bestMatchingIcon(app, entry_manifest, -1);
-      } else {
-        url = app.origin + url;
-      }
-
-      if (!url) {
-        if (callback) {
-          setTimeout(callback);
-        }
-        return true;
-      }
-
-      this._loadIcon({
-        url: url,
-        onsuccess: function(blob) {
-          if (callback) {
-            callback(blob);
-          }
-        },
-        onerror: function() {
-          if (callback) {
-            callback();
-          }
-        }
-      });
-
-      return true;
+      return this.getIconBlob(manifestURL, '', 0, callback);      
     }
   });
 
