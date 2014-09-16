@@ -9,7 +9,6 @@
     "url": "https://github.com/mozilla-b2g/gaia"
   },
   "permissions": {
-    "browser":{},
     "webapps-manage":{},
     "embed-widgets": {},
     "open-remote-window":{},
