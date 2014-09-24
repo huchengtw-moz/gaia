@@ -55,6 +55,13 @@ var UITest = {
     };
   },
   init: function ut_init() {
+
+    console.log('uitest init!!~~~~');
+    var evt = new CustomEvent('mozContentEvent',
+                    { bubbles: true, cancelable: false,
+                      detail: { type: 'system-message-listener-ready' } });
+    window.dispatchEvent(evt);
+
     this.iframe.addEventListener('load', this);
     this.iframe.addEventListener('unload', this);
     document.body.addEventListener('transitionend', this);
