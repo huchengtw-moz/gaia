@@ -50,7 +50,6 @@
   SoundManager.MAX_VOLUME = {
     'alarm': 15,
     'notification': 15,
-    'telephony': 5,
     'content': 15,
     'bt_sco': 15
   };
@@ -81,7 +80,6 @@
    *   content
    *   notification
    *   alarm
-   *   telephony
    *   ringer
    *   publicnotification
    *   unknown
@@ -161,7 +159,7 @@
   SoundManager.prototype.CETimestamp = 0;
 
   /**
-   * The current volume for all channels: alarm, notification, telephony,
+   * The current volume for all channels: alarm, notification,
    * content, and bt_sco.
    * @memberOf SoundManager.prototype
    * @type {Object}
@@ -170,7 +168,6 @@
   SoundManager.prototype.currentVolume = {
     'alarm': 15,
     'notification': 15,
-    'telephony': 5,
     'content': 15,
     'bt_sco': 15
   };
@@ -345,10 +342,7 @@
       return;
     }
 
-    if (Bluetooth.isProfileConnected(Bluetooth.Profiles.SCO) &&
-        this.isOnCall()) {
-      this.changeVolume(offset, 'bt_sco');
-    } else if (this.isHeadsetConnected && offset > 0) {
+    if (this.isHeadsetConnected && offset > 0) {
       this.headsetVolumeup();
     } else {
       this.changeVolume(offset);
@@ -389,16 +383,10 @@
    * @returns {String} the volume channel
    */
   SoundManager.prototype.getChannel = function sm_getChannel() {
-    if (this.isOnCall()) {
-      return 'telephony';
-    }
-
     switch (this.currentChannel) {
       case 'normal':
       case 'content':
         return 'content';
-      case 'telephony':
-        return 'telephony';
       case 'alarm':
         return 'alarm';
       case 'notification':
@@ -635,29 +623,6 @@
       self.pendingRequest.p();
       self.showCEWarningDialog(callback);
     };
-  };
-
-  /**
-   * It tells if it is currently on a call.
-   *
-   * @memberOf SoundManager.prototype
-   */
-  SoundManager.prototype.isOnCall = function sm_isOnCall() {
-    if (this.currentChannel == 'telephony') {
-      return true;
-    }
-
-    // XXX: This work should be removed
-    // once we could get telephony channel change event
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=819858
-    var telephony = window.navigator.mozTelephony;
-    if (!telephony) {
-      return false;
-    }
-
-    return telephony.calls.some(function callIterator(call) {
-        return (call.state == 'connected');
-    });
   };
 
   /**
@@ -956,8 +921,7 @@
     var steps =
       Array.prototype.slice.call(notification.querySelectorAll('div'), 0);
 
-    var maxVolumeStep = (channel == 'telephony' || channel == 'bt_sco') ?
-      volume + 1 : volume;
+    var maxVolumeStep = volume;
 
     for (var i = 0; i < steps.length; i++) {
       var step = steps[i];
