@@ -1,4 +1,4 @@
-dev_apps/smart-system
+tv_apps/smart-system
 apps/settings
 tv_apps/smart-home
 apps/bluetooth
@@ -6,7 +6,6 @@ apps/calendar
 apps/camera
 apps/clock
 apps/communications
-apps/ftu
 apps/email
 apps/fl
 apps/gallery
