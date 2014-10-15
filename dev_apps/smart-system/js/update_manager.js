@@ -67,6 +67,7 @@ var UpdateManager = {
     this.downloadDialogTitle = this.downloadDialog.querySelector('h1');
     this.downloadDialogList = this.downloadDialog.querySelector('ul');
 
+    this.toaster.onclick = this.showDownloadPrompt.bind(this);
     this.laterButton.onclick = this.cancelPrompt.bind(this);
     this.downloadButton.onclick = this.requestDownloads.bind(this);
     this.downloadDialogList.onchange = this.updateDownloadButton.bind(this);
