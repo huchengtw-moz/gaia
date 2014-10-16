@@ -86,26 +86,6 @@
 
     get manifestURL() {
       return window.location.href.replace('index.html', 'manifest.webapp');
-    },
-
-    /**
-     * To request some actions of whole system.
-     *
-     * @param {string} action
-     * @param {object} detailContent
-     * @return {Promise}
-     */
-    request(action, detailContent) {
-      switch (action) {
-        case 'lock':
-        case 'unlock':
-          window.dispatchEvent(
-            new CustomEvent('lockscreen-request-' + action, {
-              detail: detailContent
-            })
-          );
-          break;
-      }
     }
   };
 })(window);
