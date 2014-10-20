@@ -7,11 +7,11 @@
    * Usually the request is coming from homescreen app.
    * @module WrapperFactory
    */
-  var WrapperFactory = {
-    init: function wf_init() {
-      window.addEventListener('mozbrowseropenwindow', this, true);
-    },
+  function WrapperFactory() {
+  }
 
+  WrapperFactory.prototype = {
+    // listen mozbrowseropenwindow in module loader
     handleEvent: function wf_handleEvent(evt) {
       var detail = evt.detail;
 
@@ -177,5 +177,4 @@
     }
   };
   window.WrapperFactory = WrapperFactory;
-  WrapperFactory.init();
 }(window));

@@ -25,13 +25,6 @@
   SleepMenu.prototype = {
 
     /**
-     * Indicate setting status of airplane mode
-     * @memberof SleepMenu.prototype
-     * @type {Boolean}
-     */
-    isFlightModeEnabled: false,
-
-    /**
      * Indicate setting status of developer.menu.enabled
      * @memberof SleepMenu.prototype
      * @type {Boolean}
@@ -86,17 +79,13 @@
      */
     start: function sm_init() {
       this.getAllElements();
-      window.addEventListener('holdsleep', this.show.bind(this));
       window.addEventListener('click', this, true);
       window.addEventListener('screenchange', this, true);
       window.addEventListener('home', this);
-      window.addEventListener('batteryshutdown', this);
       window.addEventListener('cardviewbeforeshow', this);
 
       window.addEventListener('attentionopened', this);
       this.elements.cancel.addEventListener('click', this);
-
-      window.addEventListener('airplanemodechanged', this);
 
       var self = this;
       SettingsListener.observe('developer.menu.enabled', false,
@@ -144,7 +133,7 @@
         }
       };
 
-      if (this.isFlightModeEnabled) {
+      if (AirplaneMode.enabled) {
         items.push(options.airplaneOff);
       } else {
         items.push(options.airplane);
@@ -213,6 +202,9 @@
      */
     handleEvent: function sm_handleEvent(evt) {
       switch (evt.type) {
+        case 'holdsleep':
+          this.show();
+          break;
         case 'cardviewbeforeshow':
           this.hide();
           break;
@@ -252,9 +244,6 @@
           }
           break;
 
-        case 'airplanemodechanged':
-          this.isFlightModeEnabled = evt.detail.enabled;
-          break;
         default:
           break;
       }
@@ -277,7 +266,7 @@
           //
           // It should also save the status of the latter 4 items so when
           // leaving the airplane mode we could know which one to turn on.
-          AirplaneMode.enabled = !this.isFlightModeEnabled;
+          AirplaneMode.enabled = !AirplaneMode.enabled;
           break;
 
         case 'restart':

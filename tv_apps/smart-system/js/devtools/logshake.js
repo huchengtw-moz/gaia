@@ -131,7 +131,4 @@
 
   exports.LogShake = LogShake;
 
-  // XXX: See issue described in screenshot.js
-  exports.logshake = new LogShake();
-  exports.logshake.start();
 })(window);

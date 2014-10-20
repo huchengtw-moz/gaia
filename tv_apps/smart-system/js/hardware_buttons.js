@@ -77,7 +77,6 @@
    **/
   var HardwareButtons = function HardwareButtons() {
     this._started = false;
-    this._softwareHome = false;
   };
 
   /**
@@ -119,16 +118,6 @@
 
     // Kick off the FSM in the base state
     this.state = new HardwareButtonsBaseState(this);
-
-    // This event handler listens for hardware button events and passes the
-    // event type to the process() method of the current state for processing
-    window.addEventListener('mozChromeEvent', this);
-
-    window.addEventListener('softwareButtonEvent', this);
-
-    SettingsListener.observe('software-button.enabled', false, function(value) {
-      this._softwareHome = value;
-    }.bind(this));
   };
 
   /**
@@ -148,10 +137,6 @@
     }
 
     this.state = null;
-
-    window.removeEventListener('mozChromeEvent', this);
-
-    window.removeEventListener('softwareButtonEvent', this);
   };
 
   /**
@@ -190,14 +175,6 @@
    */
   HardwareButtons.prototype.handleEvent = function hb_handleEvent(evt) {
     var type = evt.detail.type;
-
-    // When the software home button is displayed we ignore the hardware
-    // home button if there is one
-    var hardwareHomeEvent = (evt.type == 'mozChromeEvent') &&
-                            type.startsWith('home-button');
-    if (this._softwareHome && hardwareHomeEvent) {
-      return;
-    }
 
     switch (type) {
       case 'home-button-press':
@@ -642,14 +619,6 @@
   HardwareButtonsScreenshotState.prototype.process = function(type) {
     this.hardwareButtons.setState('base', type);
   };
-
-
-  /*
-   * Start the hardware buttons events.
-   * XXX: To be moved.
-   */
-  exports.hardwareButtons = new HardwareButtons();
-  exports.hardwareButtons.start();
 
   exports.HardwareButtons = HardwareButtons;
 }(window));

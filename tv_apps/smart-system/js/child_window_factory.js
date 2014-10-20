@@ -216,9 +216,13 @@
         top.url == configuration.url) {
       return;
     }
-    var activity = new ActivityWindow(configuration, top);
-    activity.element.addEventListener('_closing', this);
-    activity.open();
+
+    var self = this;
+    LazyLoader.load('/js/activity_window.js', function() {
+      var activity = new ActivityWindow(configuration, top);
+      activity.element.addEventListener('_closing', self);
+      activity.open();
+    });
   };
 
   ChildWindowFactory.prototype.launchActivity = function(evt) {

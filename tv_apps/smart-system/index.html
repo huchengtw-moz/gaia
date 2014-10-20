@@ -34,6 +34,8 @@
     <!-- XXX can be removed while gecko support navigator.mozHour12 API -->
     <script defer src="shared/js/date_time_helper.js"></script>
 
+    <script defer src="js/module_loader.js"></script>
+
     <script defer src="js/system.js"></script>
     <script defer src="js/base_ui.js"></script>
 
@@ -53,13 +55,19 @@
     -->
 
     <link rel="stylesheet" type="text/css" href="style/definitions.css">
-    <link rel="stylesheet" type="text/css" href="style/attention_indicator.css">
+    <!--
+        attention_indicator.css is lazy loaded at attention_window.js
+        <link rel="stylesheet" type="text/css" href="style/attention_indicator.css">
+    -->
 
     <!-- System -->
     <link rel="stylesheet" type="text/css" href="style/system/system.css">
     <link rel="stylesheet" type="text/css" href="style/system/keyboard.css">
     <link rel="stylesheet" type="text/css" href="style/sound_manager/sound_manager.css">
-    <link rel="stylesheet" type="text/css" href="style/ime_menu.css">
+    <!--
+        ImeMenu is lazy loaded at keyboard_manager.js
+        <link rel="stylesheet" type="text/css" href="style/ime_menu.css">
+    -->
 
     <!-- Include shared building blocks -->
     <link rel="stylesheet" type="text/css" href="shared/style/confirm.css"/>
@@ -104,14 +112,21 @@
     <script src="js/init_logo_handler.js"></script>
 
     <script defer src="js/screen_manager.js"></script>
-    <script defer src="js/activities.js"></script>
+    <!-- <script defer src="js/activities.js"></script> -->
     <script defer src="js/usb_storage.js"></script>
     <script defer src="js/external_storage_monitor.js"></script>
     <script defer src="js/bootstrap.js"></script>
-    <script defer src="js/screenshot.js"></script>
+    <!-- 
+        Screenshot is lazy loaded at module loader
+        <script defer src="js/screenshot.js"></script>
+    -->
     <script defer src="js/async_semaphore.js"></script>
     <script defer src="js/sound_manager.js"></script>
-    <script defer src="js/hardware_buttons.js"></script>
+    <!--
+        HardwareButtons is lazy loaded at module loader when some specific
+        mozChromeEvents received.
+        <script defer src="js/hardware_buttons.js"></script>
+    -->
     <script defer src="js/system_banner.js"></script>
     <script defer src="js/home_gesture.js"></script>
     <script defer src="js/wallpaper_manager.js"></script>
@@ -119,17 +134,21 @@
         <script defer src="shared/js/image_utils.js"></script>
     -->
 
-    <!-- TTL View -->
-    <link rel="stylesheet" type="text/css" href="style/ttlview/ttlview.css">
-    <script defer src="js/ttlview.js"></script>
+    <!--
+        TTL View is lazy loaded at module loader
+        <link rel="stylesheet" type="text/css" href="style/ttlview/ttlview.css">
+        <script defer src="js/ttlview.js"></script>
+    -->
 
     <!-- Accessibility -->
     <link rel="stylesheet" type="text/css" href="style/accessibility/accessibility.css">
     <script defer src="js/accessibility.js"></script>
 
-    <!-- Sleep Menu -->
-    <link rel="stylesheet" type="text/css" href="style/sleep_menu/sleep_menu.css">
-    <script defer src="js/sleep_menu.js"></script>
+    <!--
+        Sleep Menu is lazy load at module loader
+        <link rel="stylesheet" type="text/css" href="style/sleep_menu/sleep_menu.css">
+        <script defer src="js/sleep_menu.js"></script>
+    -->
 
     <!-- Battery Manager -->
     <link rel="stylesheet" type="text/css" href="style/battery_manager/battery_manager.css">
@@ -142,16 +161,19 @@
     <script defer src="js/keyboard_manager.js"></script>
 
     <!-- Action Menu -->
-    <link rel="stylesheet" type="text/css" href="shared/style/action_menu.css">
-    <link rel="stylesheet" type="text/css" href="style/action_menu/action_menu_extended.css">
-    <script defer src="js/action_menu.js"></script>
-
+    <!-- Action Menu is lazy loaded while showing activity chooser, activity.js 
+        <link rel="stylesheet" type="text/css" href="shared/style/action_menu.css">
+        <link rel="stylesheet" type="text/css" href="style/action_menu/action_menu_extended.css">
+        <script defer src="js/action_menu.js"></script>
+    -->
     <!-- Date and Time Selector Extension -->
     <link rel="stylesheet" type="text/css" href="style/date_selector/date_selector_extended.css">
     <link rel="stylesheet" type="text/css" href="style/time_selector/time_selector_extended.css">
 
-    <!-- Ime Menu -->
-    <script defer src="js/ime_menu.js"></script>
+    <!--
+        Ime Menu is lazy loaded at keyboard_manager.js
+        <script defer src="js/ime_menu.js"></script>
+    -->
 
     <!-- FTU launcher -->
     <script defer src="js/ftu_launcher.js"></script>
@@ -162,7 +184,9 @@
 
     <!-- Airplane Mode -->
     <script defer src="js/airplane_mode.js"></script>
-    <link rel="stylesheet" type="text/css" href="style/textselection_dialog/textselection_dialog.css">
+    <!-- TextSelectionDialog is lazy loaded at module loader
+        <link rel="stylesheet" type="text/css" href="style/textselection_dialog/textselection_dialog.css">
+    -->
 
     <!-- Modal Dialog -->
     <link rel="stylesheet" type="text/css" href="style/modal_dialog/prompt.css">
@@ -183,9 +207,11 @@
     <link rel="stylesheet" type="text/css" href="style/trusted_ui/trusted_ui.css">
     <script defer src="js/trusted_ui.js"></script>
 
-    <!-- Permission Manager -->
-    <link rel="stylesheet" type="text/css" href="style/permission_manager/permission_manager.css">
-    <script defer src="js/permission_manager.js"></script>
+    <!--
+        Permission Manager is lazy loaded at module loader.
+        <link rel="stylesheet" type="text/css" href="style/permission_manager/permission_manager.css">
+        <script defer src="js/permission_manager.js"></script>
+    -->
 
     <!-- App Install -->
     <link rel="stylesheet" type="text/css" href="style/app_install_manager/app_install_manager.css">
@@ -208,8 +234,10 @@
     <script defer src="js/update_manager.js"></script>
     <link rel="stylesheet" type="text/css" href="style/update_manager/update_manager.css">
 
-    <!-- Media Recording Logic without UI-->
-    <script defer src="js/media_recording.js"></script>
+    <!--
+        Media Recording Logic without UI is lazy loaded at module_loader.js
+        <script defer src="js/media_recording.js"></script>
+    -->
 
     <!-- Theme and localization -->
     <link rel="stylesheet" type="text/css" href="style/themes/default/system.css">
@@ -255,21 +283,32 @@
     <script defer src="js/attention_toaster.js"></script>
     <script defer src="js/app_transition_controller.js"></script>
     <script defer src="js/app_authentication_dialog.js"></script>
-    <script defer src="js/text_selection_dialog.js"></script>
+    <!--
+        TextSelectionDialog is lazy loaded at module loader
+        <script defer src="js/text_selection_dialog.js"></script>
+    -->
     <script defer src="js/app_window.js"></script>
     <script defer src="js/popup_window.js"></script>
     <script defer src="js/browser_mixin.js"></script>
-    <script defer src="js/wrapper_factory.js"></script>
+    <!-- WrapperFactory is lazy loaded at module loader
+        <script defer src="js/wrapper_factory.js"></script>
+    -->
     <script defer src="js/homescreen_window.js"></script>
     <script defer src="js/homescreen_launcher.js"></script>
     <script defer src="js/landing_app_window.js"></script>
     <script defer src="js/landing_app_launcher.js"></script>
     <script defer src="js/homescreen_window_manager.js"></script>
-    <script defer src="js/activity_window.js"></script>
+    <!--
+        ActivityWindow is lazy loaded at child_window_manager.js
+        <script defer src="js/activity_window.js"></script>
+    -->
     <script defer src="js/activity_window_manager.js"></script>
     <script defer src="js/app_window_factory.js"></script>
     <script defer src="js/attention_window.js"></script>
-    <script defer src="js/attention_indicator.js"></script>
+    <!--
+        attention_indicator.js is lazy loaded at attention_window.js
+        <script defer src="js/attention_indicator.js"></script>
+    -->
     <script defer src="js/attention_window_manager.js"></script>
     <script defer src="js/app_window_manager.js"></script>
     <script defer src="js/secure_window.js"></script>
@@ -279,20 +318,34 @@
     <script defer src="js/system_dialog_manager.js"></script>
     <script defer src="js/visibility_manager.js"></script>
     <script defer src="js/layout_manager.js"></script>
-    <script defer src="js/suspending_app_priority_manager.js"></script>
+    <!--
+        suspending_app_priority_manager is lazy loaded at module loader
+        <script defer src="js/suspending_app_priority_manager.js"></script>
+    -->
 
     <!-- Stack Manager -->
     <script defer src="js/stack_manager.js"></script>
 
-    <!-- Entry Sheet -->
-    <link rel="stylesheet" type="text/css" href="style/entry_sheet/entry_sheet.css">
-    <script defer src="js/entry_sheet.js"></script>
+    <!--
+        Entry Sheet is lazy loaded at captive portal.
+        <link rel="stylesheet" type="text/css" href="style/entry_sheet/entry_sheet.css">
+        <script defer src="js/entry_sheet.js"></script>
+    -->
 
     <!-- Developer Tools -->
-    <script defer src="js/remote_debugger.js"></script>
-    <script defer src="js/devtools/logshake.js"></script>
-    <script defer src="js/devtools/developer_hud.js"></script>
-    <link rel="stylesheet" type="text/css" href="style/devtools/developer_hud.css">
+    <!--
+        RemoteDebugger is lazy loaded at module loader
+        <script defer src="js/remote_debugger.js"></script>
+    -->
+    <!--
+        LogShake is lazy loaded at module loader
+        <script defer src="js/devtools/logshake.js"></script>
+    -->
+    <!--
+        DeveloperHUD is lazy loaded at module loader
+        <script defer src="js/devtools/developer_hud.js"></script>
+        <link rel="stylesheet" type="text/css" href="style/devtools/developer_hud.css">
+    -->
 
     <!-- z-indexes of all the overlays in the system -->
     <link rel="stylesheet" type="text/css" href="style/zindex.css">
@@ -513,6 +566,7 @@
       </div>
 
       <div id="permission-screen" data-z-index-level="permission-screen">
+      <!--
         <div id="permission-dialog" role="dialog" class="generic-dialog">
           <div class="inner">
             <h1 id="permission-title"></h1>
@@ -538,6 +592,7 @@
             </menu>
           </div>
         </div>
+      -->
       </div>
 
       <div id="device-list-item-tmpl" class="hide">
@@ -711,6 +766,7 @@
       </div> <!-- end of template for each IME item. -->
 
       <div id="sleep-menu" data-z-index-level="sleep-menu">
+      <!--
         <div id="sleep-menu-container" role="dialog" data-type="object">
           <header>
             <h1 data-l10n-id="deviceMenu">Device menu</h1>
@@ -723,6 +779,7 @@
             <button data-l10n-id="cancel">Cancel</button>
           </gaia-buttons>
         </div>
+      -->
       </div>
 
       <div id="system-overlay" data-z-index-level="system-overlay">

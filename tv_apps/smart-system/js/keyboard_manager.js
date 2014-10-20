@@ -494,12 +494,13 @@ var KeyboardManager = {
         });
 
       this.hideKeyboard();
+      LazyLoader.load(['/style/ime_menu.css', '/js/ime_menu.js'], function() {
+        var menu = new ImeMenu(items, actionMenuTitle,
+                               this._imeMenuCallback.bind(this, showedGroup),
+                               this._imeMenuCallback.bind(this, showedGroup));
 
-      var menu = new ImeMenu(items, actionMenuTitle,
-        this._imeMenuCallback.bind(this, showedGroup),
-        this._imeMenuCallback.bind(this, showedGroup));
-
-      menu.start();
+        menu.start();
+      }.bind(this));
 
     }.bind(this));
   }

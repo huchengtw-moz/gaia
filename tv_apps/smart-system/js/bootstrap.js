@@ -3,13 +3,11 @@
 
 /*global ActivityWindowManager, SecureWindowFactory,
          SecureWindowManager, HomescreenLauncher, HomescreenWindowManager,
-         FtuLauncher, ScreenManager, Activities,
-         DeveloperHUD, RemoteDebugger, HomeGesture,
+         FtuLauncher, ScreenManager, HomeGesture,
          VisibilityManager, UsbStorage,
-         SuspendingAppPriorityManager, TTLView,
-         MediaRecording, AppWindowFactory, SystemDialogManager,
-         applications, LayoutManager, PermissionManager, Accessibility,
-         TextSelectionDialog, SleepMenu,
+         SuspendingAppPriorityManager,
+         AppWindowFactory, SystemDialogManager,
+         applications, LayoutManager, Accessibility,
          ExternalStorageMonitor*/
 'use strict';
 
@@ -44,17 +42,10 @@ window.addEventListener('load', function startup() {
     /** @global */
     window.secureWindowFactory = new SecureWindowFactory();
     /** @global */
-    if (window.SuspendingAppPriorityManager) {
-      window.suspendingAppPriorityManager = new SuspendingAppPriorityManager();
-    }
-    /** @global */
     window.systemDialogManager = window.systemDialogManager ||
       new SystemDialogManager();
 
     window.AppWindowManager.init();
-
-    /** @global */
-    window.textSelectionDialog = new TextSelectionDialog();
   }
 
   function safelyLaunchFTU() {
@@ -110,13 +101,11 @@ window.addEventListener('load', function startup() {
   window.homescreenWindowManager.start();
 
   // Please sort it alphabetically
-  window.activities = new Activities();
+  window.moduleLoader = new ModuleLoader();
   window.accessibility = new Accessibility();
   window.accessibility.start();
   window.appWindowFactory = new AppWindowFactory();
   window.appWindowFactory.start();
-  window.developerHUD = new DeveloperHUD();
-  window.developerHUD.start();
   /** @global */
   window.attentionWindowManager = new window.AttentionWindowManager();
   window.attentionWindowManager.start();
@@ -132,24 +121,10 @@ window.addEventListener('load', function startup() {
   }
   window.layoutManager = new LayoutManager();
   window.layoutManager.start();
-  window.permissionManager = new PermissionManager();
-  window.permissionManager.start();
-  window.remoteDebugger = new RemoteDebugger();
-  window.sleepMenu = new SleepMenu();
-  window.sleepMenu.start();
-  window.ttlView = new TTLView();
   window.visibilityManager = new VisibilityManager();
   window.visibilityManager.start();
   window.wallpaperManager = new window.WallpaperManager();
   window.wallpaperManager.start();
-
-  // unit tests call start() manually
-  if (navigator.mozL10n) {
-    navigator.mozL10n.once(function l10n_ready() {
-      window.mediaRecording = new MediaRecording();
-      window.mediaRecording.start();
-    });
-  }
 
   // We need to be sure to get the focus in order to wake up the screen
   // if the phone goes to sleep before any user interaction.

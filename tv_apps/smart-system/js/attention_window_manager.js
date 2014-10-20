@@ -48,8 +48,6 @@
     start: function attwm_init() {
       this._instances = [];
       this._openedInstances = new Map();
-      this.attentionIndicator = new AttentionIndicator(this);
-      this.attentionIndicator.start();
       window.addEventListener('attentioncreated', this);
       window.addEventListener('attentionterminated', this);
       window.addEventListener('attentionshown', this);
@@ -69,8 +67,9 @@
     stop: function attwm_init() {
       this._instances = null;
       this._openedInstances = null;
-      this.attentionIndicator.stop();
-      this.attentionIndicator = null;
+      if (this.attentionIndicator) {
+        this.attentionIndicator.stop();
+      }
       window.removeEventListener('attentioncreated', this);
       window.removeEventListener('attentionterminated', this);
       window.removeEventListener('attentionshow', this);
@@ -226,10 +225,25 @@
       }
     },
     updateAttentionIndicator: function() {
-      if (this._openedInstances.size == this._instances.length) {
-        this.attentionIndicator.hide();
+      var self = this;
+      function updateIndicator() {
+        if (self._openedInstances.size == self._instances.length) {
+          self.attentionIndicator.hide();
+        } else {
+          self.attentionIndicator.show();
+        }
+      }
+
+      if (this.attentionIndicator) {
+         updateIndicator();
       } else {
-        this.attentionIndicator.show();
+        LazyLoader.load(['/style/attention_indicator.css',
+                         '/js/attention_indicator.js'], function() {
+
+          self.attentionIndicator = new AttentionIndicator(self);
+          self.attentionIndicator.start();
+          updateIndicator();
+        });
       }
     },
     closeAllAttentionWindows: function() {

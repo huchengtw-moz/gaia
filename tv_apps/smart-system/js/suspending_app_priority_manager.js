@@ -20,8 +20,7 @@
     this.init();
   };
   SuspendingAppPriorityManager.prototype.init = function() {
-    window.addEventListener('appsuspended', this);
-    window.addEventListener('appresumed', this);
+    // appsuspended and appresumed is hooked at module loader
   };
 
   /**

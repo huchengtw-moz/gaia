@@ -10,7 +10,6 @@
    * @class Activities
    */
   function Activities() {
-    window.addEventListener('mozChromeEvent', this);
     window.addEventListener('appopened', this);
     this.actionMenu = null;
   }
@@ -85,21 +84,26 @@
           }
         }
 
+        var self = this;
         // Since the mozChromeEvent could be triggered by a 'click', and gecko
         // event are synchronous make sure to exit the event loop before
         // showing the list.
         setTimeout((function nextTick() {
-          // Bug 852785: force the keyboard to close before the activity menu
-          // shows
-          window.dispatchEvent(new CustomEvent('activitymenuwillopen'));
+          LazyLoader.load(['/shared/style/action_menu.css',
+                           '/style/action_menu/action_menu_extended.css',
+                           '/js/action_menu.js'], function() {
+            // Bug 852785: force the keyboard to close before the activity menu
+            // shows
+            window.dispatchEvent(new CustomEvent('activitymenuwillopen'));
 
-          var activityName = navigator.mozL10n.get('activity-' + detail.name);
-          if (!this.actionMenu) {
-            this.actionMenu = new ActionMenu(this._listItems(choices),
-              activityName, this.choose.bind(this), this.cancel.bind(this));
-            this.actionMenu.start();
-          }
-        }).bind(this));
+            var activityName = navigator.mozL10n.get('activity-' + detail.name);
+            if (!self.actionMenu) {
+              self.actionMenu = new ActionMenu(self._listItems(choices),
+                activityName, self.choose.bind(self), self.cancel.bind(self));
+              self.actionMenu.start();
+            }
+          });
+        }));
       }
     },
 
