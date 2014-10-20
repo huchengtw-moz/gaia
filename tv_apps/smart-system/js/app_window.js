@@ -74,7 +74,7 @@
    * @type {Boolean}
    */
   AppWindow.SUSPENDING_ENABLED = false;
-  SettingsListener.observe('app-suspending.enabled', false, function(value) {
+  SettingsCache.observe('app-suspending.enabled', false, function(value) {
     AppWindow.SUSPENDING_ENABLED = !!value;
   });
 

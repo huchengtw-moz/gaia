@@ -16,7 +16,7 @@
   var appTransitionSetting = 'app-transition.enabled';
   var transitionEnabled =
     SettingsListener.getSettingsLock().get(appTransitionSetting);
-  SettingsListener.observe(appTransitionSetting, true, function(value) {
+  SettingsCache.observe(appTransitionSetting, true, function(value) {
     transitionEnabled = value;
   });
 
