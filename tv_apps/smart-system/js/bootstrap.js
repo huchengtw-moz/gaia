@@ -9,7 +9,7 @@
         SuspendingAppPriorityManager, TTLView,
          MediaRecording, AppWindowFactory, SystemDialogManager,
          applications, LayoutManager, PermissionManager, Accessibility,
-         TextSelectionDialog, SleepMenu, AppUsageMetrics,
+         TextSelectionDialog, SleepMenu,
          ExternalStorageMonitor,
          BrowserSettings, QuickSettings */
 'use strict';
@@ -114,8 +114,6 @@ window.addEventListener('load', function startup() {
   window.activities = new Activities();
   window.accessibility = new Accessibility();
   window.accessibility.start();
-  window.appUsageMetrics = new AppUsageMetrics();
-  window.appUsageMetrics.start();
   window.appWindowFactory = new AppWindowFactory();
   window.appWindowFactory.start();
   window.developerHUD = new DeveloperHUD();
