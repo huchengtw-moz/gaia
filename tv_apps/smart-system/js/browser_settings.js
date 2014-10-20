@@ -8,8 +8,7 @@
   // Use a setting in order to be "called" by settings app
   BrowserSettings.prototype.addRemoteRequestSetting =
                                     function(key, requestFunction) {
-    function observer(setting) {
-      var isRequested = setting.settingValue;
+    function observer(isRequested) {
       if (!isRequested) {
         return;
       }
@@ -23,12 +22,7 @@
       lock.set(falseSetting);
     }
 
-    navigator.mozSettings.addObserver(key, observer);
-
-    var getRequest = navigator.mozSettings.createLock().get(key);
-    getRequest.onsuccess = function() {
-      observer({settingName: key, settingValue: getRequest.result[key]});
-    };
+    SettingsCache.observe(key, '', observer);
   };
 
   BrowserSettings.prototype.start = function() {

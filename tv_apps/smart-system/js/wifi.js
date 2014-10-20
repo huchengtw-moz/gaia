@@ -77,20 +77,20 @@ var Wifi = {
       window.dispatchEvent(evt);
     };
 
-    SettingsListener.observe(
+    SettingsCache.observe(
       'wifi.screen_off_timeout', 600000, function(value) {
         self.screenOffTimeout = value;
       });
 
     // Track the wifi.enabled mozSettings value
-    SettingsListener.observe('wifi.enabled', true, function(value) {
+    SettingsCache.observe('wifi.enabled', true, function(value) {
       if (!wifiManager && value) {
         self.wifiEnabled = false;
 
         // roll back the setting value to notify the UIs
         // that wifi interface is not available
         if (value) {
-          SettingsListener.getSettingsLock().set({
+          SettingsCache.getSettingsLock().set({
             'wifi.enabled': false
           });
         }

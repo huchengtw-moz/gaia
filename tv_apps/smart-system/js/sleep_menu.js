@@ -99,7 +99,7 @@
       window.addEventListener('airplanemodechanged', this);
 
       var self = this;
-      SettingsListener.observe('developer.menu.enabled', false,
+      SettingsCache.observe('developer.menu.enabled', false,
         function(value) {
         self.isDeveloperMenuEnabled = value;
       });
@@ -107,13 +107,13 @@
       for (var option in this.developerOptions) {
         /* jshint loopfunc: true */
         (function attachListenerToDeveloperOption(opt) {
-          SettingsListener.observe(opt.setting, opt.value, function(value) {
+          SettingsCache.observe(opt.setting, opt.value, function(value) {
             opt.value = value;
           });
        })(this.developerOptions[option]);
       }
 
-      SettingsListener.observe('audio.volume.notification', 7, function(value) {
+      SettingsCache.observe('audio.volume.notification', 7, function(value) {
         self.isSilentModeEnabled = (value === 0);
       });
     },
