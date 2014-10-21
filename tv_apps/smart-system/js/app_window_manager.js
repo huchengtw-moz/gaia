@@ -439,6 +439,7 @@
           }
           break;
 
+        case 'homescreenopened':
         case 'appopening':
         case 'appopened':
           // Someone else may open the app,
@@ -450,7 +451,6 @@
           this._apps[evt.detail.instanceID] = evt.detail;
           break;
 
-        case 'homescreenopened':
         case 'homescreen-changed':
         case 'landing-app-changed':
           this.display();
