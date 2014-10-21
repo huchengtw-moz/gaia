@@ -3,10 +3,10 @@
 
 /*global ActivityWindowManager, SecureWindowFactory,
          SecureWindowManager, HomescreenLauncher, HomescreenWindowManager,
-         FtuLauncher, SourceView, ScreenManager, Activities,
+         FtuLauncher, ScreenManager, Activities,
          DeveloperHUD, RemoteDebugger, HomeGesture,
          VisibilityManager, UsbStorage,
-        SuspendingAppPriorityManager, TTLView,
+         SuspendingAppPriorityManager, TTLView,
          MediaRecording, AppWindowFactory, SystemDialogManager,
          applications, LayoutManager, PermissionManager, Accessibility,
          TextSelectionDialog, SleepMenu,
@@ -137,7 +137,6 @@ window.addEventListener('load', function startup() {
   window.remoteDebugger = new RemoteDebugger();
   window.sleepMenu = new SleepMenu();
   window.sleepMenu.start();
-  window.sourceView = new SourceView();
   window.ttlView = new TTLView();
   window.visibilityManager = new VisibilityManager();
   window.visibilityManager.start();
