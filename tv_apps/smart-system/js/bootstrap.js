@@ -3,15 +3,14 @@
 
 /*global ActivityWindowManager, SecureWindowFactory,
          SecureWindowManager, HomescreenLauncher, HomescreenWindowManager,
-         FtuLauncher, SourceView, ScreenManager, Places, Activities,
+         FtuLauncher, SourceView, ScreenManager, Activities,
          DeveloperHUD, RemoteDebugger, HomeGesture,
          VisibilityManager, UsbStorage,
         SuspendingAppPriorityManager, TTLView,
          MediaRecording, AppWindowFactory, SystemDialogManager,
          applications, LayoutManager, PermissionManager, Accessibility,
          TextSelectionDialog, SleepMenu,
-         ExternalStorageMonitor,
-         BrowserSettings, QuickSettings */
+         ExternalStorageMonitor*/
 'use strict';
 
 
@@ -135,8 +134,6 @@ window.addEventListener('load', function startup() {
   window.layoutManager.start();
   window.permissionManager = new PermissionManager();
   window.permissionManager.start();
-  window.places = new Places();
-  window.places.start();
   window.remoteDebugger = new RemoteDebugger();
   window.sleepMenu = new SleepMenu();
   window.sleepMenu.start();
@@ -179,10 +176,6 @@ window.addEventListener('wallpaperchange', function(evt) {
     'linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),' +
     'url(' + evt.detail.url + ')';
 });
-
-window.browserSettings = new BrowserSettings();
-window.browserSettings.start();
-
 
 /* === XXX Bug 900512 === */
 // On some devices touching the hardware home button triggers
