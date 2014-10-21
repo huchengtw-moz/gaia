@@ -58,10 +58,12 @@ window.addEventListener('load', function startup() {
   }
 
   function safelyLaunchFTU() {
-    window.addEventListener('homescreen-ready', function onHomescreenReady() {
-      window.removeEventListener('homescreen-ready', onHomescreenReady);
-      FtuLauncher.retrieve();
-    });
+    window.addEventListener('homescreenwindowmanager-ready',
+      function onHomescreenReady() {
+        window.removeEventListener('homescreenwindowmanager-ready',
+                                   onHomescreenReady);
+        FtuLauncher.retrieve();
+      });
     /** @global */
     if (!window.homescreenLauncher) {
       // We may have application.ready = true while reloading at firefox nightly

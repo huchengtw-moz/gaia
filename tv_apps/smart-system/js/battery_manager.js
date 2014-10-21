@@ -36,7 +36,7 @@ var BatteryManager = {
     if (battery) {
       // When the device is booted, check if the battery is drained.
       // If so, batteryshutdown would be triggered to inform sleepMenu shutdown.
-      window.addEventListener('homescreen-ready',
+      window.addEventListener('homescreenwindowmanager-ready',
                               this.checkBatteryDrainage.bind(this));
 
       battery.addEventListener('levelchange', this);
