@@ -10,7 +10,6 @@
    * @class Activities
    */
   function Activities() {
-    window.addEventListener('mozChromeEvent', this);
     window.addEventListener('appopened', this);
     this.actionMenu = null;
   }

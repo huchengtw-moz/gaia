@@ -3,7 +3,7 @@
 
 /*global ActivityWindowManager, SecureWindowFactory,
          SecureWindowManager, HomescreenLauncher, HomescreenWindowManager,
-         FtuLauncher, ScreenManager, Activities,
+         FtuLauncher, ScreenManager,
          DeveloperHUD, RemoteDebugger, HomeGesture,
          VisibilityManager, UsbStorage,
          SuspendingAppPriorityManager, TTLView,
@@ -110,7 +110,7 @@ window.addEventListener('load', function startup() {
   window.homescreenWindowManager.start();
 
   // Please sort it alphabetically
-  window.activities = new Activities();
+  window.moduleLoader = new ModuleLoader();
   window.accessibility = new Accessibility();
   window.accessibility.start();
   window.appWindowFactory = new AppWindowFactory();
