@@ -121,6 +121,8 @@
           break;
         case 'homescreenopened':
           var detail = evt.detail;
+          // Landing app is also a homescreen. We need to which one is opened
+          // and show/hide the correct homescreen
           if (detail.CLASS_NAME === 'LandingAppWindow') {
             this.setHomescreenVisible(homescreenLauncher, false);
             this.setHomescreenVisible(this.landingAppLauncher, true);
@@ -147,9 +149,12 @@
             window.removeEventListener('landing-app-ready', this);
 
             this.publish('homescreenwindowmanager-ready');
+            // The first activeHome is landing app.
             this._activeHome = this.landingAppLauncher.hasLandingApp ?
                                this.landingAppLauncher : homescreenLauncher;
             if (this._ftuSkipped && this.landingAppLauncher.hasLandingApp) {
+              // If ftu skipped already got, we need to set landing app as
+              // visible
               this.setHomescreenVisible(homescreenLauncher, false);
               this.setHomescreenVisible(this.landingAppLauncher, true);
             }
@@ -160,6 +165,7 @@
 
     setHomescreenVisible: function hwm_hideActiveHome(launcher, visible) {
       launcher.getHomescreen().ensure(true);
+      // We need to show/hide fade overlay to have wallpaper shown correctly.
       if (visible) {
         launcher.getHomescreen().showFadeOverlay();
       } else {
