@@ -25,17 +25,17 @@
 
 @media not all and (-moz-physical-home-button) {
   #screen:not(.software-button-disabled) #keyboards {
-    bottom: var(--software-home-button-height);
+    bottom: 0;
   }
 }
 
 #screen.software-button-enabled #keyboards {
-  bottom: var(--software-home-button-height);
+  bottom: 0;
 }
 
 @media (orientation: landscape) {
   #screen.software-button-enabled #keyboards {
-    right: var(--software-home-button-height);
+    right: 0;
     bottom: 0;
     left: 0;
     width: auto;

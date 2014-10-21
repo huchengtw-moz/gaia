@@ -33,7 +33,7 @@
 }
 
 #screen.fullscreen-layout-app.software-button-enabled .appWindow > .modal-dialog {
-  height: calc(100% - var(--software-home-button-height));
+  height: 100%;
 }
 
 @media (orientation: landscape) {

@@ -11,7 +11,7 @@
 }
 
 #screen.fullscreen-layout-app.software-button-enabled #permission-screen {
-  height: calc(100% - var(--software-home-button-height));
+  height: 100%;
 }
 
 @media (orientation: landscape) {
@@ -43,11 +43,11 @@
 
 @media not all and (-moz-physical-home-button) {
   #screen:not(.software-button-disabled) #permission-screen {
-    height: calc(100% - var(--software-home-button-height));
+    height: 100%;
   }
 
   #screen.fullscreen-app:not(.software-button-disabled) #permission-screen {
-    height: calc(100% - var(--software-home-button-height));
+    height: 100%;
   }
 }
 

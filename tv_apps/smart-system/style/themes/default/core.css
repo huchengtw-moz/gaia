@@ -20,13 +20,13 @@
 }
 
 #screen.software-button-enabled [role="dialog"].generic-dialog {
-  bottom: var(--software-home-button-height);
+  bottom: 0;
 }
 
 @media (orientation: landscape) {
   #screen.software-button-enabled [role="dialog"].generic-dialog {
     bottom: 0;
-    right: var(--software-home-button-height);
+    right: 0;
   }
 }
 
