@@ -14,11 +14,17 @@
   }
 
   ModuleLoader.prototype = {
-    chromeEventHandlers: {
-      'activity-choice': [{
+    handlers: {
+      'activities': {
         'file': '/js/activities.js',
         'className': 'Activities'
-      }]
+      }
+    },
+    /**
+     * handles for mozChromeEvent
+     */
+    chromeEventHandlers: {
+      'activity-choice': ['activities']
     },
     /** @lends ModuleLoader */
 
@@ -43,10 +49,14 @@
         return;
       }
 
-      this.chromeEventHandlers[detail.type].forEach(function(handler) {
+      this.chromeEventHandlers[detail.type].forEach(function(name) {
+        var handler = self.handlers[name];
         if (!handler.instance) {
           LazyLoader.load(handler.file, function() {
             handler.instance = new exports[handler.className]();
+            if ((typeof handler.instance['start']) === 'function') {
+              handler.instance.start();
+            }
             handler.instance.handleEvent(evt);
           }); 
         } else {
