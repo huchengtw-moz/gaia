@@ -56,7 +56,10 @@
     -->
 
     <link rel="stylesheet" type="text/css" href="style/definitions.css">
-    <link rel="stylesheet" type="text/css" href="style/attention_indicator.css">
+    <!--
+        attention_indicator.css is lazy loaded at attention_window.js
+        <link rel="stylesheet" type="text/css" href="style/attention_indicator.css">
+    -->
 
     <!-- System -->
     <link rel="stylesheet" type="text/css" href="style/system/system.css">
@@ -276,7 +279,10 @@
     <script defer src="js/activity_window_manager.js"></script>
     <script defer src="js/app_window_factory.js"></script>
     <script defer src="js/attention_window.js"></script>
-    <script defer src="js/attention_indicator.js"></script>
+    <!--
+        attention_indicator.js is lazy loaded at attention_window.js
+        <script defer src="js/attention_indicator.js"></script>
+    -->
     <script defer src="js/attention_window_manager.js"></script>
     <script defer src="js/app_window_manager.js"></script>
     <script defer src="js/secure_window.js"></script>
