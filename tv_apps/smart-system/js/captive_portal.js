@@ -5,7 +5,8 @@
    EntrySheet,
    FtuLauncher,
    Notification,
-   MozActivity
+   MozActivity,
+   LazyLoader
 */
 
 'use strict';
@@ -34,10 +35,14 @@ var CaptivePortal = {
     if (FtuLauncher.isFtuRunning()) {
       settings.createLock().set({'wifi.connect_via_settings': false});
 
-      this.entrySheet = new EntrySheet(document.getElementById('screen'),
-                                      url,
-                                      new BrowserFrame({url: url}));
-      this.entrySheet.open();
+      LazyLoader.load(['/style/entry_sheet/entry_sheet.css',
+                       '/js/entry_sheet.js'], (function() {
+
+        this.entrySheet = new EntrySheet(document.getElementById('screen'),
+                                         url,
+                                         new BrowserFrame({url: url}));
+        this.entrySheet.open();
+      }).bind(this));
       return;
     }
 
