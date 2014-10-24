@@ -32,6 +32,10 @@
       'hardwareButtons': {
         'file': '/js/hardware_buttons.js',
         'className': 'HardwareButtons'
+      },
+      'mediaRecording': {
+        'file': '/js/media_recording.js',
+        'className': 'MediaRecording'
       }
     },
 
@@ -47,7 +51,8 @@
       'volume-up-button-press': ['hardwareButtons'],
       'volume-up-button-release': ['hardwareButtons'],
       'volume-down-button-press': ['hardwareButtons'],
-      'volume-down-button-release': ['hardwareButtons']
+      'volume-down-button-release': ['hardwareButtons'],
+      'recording-status': ['mediaRecording']
     },
 
     /**

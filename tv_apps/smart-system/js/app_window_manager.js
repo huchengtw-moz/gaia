@@ -885,7 +885,7 @@
     sendStopRecordingRequest: function sendStopRecordingRequest(callback) {
       // If we are not currently recording anything, just call
       // the callback synchronously
-      if (!window.mediaRecording.isRecording) {
+      if (!window.mediaRecording || !window.mediaRecording.isRecording) {
         if (callback) { callback(); }
         return;
       }

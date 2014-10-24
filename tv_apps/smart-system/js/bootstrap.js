@@ -7,7 +7,7 @@
          DeveloperHUD, RemoteDebugger, HomeGesture,
          VisibilityManager, UsbStorage,
          SuspendingAppPriorityManager, TTLView,
-         MediaRecording, AppWindowFactory, SystemDialogManager,
+         AppWindowFactory, SystemDialogManager,
          applications, LayoutManager, PermissionManager, Accessibility,
          TextSelectionDialog, SleepMenu*/
 'use strict';
@@ -139,14 +139,6 @@ window.addEventListener('load', function startup() {
   window.visibilityManager.start();
   window.wallpaperManager = new window.WallpaperManager();
   window.wallpaperManager.start();
-
-  // unit tests call start() manually
-  if (navigator.mozL10n) {
-    navigator.mozL10n.once(function l10n_ready() {
-      window.mediaRecording = new MediaRecording();
-      window.mediaRecording.start();
-    });
-  }
 
   // We need to be sure to get the focus in order to wake up the screen
   // if the phone goes to sleep before any user interaction.

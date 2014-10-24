@@ -30,7 +30,7 @@
      * @memberof MediaRecording.prototype
      */
     start: function mr_start() {
-      window.addEventListener('mozChromeEvent', this);
+      // listen to mozChromeEvent at module loader
     },
 
     /**
@@ -40,8 +40,6 @@
     stop: function mr_stop() {
       this.isRecording = false;
       this.messages = [];
-
-      window.removeEventListener('mozChromeEvent', this);
     },
 
     /**
