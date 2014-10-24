@@ -65,7 +65,10 @@
     <link rel="stylesheet" type="text/css" href="style/system/system.css">
     <link rel="stylesheet" type="text/css" href="style/system/keyboard.css">
     <link rel="stylesheet" type="text/css" href="style/sound_manager/sound_manager.css">
-    <link rel="stylesheet" type="text/css" href="style/ime_menu.css">
+    <!--
+        ImeMenu is lazy loaded at keyboard_manager.js
+        <link rel="stylesheet" type="text/css" href="style/ime_menu.css">
+    -->
 
     <!-- Include shared building blocks -->
     <link rel="stylesheet" type="text/css" href="shared/style/confirm.css"/>
@@ -164,8 +167,10 @@
     <link rel="stylesheet" type="text/css" href="style/date_selector/date_selector_extended.css">
     <link rel="stylesheet" type="text/css" href="style/time_selector/time_selector_extended.css">
 
-    <!-- Ime Menu -->
-    <script defer src="js/ime_menu.js"></script>
+    <!--
+        Ime Menu is lazy loaded at keyboard_manager.js
+        <script defer src="js/ime_menu.js"></script>
+    -->
 
     <!-- FTU launcher -->
     <script defer src="js/ftu_launcher.js"></script>
