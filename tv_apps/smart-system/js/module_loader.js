@@ -11,23 +11,41 @@
    */
   function ModuleLoader() {
     window.addEventListener('mozChromeEvent', this);
+    for(var k in this.customEventHandlers) {
+      window.addEventListener(k, this);
+    }
   }
 
   ModuleLoader.prototype = {
     handlers: {
       'activities': {
         'file': '/js/activities.js',
-        'className': 'Activities'
+        'className': 'Activities',
+        'exportToWindow': 'activities'
+      },
+      'external_storage_monitor': {
+        'file': '/js/external_storage_monitor.js',
+        'className': 'ExternalStorageMonitor',
+        'exportToWindow': 'externalStorageMonitor',
+        'onlyLazyLoad': true
       }
     },
+
     /**
      * handles for mozChromeEvent
      */
     chromeEventHandlers: {
       'activity-choice': ['activities']
     },
-    /** @lends ModuleLoader */
 
+    /**
+     * handles for CustomEvent
+     */
+    customEventHandlers: {
+      'homescreenopened': ['external_storage_monitor']
+    },
+
+    /** @lends ModuleLoader */
     /**
     * General event handler interface.
     * Updates the overlay with as we receive load events.
@@ -39,6 +57,9 @@
         case 'mozChromeEvent':
           this.handleChromeEvent(evt);
           break;
+        default:
+          this.handleCustomEvent(evt);
+          break;
       }
     },
 
@@ -48,8 +69,19 @@
       if (!this.chromeEventHandlers[detail.type]) {
         return;
       }
+      this.pipeToHandlers(this.chromeEventHandlers[detail.type], evt);
+    },
 
-      this.chromeEventHandlers[detail.type].forEach(function(name) {
+    handleCustomEvent: function(evt) {
+      if (!this.customEventHandlers[evt.type]) {
+        return;
+      }
+      this.pipeToHandlers(this.customEventHandlers[evt.type], evt);
+    },
+
+    pipeToHandlers: function(handlers, evt) {
+      var self = this;
+      handlers.forEach(function(name) {
         var handler = self.handlers[name];
         if (!handler.instance) {
           LazyLoader.load(handler.file, function() {
@@ -57,9 +89,18 @@
             if ((typeof handler.instance['start']) === 'function') {
               handler.instance.start();
             }
-            handler.instance.handleEvent(evt);
+            // export to window for backward compatible.
+            if (handler.exportToWindow) {
+              window[handler.exportToWindow] = handler.instance;
+            }
+            // If handler has handleEvent, we need to pipe event to it.
+            // Otherwise, we just lazy load the module.
+            if (!handler.onlyLazyLoad &&
+                (typeof handler.instance['handleEvent']) === 'function') {
+              handler.instance.handleEvent(evt);
+            }
           }); 
-        } else {
+        } else if ((typeof handler.instance['handleEvent']) === 'function') {
           handler.instance.handleEvent(evt);
         }
       });

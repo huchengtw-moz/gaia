@@ -9,8 +9,7 @@
          SuspendingAppPriorityManager, TTLView,
          MediaRecording, AppWindowFactory, SystemDialogManager,
          applications, LayoutManager, PermissionManager, Accessibility,
-         TextSelectionDialog, SleepMenu,
-         ExternalStorageMonitor*/
+         TextSelectionDialog, SleepMenu*/
 'use strict';
 
 
@@ -120,8 +119,6 @@ window.addEventListener('load', function startup() {
   /** @global */
   window.attentionWindowManager = new window.AttentionWindowManager();
   window.attentionWindowManager.start();
-  window.externalStorageMonitor = new ExternalStorageMonitor();
-  window.externalStorageMonitor.start();
   window.homeGesture = new HomeGesture();
   window.homeGesture.start();
   if (!window.homescreenLauncher) {
