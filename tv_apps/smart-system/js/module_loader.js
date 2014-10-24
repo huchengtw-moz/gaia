@@ -23,11 +23,15 @@
         'className': 'Activities',
         'exportToWindow': 'activities'
       },
-      'external_storage_monitor': {
+      'externalStorageMonitor': {
         'file': '/js/external_storage_monitor.js',
         'className': 'ExternalStorageMonitor',
         'exportToWindow': 'externalStorageMonitor',
         'onlyLazyLoad': true
+      },
+      'hardwareButtons': {
+        'file': '/js/hardware_buttons.js',
+        'className': 'HardwareButtons'
       }
     },
 
@@ -35,14 +39,22 @@
      * handles for mozChromeEvent
      */
     chromeEventHandlers: {
-      'activity-choice': ['activities']
+      'activity-choice': ['activities'],
+      'home-button-press': ['hardwareButtons'],
+      'home-button-release': ['hardwareButtons'],
+      'sleep-button-press': ['hardwareButtons'],
+      'sleep-button-release': ['hardwareButtons'],
+      'volume-up-button-press': ['hardwareButtons'],
+      'volume-up-button-release': ['hardwareButtons'],
+      'volume-down-button-press': ['hardwareButtons'],
+      'volume-down-button-release': ['hardwareButtons']
     },
 
     /**
      * handles for CustomEvent
      */
     customEventHandlers: {
-      'homescreenopened': ['external_storage_monitor']
+      'homescreenopened': ['externalStorageMonitor']
     },
 
     /** @lends ModuleLoader */

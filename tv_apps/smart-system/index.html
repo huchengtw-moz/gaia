@@ -120,7 +120,11 @@
     <script defer src="js/screenshot.js"></script>
     <script defer src="js/async_semaphore.js"></script>
     <script defer src="js/sound_manager.js"></script>
-    <script defer src="js/hardware_buttons.js"></script>
+    <!--
+        HardwareButtons is lazy loaded at module loader when some specific
+        mozChromeEvents received.
+        <script defer src="js/hardware_buttons.js"></script>
+    -->
     <script defer src="js/system_banner.js"></script>
     <script defer src="js/home_gesture.js"></script>
     <script defer src="js/wallpaper_manager.js"></script>
