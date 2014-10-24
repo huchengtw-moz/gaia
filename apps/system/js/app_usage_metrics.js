@@ -179,7 +179,7 @@
       }
     }.bind(this);
 
-    SettingsCache.observe(AUM.TELEMETRY_ENABLED_KEY,
+    SettingsListener.observe(AUM.TELEMETRY_ENABLED_KEY,
                              false, this.metricsEnabledListener);
   };
 
@@ -188,7 +188,7 @@
   // used to stop data collection but keep the module running.
   AUM.prototype.stop = function stop() {
     this.stopCollecting();
-    SettingsCache.unobserve(AUM.TELEMETRY_ENABLED_KEY,
+    SettingsListener.unobserve(AUM.TELEMETRY_ENABLED_KEY,
                                this.metricsEnabledListener);
   };
 
@@ -812,6 +812,7 @@
   AUM.getSettings = function getSettings(settingKeysAndDefaults, callback) {
     var pendingQueries = 0;
     var results = {};
+    var lock = window.navigator.mozSettings.createLock();
     for (var key in settingKeysAndDefaults) {
       var defaultValue = settingKeysAndDefaults[key];
       query(key, defaultValue);
@@ -819,7 +820,9 @@
     }
 
     function query(key, defaultValue) {
-      SettingsCache.get(key, function(value) {
+      var request = lock.get(key);
+      request.onsuccess = function() {
+        var value = request.result[key];
         if (value === undefined || value === null) {
           value = defaultValue;
         }
@@ -828,7 +831,7 @@
         if (pendingQueries === 0) {
           callback(results);
         }
-      });
+      };
     }
   };
 
