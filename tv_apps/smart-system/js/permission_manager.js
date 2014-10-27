@@ -71,7 +71,7 @@
         self.remember.checked = !self.remember.checked;
       });
 
-      window.addEventListener('mozChromeEvent', this);
+      // listen mozChromeEvent at module loader
       window.addEventListener('attentionopening', this);
       window.addEventListener('attentionopened', this);
       /* On home/holdhome pressed, discard permission request.
@@ -134,7 +134,6 @@
       this.yes = null;
       this.no = null;
 
-      window.removeEventListener('mozChromeEvent', this);
       window.removeEventListener('attentionopening', this);
       window.removeEventListener('attentionopened', this);
       window.removeEventListener('home', this);

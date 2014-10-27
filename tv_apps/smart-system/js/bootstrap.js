@@ -8,7 +8,7 @@
          VisibilityManager, UsbStorage,
          SuspendingAppPriorityManager, TTLView,
          AppWindowFactory, SystemDialogManager,
-         applications, LayoutManager, PermissionManager, Accessibility,
+         applications, LayoutManager, Accessibility,
          TextSelectionDialog, SleepMenu*/
 'use strict';
 
@@ -129,8 +129,6 @@ window.addEventListener('load', function startup() {
   }
   window.layoutManager = new LayoutManager();
   window.layoutManager.start();
-  window.permissionManager = new PermissionManager();
-  window.permissionManager.start();
   window.remoteDebugger = new RemoteDebugger();
   window.sleepMenu = new SleepMenu();
   window.sleepMenu.start();

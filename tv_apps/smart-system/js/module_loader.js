@@ -36,6 +36,13 @@
       'mediaRecording': {
         'file': '/js/media_recording.js',
         'className': 'MediaRecording'
+      },
+      'permissionManager': {
+        'file': [document.getElementById('permission-screen'),// lazy load DOM
+                 '/style/permission_manager/permission_manager.css',
+                 '/js/permission_manager.js'],
+        'className': 'PermissionManager',
+        'exportToWindow': 'permissionManager'
       }
     },
 
@@ -52,7 +59,10 @@
       'volume-up-button-release': ['hardwareButtons'],
       'volume-down-button-press': ['hardwareButtons'],
       'volume-down-button-release': ['hardwareButtons'],
-      'recording-status': ['mediaRecording']
+      'recording-status': ['mediaRecording'],
+      'permission-prompt': ['permissionManager'],
+      'cancel-permission-prompt': ['permissionManager'],
+      'fullscreenoriginchange': ['permissionManager']
     },
 
     /**

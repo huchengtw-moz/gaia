@@ -202,9 +202,11 @@
     <link rel="stylesheet" type="text/css" href="style/trusted_ui/trusted_ui.css">
     <script defer src="js/trusted_ui.js"></script>
 
-    <!-- Permission Manager -->
-    <link rel="stylesheet" type="text/css" href="style/permission_manager/permission_manager.css">
-    <script defer src="js/permission_manager.js"></script>
+    <!--
+        Permission Manager is lazy loaded at module loader.
+        <link rel="stylesheet" type="text/css" href="style/permission_manager/permission_manager.css">
+        <script defer src="js/permission_manager.js"></script>
+    -->
 
     <!-- App Install -->
     <link rel="stylesheet" type="text/css" href="style/app_install_manager/app_install_manager.css">
@@ -542,6 +544,7 @@
       </div>
 
       <div id="permission-screen" data-z-index-level="permission-screen">
+      <!--
         <div id="permission-dialog" role="dialog" class="generic-dialog">
           <div class="inner">
             <h1 id="permission-title"></h1>
@@ -567,6 +570,7 @@
             </menu>
           </div>
         </div>
+      -->
       </div>
 
       <div id="device-list-item-tmpl" class="hide">
