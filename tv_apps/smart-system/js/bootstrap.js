@@ -43,10 +43,6 @@ window.addEventListener('load', function startup() {
     /** @global */
     window.secureWindowFactory = new SecureWindowFactory();
     /** @global */
-    if (window.SuspendingAppPriorityManager) {
-      window.suspendingAppPriorityManager = new SuspendingAppPriorityManager();
-    }
-    /** @global */
     window.systemDialogManager = window.systemDialogManager ||
       new SystemDialogManager();
 

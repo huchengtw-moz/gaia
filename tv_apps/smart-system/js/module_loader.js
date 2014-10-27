@@ -60,6 +60,10 @@
                  '/js/sleep_menu.js'],
         'className': 'SleepMenu',
         'exportToWindow': 'sleepMenu'
+      },
+      'suspendingAppPriorityManager': {
+        'file': 'suspending_app_priority_manager.js',
+        'className': 'SuspendingAppPriorityManager'
       }
     },
 
@@ -90,7 +94,9 @@
       'homescreenopened': ['externalStorageMonitor'],
       'volumedown+sleep': ['screenshot'],
       'holdsleep': ['sleepMenu'],
-      'batteryshutdown': ['sleepMenu']
+      'batteryshutdown': ['sleepMenu'],
+      'appsuspended': ['suspendingAppPriorityManager'],
+      'appresumed': ['suspendingAppPriorityManager']
     },
 
     /** @lends ModuleLoader */
