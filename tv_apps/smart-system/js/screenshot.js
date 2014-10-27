@@ -47,7 +47,7 @@
       }
       this._started = true;
 
-      window.addEventListener('volumedown+sleep', this);
+      // listener 'volumedown+sleep' at module loader
       window.addEventListener('mozChromeEvent', this);
     },
 
@@ -61,7 +61,6 @@
       }
       this._started = false;
 
-      window.removeEventListener('volumedown+sleep', this);
       window.removeEventListener('mozChromeEvent', this);
     },
 
@@ -119,6 +118,7 @@
      */
     handleTakeScreenshotSuccess: function(file) {
       try {
+        console.log('take screenshot success');
         this._getDeviceStorage(function(storage) {
           var d = new Date();
           d = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
@@ -144,6 +144,7 @@
           };
 
           saveRequest.onsuccess = (function ss_onsuccess() {
+            console.log('save to ' + filename + ' success');
             // Vibrate again when the screenshot is saved
             navigator.vibrate(100);
 
@@ -152,6 +153,7 @@
           }).bind(this);
 
           saveRequest.onerror = (function ss_onerror() {
+            console.log('fail to save to ' + filename);
             this._notify('screenshotFailed', saveRequest.error.name);
           }).bind(this);
         });
@@ -228,12 +230,5 @@
   };
 
   exports.Screenshot = Screenshot;
-
-  // XXX: We initialize ourselves here for now to avoid conflicts with other
-  // system2 stage1 patches. This instance is de-initalized in unit tests.
-  // We should move the initalization to somewhere sane (maybe System module)
-  // in the future.
-  exports.screenshot = new Screenshot();
-  exports.screenshot.start();
 
 }(window));

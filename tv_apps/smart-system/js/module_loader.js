@@ -48,6 +48,11 @@
         'file': '/js/remote_debugger.js',
         'className': 'RemoteDebugger',
         'exportToWindow': 'remoteDebugger'
+      },
+      'screenshot': {
+        'file': '/js/screenshot.js',
+        'className': 'Screenshot',
+        'exportToWindow': 'screenshot'
       }
     },
 
@@ -75,7 +80,8 @@
      * handles for CustomEvent
      */
     customEventHandlers: {
-      'homescreenopened': ['externalStorageMonitor']
+      'homescreenopened': ['externalStorageMonitor'],
+      'volumedown+sleep': ['screenshot']
     },
 
     /** @lends ModuleLoader */
