@@ -53,6 +53,13 @@
         'file': '/js/screenshot.js',
         'className': 'Screenshot',
         'exportToWindow': 'screenshot'
+      },
+      'sleepMenu': {
+        'file': [document.getElementById('sleep-menu'),// lazy load DOM
+                 '/style/sleep_menu/sleep_menu.css',
+                 '/js/sleep_menu.js'],
+        'className': 'SleepMenu',
+        'exportToWindow': 'sleepMenu'
       }
     },
 
@@ -81,7 +88,9 @@
      */
     customEventHandlers: {
       'homescreenopened': ['externalStorageMonitor'],
-      'volumedown+sleep': ['screenshot']
+      'volumedown+sleep': ['screenshot'],
+      'holdsleep': ['sleepMenu'],
+      'batteryshutdown': ['sleepMenu']
     },
 
     /** @lends ModuleLoader */

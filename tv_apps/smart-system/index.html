@@ -146,9 +146,11 @@
     <link rel="stylesheet" type="text/css" href="style/accessibility/accessibility.css">
     <script defer src="js/accessibility.js"></script>
 
-    <!-- Sleep Menu -->
-    <link rel="stylesheet" type="text/css" href="style/sleep_menu/sleep_menu.css">
-    <script defer src="js/sleep_menu.js"></script>
+    <!--
+        Sleep Menu is lazy load at module loader
+        <link rel="stylesheet" type="text/css" href="style/sleep_menu/sleep_menu.css">
+        <script defer src="js/sleep_menu.js"></script>
+    -->
 
     <!-- Battery Manager -->
     <link rel="stylesheet" type="text/css" href="style/battery_manager/battery_manager.css">
@@ -750,6 +752,7 @@
       </div> <!-- end of template for each IME item. -->
 
       <div id="sleep-menu" data-z-index-level="sleep-menu">
+      <!--
         <div id="sleep-menu-container" role="dialog" data-type="object">
           <header>
             <h1 data-l10n-id="deviceMenu">Device menu</h1>
@@ -762,6 +765,7 @@
             <button data-l10n-id="cancel">Cancel</button>
           </gaia-buttons>
         </div>
+      -->
       </div>
 
       <div id="system-overlay" data-z-index-level="system-overlay">

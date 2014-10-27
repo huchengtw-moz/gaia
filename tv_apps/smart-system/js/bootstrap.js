@@ -9,7 +9,7 @@
          SuspendingAppPriorityManager, TTLView,
          AppWindowFactory, SystemDialogManager,
          applications, LayoutManager, Accessibility,
-         TextSelectionDialog, SleepMenu*/
+         TextSelectionDialog*/
 'use strict';
 
 
@@ -129,8 +129,6 @@ window.addEventListener('load', function startup() {
   }
   window.layoutManager = new LayoutManager();
   window.layoutManager.start();
-  window.sleepMenu = new SleepMenu();
-  window.sleepMenu.start();
   window.ttlView = new TTLView();
   window.visibilityManager = new VisibilityManager();
   window.visibilityManager.start();
