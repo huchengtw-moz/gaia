@@ -12,7 +12,6 @@
    * @class RemoteDebugger
    */
   function RemoteDebugger() {
-    window.addEventListener('mozChromeEvent', this);
   }
 
   RemoteDebugger.prototype = {

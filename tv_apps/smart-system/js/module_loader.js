@@ -43,6 +43,11 @@
                  '/js/permission_manager.js'],
         'className': 'PermissionManager',
         'exportToWindow': 'permissionManager'
+      },
+      'remoteDebugger': {
+        'file': '/js/remote_debugger.js',
+        'className': 'RemoteDebugger',
+        'exportToWindow': 'remoteDebugger'
       }
     },
 
@@ -62,7 +67,8 @@
       'recording-status': ['mediaRecording'],
       'permission-prompt': ['permissionManager'],
       'cancel-permission-prompt': ['permissionManager'],
-      'fullscreenoriginchange': ['permissionManager']
+      'fullscreenoriginchange': ['permissionManager'],
+      'remote-debugger-prompt': ['remoteDebugger']
     },
 
     /**
