@@ -8,8 +8,7 @@
          VisibilityManager, UsbStorage,
          SuspendingAppPriorityManager, TTLView,
          AppWindowFactory, SystemDialogManager,
-         applications, LayoutManager, Accessibility,
-         TextSelectionDialog*/
+         applications, LayoutManager, Accessibility*/
 'use strict';
 
 
@@ -47,9 +46,6 @@ window.addEventListener('load', function startup() {
       new SystemDialogManager();
 
     window.AppWindowManager.init();
-
-    /** @global */
-    window.textSelectionDialog = new TextSelectionDialog();
   }
 
   function safelyLaunchFTU() {

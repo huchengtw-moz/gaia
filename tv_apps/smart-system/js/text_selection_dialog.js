@@ -22,9 +22,6 @@
 
     window.addEventListener('activeappchanged', this);
     window.addEventListener('home', this);
-    window.addEventListener('mozChromeEvent', this);
-    window.addEventListener('value-selector-shown', this);
-    window.addEventListener('value-selector-hidden', this);
   };
 
   TextSelectionDialog.prototype = Object.create(window.BaseUI.prototype);

@@ -64,6 +64,12 @@
       'suspendingAppPriorityManager': {
         'file': 'suspending_app_priority_manager.js',
         'className': 'SuspendingAppPriorityManager'
+      },
+      'textSelectionDialog': {
+        'file': ['/style/textselection_dialog/textselection_dialog.css',
+                 '/js/text_selection_dialog.js'],
+        'className': 'TextSelectionDialog',
+        'exportToWindow': 'textSelectionDialog'
       }
     },
 
@@ -84,7 +90,9 @@
       'permission-prompt': ['permissionManager'],
       'cancel-permission-prompt': ['permissionManager'],
       'fullscreenoriginchange': ['permissionManager'],
-      'remote-debugger-prompt': ['remoteDebugger']
+      'remote-debugger-prompt': ['remoteDebugger'],
+      'selectionchange': ['textSelectionDialog'],
+      'scrollviewchange': ['textSelectionDialog']
     },
 
     /**
@@ -96,7 +104,9 @@
       'holdsleep': ['sleepMenu'],
       'batteryshutdown': ['sleepMenu'],
       'appsuspended': ['suspendingAppPriorityManager'],
-      'appresumed': ['suspendingAppPriorityManager']
+      'appresumed': ['suspendingAppPriorityManager'],
+      'value-selector-shown': ['textSelectionDialog'],
+      'value-selector-hidden': ['textSelectionDialog']
     },
 
     /** @lends ModuleLoader */
