@@ -14,6 +14,9 @@
     for (var k in this.customEventHandlers) {
       window.addEventListener(k, this);
     }
+    for (var k in this.customEventHandlersInCaptureMode) {
+      window.addEventListener(k, this, true);
+    }
     for (var k in this.settingsHandler) {
       SettingsCache.observe(k, this.settingsHandler[k].defaultValue,
                             this.handleSettingsChanged.bind(this, k));
@@ -79,6 +82,11 @@
         'file': ['/style/ttlview/ttlview.css', '/js/ttlview.js'],
         'className': 'TTLView',
         'exportToWindow': 'ttlView'
+      },
+      'wrapperFactory': {
+        'file': 'js/wrapper_factory.js',
+        'className': 'WrapperFactory',
+        'exportToWindow': 'wrapperFactory'
       }
     },
 
@@ -118,6 +126,10 @@
       'value-selector-hidden': ['textSelectionDialog']
     },
 
+    customEventHandlersInCaptureMode: {
+      'mozbrowseropenwindow': ['wrapperFactory']
+    },
+
     settingsHandler: {
       'debug.ttl.enabled': [{
           'handler': 'ttlView',
@@ -154,10 +166,15 @@
     },
 
     handleCustomEvent: function(evt) {
-      if (!this.customEventHandlers[evt.type]) {
+      if (!this.customEventHandlers[evt.type] &&
+          !this.customEventHandlersInCaptureMode[evt.type]) {
         return;
       }
-      this.pipeToHandlers(this.customEventHandlers[evt.type], evt);
+
+      var handlers = evt.eventPhase === Event.CAPTURING_PHASE ?
+                       this.customEventHandlersInCaptureMode[evt.type] :
+                       this.customEventHandlers[evt.type];
+      this.pipeToHandlers(handlers, evt);
     },
 
     pipeToHandlers: function(handlers, evt) {
