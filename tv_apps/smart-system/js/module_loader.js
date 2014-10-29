@@ -84,9 +84,15 @@
         'exportToWindow': 'ttlView'
       },
       'wrapperFactory': {
-        'file': 'js/wrapper_factory.js',
+        'file': '/js/wrapper_factory.js',
         'className': 'WrapperFactory',
         'exportToWindow': 'wrapperFactory'
+      },
+      'developerHUD': {
+        'file': ['/style/devtools/developer_hud.css',
+                 '/js/devtools/developer_hud.js'],
+        'className': 'DeveloperHUD',
+        'exportToWindow': 'developerHUD'
       }
     },
 
@@ -132,10 +138,15 @@
 
     settingsHandler: {
       'debug.ttl.enabled': [{
-          'handler': 'ttlView',
-          'defaultValue': false,
-          'observingValue': true
-        }]
+        'handler': 'ttlView',
+        'defaultValue': false,
+        'observingValue': true
+      }],
+      'devtools.overlay': [{
+        'handler': 'developerHUD',
+        'defaultValue': false,
+        'observingValue': true
+      }]
     },
 
     /** @lends ModuleLoader */

@@ -3,8 +3,7 @@
 
 /*global ActivityWindowManager, SecureWindowFactory,
          SecureWindowManager, HomescreenLauncher, HomescreenWindowManager,
-         FtuLauncher, ScreenManager,
-         DeveloperHUD, HomeGesture,
+         FtuLauncher, ScreenManager, HomeGesture,
          VisibilityManager, UsbStorage,
          SuspendingAppPriorityManager,
          AppWindowFactory, SystemDialogManager,
@@ -106,8 +105,6 @@ window.addEventListener('load', function startup() {
   window.accessibility.start();
   window.appWindowFactory = new AppWindowFactory();
   window.appWindowFactory.start();
-  window.developerHUD = new DeveloperHUD();
-  window.developerHUD.start();
   /** @global */
   window.attentionWindowManager = new window.AttentionWindowManager();
   window.attentionWindowManager.start();
