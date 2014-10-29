@@ -11,8 +11,12 @@
    */
   function ModuleLoader() {
     window.addEventListener('mozChromeEvent', this);
-    for(var k in this.customEventHandlers) {
+    for (var k in this.customEventHandlers) {
       window.addEventListener(k, this);
+    }
+    for (var k in this.settingsHandler) {
+      SettingsCache.observe(k, this.settingsHandler[k].defaultValue,
+                            this.handleSettingsChanged.bind(this, k));
     }
   }
 
@@ -70,6 +74,11 @@
                  '/js/text_selection_dialog.js'],
         'className': 'TextSelectionDialog',
         'exportToWindow': 'textSelectionDialog'
+      },
+      'ttlView': {
+        'file': ['/style/ttlview/ttlview.css', '/js/ttlview.js'],
+        'className': 'TTLView',
+        'exportToWindow': 'ttlView'
       }
     },
 
@@ -109,6 +118,14 @@
       'value-selector-hidden': ['textSelectionDialog']
     },
 
+    settingsHandler: {
+      'debug.ttl.enabled': [{
+          'handler': 'ttlView',
+          'defaultValue': false,
+          'observingValue': true
+        }]
+    },
+
     /** @lends ModuleLoader */
     /**
     * General event handler interface.
@@ -146,28 +163,49 @@
     pipeToHandlers: function(handlers, evt) {
       var self = this;
       handlers.forEach(function(name) {
-        var handler = self.handlers[name];
-        if (!handler.instance) {
-          LazyLoader.load(handler.file, function() {
-            handler.instance = new exports[handler.className]();
-            if ((typeof handler.instance['start']) === 'function') {
-              handler.instance.start();
-            }
-            // export to window for backward compatible.
-            if (handler.exportToWindow) {
-              window[handler.exportToWindow] = handler.instance;
-            }
-            // If handler has handleEvent, we need to pipe event to it.
-            // Otherwise, we just lazy load the module.
-            if (!handler.onlyLazyLoad &&
-                (typeof handler.instance['handleEvent']) === 'function') {
-              handler.instance.handleEvent(evt);
-            }
-          }); 
-        } else if ((typeof handler.instance['handleEvent']) === 'function') {
-          handler.instance.handleEvent(evt);
+        self.loadModule(self.handlers[name], function handleCreated(handler) {
+          // If handler has handleEvent, we need to pipe event to it.
+          // Otherwise, we just lazy load the module.
+          if (!handler.onlyLazyLoad &&
+              (typeof handler.instance['handleEvent']) === 'function') {
+            handler.instance.handleEvent(evt);
+          }
+        });
+      });
+    },
+
+    handleSettingsChanged: function(key, value) {
+      if (!this.settingsHandler[key]) {
+        return;
+      }
+
+      var self = this;
+      this.settingsHandler[key].forEach(function(handlerDef) {
+        if (handlerDef.observingValue === value) {
+          // we only lazy load modules in settings case.
+          self.loadModule(self.handlers[handlerDef.handler]);
         }
       });
+    },
+
+    loadModule: function(handler, callback) {
+      if (!handler.instance) {
+        LazyLoader.load(handler.file, function() {
+          handler.instance = new exports[handler.className]();
+          if ((typeof handler.instance['start']) === 'function') {
+            handler.instance.start();
+          }
+          // export to window for backward compatible.
+          if (handler.exportToWindow) {
+            window[handler.exportToWindow] = handler.instance;
+          }
+          if (callback) {
+            callback(handler)
+          }
+        });
+      } else if (callback) {
+        callback(handler);
+      }
     }
   };
 

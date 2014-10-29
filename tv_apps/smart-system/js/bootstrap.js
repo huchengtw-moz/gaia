@@ -6,7 +6,7 @@
          FtuLauncher, ScreenManager,
          DeveloperHUD, HomeGesture,
          VisibilityManager, UsbStorage,
-         SuspendingAppPriorityManager, TTLView,
+         SuspendingAppPriorityManager,
          AppWindowFactory, SystemDialogManager,
          applications, LayoutManager, Accessibility*/
 'use strict';
@@ -121,7 +121,6 @@ window.addEventListener('load', function startup() {
   }
   window.layoutManager = new LayoutManager();
   window.layoutManager.start();
-  window.ttlView = new TTLView();
   window.visibilityManager = new VisibilityManager();
   window.visibilityManager.start();
   window.wallpaperManager = new window.WallpaperManager();
