@@ -126,7 +126,7 @@
 
     window.addEventListener('softwareButtonEvent', this);
 
-    SettingsListener.observe('software-button.enabled', false, function(value) {
+    SettingsCache.observe('software-button.enabled', false, function(value) {
       this._softwareHome = value;
     }.bind(this));
   };

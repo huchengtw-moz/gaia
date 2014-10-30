@@ -15,7 +15,7 @@
   'use strict';
 
   var forceApzSetting = true;
-  SettingsListener.observe('apz.force-enable', true,
+  SettingsCache.observe('apz.force-enable', true,
     function apzSettingsChanged(value) {
       forceApzSetting = value;
     }
