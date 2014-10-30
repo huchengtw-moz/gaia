@@ -93,6 +93,11 @@
                  '/js/devtools/developer_hud.js'],
         'className': 'DeveloperHUD',
         'exportToWindow': 'developerHUD'
+      },
+      'logShake': {
+        'file': '/js/devtools/logshake.js',
+        'className': 'LogShake',
+        'exportToWindow': 'logshake'
       }
     },
 
@@ -129,7 +134,9 @@
       'appsuspended': ['suspendingAppPriorityManager'],
       'appresumed': ['suspendingAppPriorityManager'],
       'value-selector-shown': ['textSelectionDialog'],
-      'value-selector-hidden': ['textSelectionDialog']
+      'value-selector-hidden': ['textSelectionDialog'],
+      'capture-logs-success': ['logShake'],
+      'capture-logs-error': ['logShake']
     },
 
     customEventHandlersInCaptureMode: {
