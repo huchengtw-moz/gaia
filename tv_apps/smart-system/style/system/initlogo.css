@@ -6,7 +6,7 @@
   background: #000 url('/shared/resources/branding/initlogo.png') no-repeat center / cover;
   z-index: 65538;
   opacity: 1;
-  transition: opacity 1s ease 2s;
+  transition: opacity 0.5s ease 1s;
   pointer-events: none;
 }
 
