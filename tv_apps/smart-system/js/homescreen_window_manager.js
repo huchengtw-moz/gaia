@@ -91,7 +91,9 @@
         case 'ftuskip':
           this._ftuSkipped = true;
           if (this.ready) {
-            this.getHomescreen().setVisible(true);
+            var landingApp = this.landingAppLauncher.getHomescreen(true);
+            landingApp.ensure(true);
+            landingApp.setVisible(true);
           }
           break;
         case 'open-app':
@@ -110,9 +112,9 @@
           if (detail.manifestURL === FtuLauncher.getFtuManifestURL()) {
             // we don't need to set activeHome as anything if it is ftu.
             break;
-          } else if (detail.isHomescreen) {
-            this._activeHome = ('LandingAppWindow' === detail.CLASS_NAME) ?
-                                 this.landingAppLauncher : homescreenLauncher;
+          } else if (detail.isHomescreen &&
+                     detail.manifestURL === homescreenLauncher.manifestURL) {
+            this._activeHome = homescreenLauncher;
           } else {
             this.closeHomeApp();
           }
@@ -146,12 +148,10 @@
           var detail = evt.detail;
           // Landing app is also a homescreen. We need to which one is opened
           // and show/hide the correct homescreen
-          if (detail.CLASS_NAME === 'LandingAppWindow') {
-            this.setHomescreenVisible(homescreenLauncher, false);
-            this.setHomescreenVisible(this.landingAppLauncher, true);
-          } else if (this.landingAppLauncher.hasLandingApp) {
-            this.setHomescreenVisible(this.landingAppLauncher, false);
+          if (detail.manifestURL === homescreenLauncher.manifestURL) {
             this.setHomescreenVisible(homescreenLauncher, true);
+          } else if (this.landingAppLauncher.hasLandingApp) {
+            this.setHomescreenVisible(this.landingAppLauncher, true);
           }
           break;
         case 'activityopened':
@@ -211,17 +211,8 @@
         return;
       }
       homeApp.ready((function() {
-        if (originApp.isHomescreen) {
-          if (this._underlayApp) {
-            this._underlayApp.close('immediate');
-            this._underlayApp = null;
-          }
-          originApp.close('immediate');
-          homeApp.open();
-        } else {
-          this._underlayApp = originApp;
-          homeApp.open();
-        }
+        this._underlayApp = originApp;
+        homeApp.open();
       }).bind(this));
     },
 
@@ -251,45 +242,18 @@
         return;
       }
 
-      if (this._activeHome) {
-        if (this._activeHome.manifestURL !== manifestURL) {
-          // in homeA trying to switch to homeB
-          this.publish('home');
-        } else {
-          // cal getHomescreen to ensure it.
-          this.getHomescreen();
-        }
-      } else if (homescreenLauncher.manifestURL === manifestURL) {
+      if (homescreenLauncher.manifestURL === manifestURL) {
         // in appX trying to switch to home
         this.publish('home');
       } else if (this.landingAppLauncher.manifestURL === manifestURL) {
         // We set the activeHome as normal home and use home event to switch to
         // landing app
-        this._activeHome = homescreenLauncher;
-        this.publish('home');
+        AppWindowManager.display(this.landingAppLauncher.getHomescreen(true));
       }
     },
 
     handleHomeEvent: function handleHomeEvent() {
-      // If press home when one home app active, we need to swap the
-      // launcher.
-      if (this._activityCount > 0) {
-        // If we have activity on top of home, we need to ensure it to close
-        // all of them.
-        this._activeHome.getHomescreen().ensure(true);
-        if (this._activeHome === this.landingAppLauncher) {
-          this._activeHome.getHomescreen().setVisible(false);
-          this._activeHome.getHomescreen().close('immediate');
-          this._activeHome = homescreenLauncher;
-        }
-        this._activityCount = 0;
-      } else {
-        this._activeHome.getHomescreen().setVisible(false);
-        this._activeHome.getHomescreen().close('immediate');
-        // If we have activity on top of home, we always normal home
-        this._activeHome = this._activeHome === this.landingAppLauncher ?
-                           homescreenLauncher : this.landingAppLauncher;
-      }
+      this._activeHome = homescreenLauncher;
     },
 
     /**
