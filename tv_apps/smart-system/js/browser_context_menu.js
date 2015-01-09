@@ -43,6 +43,7 @@
   BrowserContextMenu.prototype.handleFocus = function(elem) {
     if (elem.nodeName) {
       selectionBorder.select(elem);
+      document.activeElement.blur();
       elem.focus();
     } else {
       selectionBorder.selectRect(elem);

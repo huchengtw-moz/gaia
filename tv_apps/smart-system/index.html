@@ -82,6 +82,7 @@
     <link rel="stylesheet" type="text/css" href="tv_shared/components/smart-banner/style.css">
 
     <link rel="stylesheet" type="text/css" href="style/fake-notification.css"/>
+    <link rel="stylesheet" type="text/css" href="style/app_lock/app_lock.css"/>
 
     <script defer src="shared/elements/config.js"></script>
     <script defer src="shared/js/component_utils.js"></script>
@@ -319,6 +320,8 @@
 
     <!-- API Services -->
     <script defer src="js/screenshot_service.js"></script>
+
+    <script defer src="js/app_lock_dialog.js"></script>
   </head>
 
   <body class="theme-settings" role="application">
@@ -744,7 +747,10 @@
           <smart-button id="notification-button-1" type="simple-text"></smart-button>
         </menu>
       </smart-banner>
-
+      <div id="app-lock-container" class="hidden" data-z-index-level="system-overlay">
+        <h1>This is app lock~~~</h1>
+        <button id="app-lock-ok-button" type="button">Open it</button>
+      </div>
       <div id="system-overlay" data-z-index-level="system-overlay">
         <div id="battery">
           <span class="icon-battery"></span>

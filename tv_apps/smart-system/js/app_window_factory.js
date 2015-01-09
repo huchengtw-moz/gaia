@@ -1,8 +1,14 @@
 'use strict';
-/* global applications, BrowserConfigHelper, AppWindowManager, AppWindow */
+/* global applications, BrowserConfigHelper, AppWindowManager, AppWindow,
+          appLockDialog */
 /* jshint nonew: false */
 
 (function(exports) {
+
+  // XXX: TODO, use mozSettings to store the locked app.
+  var LOCKED_APP = [
+    'app://video.gaiamobile.org/manifest.webapp'
+  ];
 
   /**
    * AppWindowFactory handle the launch request from gecko and
@@ -51,6 +57,7 @@
       window.addEventListener('openwindow', this.preHandleEvent);
       window.addEventListener('appopenwindow', this.preHandleEvent);
       window.addEventListener('iac-customlaunchpath', this.preHandleEvent);
+      window.addEventListener('applock-hidden', this.preHandleEvent);
       window.addEventListener('applicationready', (function appReady(e) {
         window.removeEventListener('applicationready', appReady);
         this._handlePendingEvents();
@@ -73,6 +80,7 @@
       window.removeEventListener('openwindow', this.preHandleEvent);
       window.removeEventListener('appopenwindow', this.preHandleEvent);
       window.removeEventListener('iac-customlaunchpath', this.preHandleEvent);
+      window.removeEventListener('applock-hidden', this.preHandleEvent);
     },
 
     /**
@@ -101,7 +109,7 @@
 
     handleEvent: function awf_handleEvent(evt) {
       var detail = evt.detail;
-      if (!detail.url) {
+      if (!detail.url && evt.type !== 'applock-hidden') {
         return;
       }
 
@@ -123,7 +131,7 @@
           config.timestamp = detail.timestamp;
           // TODO: Look up current opened window list,
           // and then create a new instance here.
-          this.launch(config);
+          this.checkAppLock(config);
           break;
         case 'open-app':
           // System Message Handler API is asking us to open the specific URL
@@ -144,11 +152,30 @@
           }
           // TODO: Create activity window instance
           // or background app window instance for system message here.
-          this.launch(config);
+          this.checkAppLock(config);
           break;
         case 'webapps-close':
           this.publish('killapp', config);
           break;
+        case 'applock-hidden':
+          if (evt.detail.result === true) {
+            this.launch(evt.detail.pendingJob);
+          } else {
+            AppWindowManager.getActiveApp().focus();
+          }
+          break;
+      }
+    },
+
+    checkAppLock: function awf_checkAppLock(config) {
+      if (config.url === window.location.href) {
+        return;
+      }
+
+      if (LOCKED_APP.indexOf(config.manifestURL) > -1) {
+        appLockDialog.show(config);
+      } else {
+        this.launch(config);
       }
     },
 
@@ -175,9 +202,6 @@
      * @memberof AppWindowFactory.prototype
      */
     launch: function awf_launch(config) {
-      if (config.url === window.location.href) {
-        return;
-      }
       if (config.isActivity && config.inline) {
         this.publish('launchactivity', config, document.body);
         return;

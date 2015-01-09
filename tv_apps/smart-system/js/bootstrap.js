@@ -2,7 +2,7 @@
 /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 
 /*global ActivityWindowManager, HomescreenLauncher, HomescreenWindowManager,
-         FtuLauncher, ScreenManager, Activities,
+         FtuLauncher, ScreenManager, Activities, AppLockDialog
          DeveloperHUD, RemoteDebugger, HomeGesture,
          VisibilityManager, UsbStorage,
          SuspendingAppPriorityManager, TTLView,
@@ -138,6 +138,9 @@ window.addEventListener('load', function startup() {
         multiple: false,
         container: document.getElementById('screen'),
         forground: true });
+
+  window.appLockDialog = new AppLockDialog();
+  window.appLockDialog.start();
 
   // unit tests call start() manually
   if (navigator.mozL10n) {
