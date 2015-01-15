@@ -104,13 +104,12 @@ var BluetoothTransfer = {
   },
 
   onFilesSending: function bt_onFilesSending(evt) {
-    var _ = navigator.mozL10n.get;
-
     // Notify user that we are sending files
     var icon = 'style/bluetooth_transfer/images/transfer.png';
-    NotificationHelper.send(_('transfer-has-started-title'),
-                            _('transfer-has-started-description'),
-                            icon);
+    NotificationHelper.send('transfer-has-started-title', {
+      'bodyL10n': 'transfer-has-started-description',
+      'icon': icon
+    });
 
     // Push sending files request in queue
     var sendingFilesSchedule = evt.detail;

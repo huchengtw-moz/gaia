@@ -19,7 +19,6 @@ var CaptivePortal = {
 
   handleLogin: function cp_handleLogin(id, url) {
     var wifiManager = window.navigator.mozWifiManager;
-    var _ = window.navigator.mozL10n.get;
     var settings = window.navigator.mozSettings;
     var icon = window.location.protocol + '//' + window.location.hostname +
       '/style/icons/captivePortal.png';
@@ -29,7 +28,8 @@ var CaptivePortal = {
     var currentNetwork = wifiManager.connection.network;
     var networkName = (currentNetwork && currentNetwork.ssid) ?
         currentNetwork.ssid : '';
-    var message = _('captive-wifi-available', { networkName: networkName });
+    var message = { 'id': 'captive-wifi-available',
+                    'args': { networkName: networkName });
 
     if (FtuLauncher.isFtuRunning()) {
       settings.createLock().set({'wifi.connect_via_settings': false});
@@ -56,17 +56,19 @@ var CaptivePortal = {
     }).bind(this);
 
     var options = {
-      body: message,
-      icon: icon,
-      tag: this.notificationPrefix + networkName
+      'bodyL10n': message,
+      'icon': icon,
+      'tag': this.notificationPrefix + networkName
     };
 
-    this.notification = new Notification('', options);
-    this.notification.addEventListener('click',
-      this.captiveNotification_onClick);
-    this.notification.addEventListener('close', (function() {
-      this.notification = null;
-    }).bind(this));
+    NotificationHelper.send('', options).then(function(notification) {
+      notification.addEventListener('click',
+        this.captiveNotification_onClick);
+      notification.addEventListener('close', (function() {
+        this.notification = null;
+      }).bind(this));
+      this.notification = notification;
+    }.bind(this));
   },
 
   dismissNotification: function dismissNotification(id) {

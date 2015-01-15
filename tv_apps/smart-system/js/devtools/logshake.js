@@ -113,12 +113,17 @@
       this._notify('logsFailed', error);
     },
 
-    _notify: function(titleId, body, onclick) {
-      var title = navigator.mozL10n.get(titleId) || titleId;
-      var notification = new window.Notification(title, {body: body});
-      if (onclick) {
-        notification.onclick = onclick;
-      }
+    _notify: function(titleId, body, bodyId, onclick) {
+      var options = {
+        'body': body,
+        'bodyL10n': bodyId
+      };
+
+      NotificationHelper.send(titleId, options).then(function(notification) {
+        if (onclick) {
+          notification.onclick = onclick;
+        }
+      });
     },
 
     /**
