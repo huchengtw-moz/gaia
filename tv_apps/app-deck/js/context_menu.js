@@ -51,7 +51,7 @@
         navigator.mozApps.getSelf().onsuccess = function(evt) {
           that._selfApp = evt.target.result;
           that._connectAndSend(message);
-        }
+        };
       }
     },
 
@@ -80,6 +80,7 @@
           // hard-coded value
           Applications.getIconBlob(app.manifestURL, app.entryPoint, 354,
             function(blob) {
+              /*jshint -W031 */
               new MozActivity({
                 name: 'pin',
                 data: {
@@ -88,7 +89,7 @@
                   group: 'app',
                   manifestURL: app.manifestURL,
                   launchURL: that._composeLaunchURL(app),
-                  // We use app's original icon instead of screenshot here because
+                // We use app's original icon instead of screenshot here because
                   // we are in app deck. For the case of getting screenshot,
                   // please refer to bug 1100238.
                   thumbnail: blob
@@ -122,7 +123,6 @@
       var l10nId =
         (detail && detail.pinned) ? 'unpin-from-home' : 'pin-to-home';
       this.pinToHomeElem.label = navigator.mozL10n.get(l10nId);
-      this.pinToHomeElem.setAttribute('data-l10n-id', l10nId);
       if (detail.removable === false) {
         this.contextMenuElem.removeChild(this.removeElem);
       } else {

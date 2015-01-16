@@ -1,7 +1,7 @@
 /* global MozActivity, IconsHelper, LazyLoader */
 /* global applications */
 /* global BookmarksDatabase */
-/* global XScrollable */
+/* global XScrollable, KeyNavigationAdapter */
 
 (function(window) {
   'use strict';
@@ -176,7 +176,11 @@
       var icon = document.createElement('div');
       action.dataset.id = item.id;
       action.dataset.value = item.value;
-      action.setAttribute('data-l10n-id', item.label);
+      if (item.labelId) {
+        action.setAttribute('data-l10n-id', item.labelId);
+      } else {
+        action.textContent = item.label;
+      }
       action.className = self.ELEMENT_PREFIX + 'button';
 
       if (item.icon) {
@@ -317,19 +321,19 @@
       case 'A':
         return [{
           id: 'open-in-new-window',
-          label: 'open-in-new-window',
+          labelId: 'open-in-new-window',
           callback: this.openUrl.bind(this, uri)
         }, {
           id: 'bookmark-link',
-          label: 'add-link-to-home-screen',
+          labelId: 'add-link-to-home-screen',
           callback: this.bookmarkUrl.bind(this, uri, text)
         }, {
           id: 'save-link',
-          label: 'save-link',
+          labelId: 'save-link',
           callback: this.app.browser.element.download.bind(this, uri)
         }, {
           id: 'share-link',
-          label: 'share-link',
+          labelId: 'share-link',
           callback: this.shareUrl.bind(this, uri)
         }];
 
@@ -348,11 +352,11 @@
 
         return [{
           id: 'save-' + type,
-          label: 'save-' + type,
+          labelId: 'save-' + type,
           callback: this.app.browser.element.download.bind(this, uri)
         }, {
           id: 'share-' + type,
-          label: 'share-' + type,
+          labelId: 'share-' + type,
           callback: this.shareUrl.bind(this, uri)
         }];
 
@@ -373,14 +377,14 @@
         if (!result) {
           menuData.push({
             id: 'add-to-homescreen',
-            label: 'add-to-home-screen',
+            labelId: 'add-to-home-screen',
             callback: this.bookmarkUrl.bind(this, config.url, name)
           });
         }
 
         menuData.push({
           id: 'share',
-          label: 'share',
+          labelId: 'share',
           callback: this.shareUrl.bind(this, config.url)
         });
 
