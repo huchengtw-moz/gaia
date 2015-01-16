@@ -85,6 +85,7 @@
                 data: {
                   name: app.name,
                   type: 'Application',
+                  group: 'app',
                   manifestURL: app.manifestURL,
                   launchURL: that._composeLaunchURL(app),
                   // We use app's original icon instead of screenshot here because
