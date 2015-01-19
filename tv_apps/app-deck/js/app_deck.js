@@ -1,5 +1,5 @@
-/* global SpatialNavigator, SharedUtils, Applications, URL, evt, XScrollable,
-  KeyNavigationAdapter, ContextMenu, CardManager, PromotionList */
+/* global SpatialNavigator, SharedUtils, Applications, URL,
+  KeyNavigationAdapter, ContextMenu, CardManager */
 
 (function(exports) {
   'use strict';
@@ -33,8 +33,7 @@
       this._keyNavigationAdapter.init();
       this._cardManager = new CardManager();
       this._cardManager.init('readonly').then(function() {
-        that._cardManager.on('cardlist-changed',
-                             that.onCardListChanged.bind(that));
+        that._cardManager.on('cardlist-changed', that.onCardListChanged.bind(that));
       });
 
       Applications.init(function() {
@@ -43,16 +42,10 @@
         appGridElements.forEach(function(appGridElem) {
           that._appDeckGridViewElem.appendChild(appGridElem);
         });
-
-        // promotion list must be created before XScrollable because it creates
-        // elements for XScrollable.
-        that._promotionList = new PromotionList();
-        that._promotionList.init();
-
         that._appDeckListScrollable = new XScrollable({
           frameElem: 'app-deck-list-frame',
           listElem: 'app-deck-list',
-          itemClassName: 'app-deck-list-item',
+          itemClassName: 'app-banner',
           margin: 1.4
         });
         that._navigableElements =
@@ -84,7 +77,7 @@
           if (elem.dataset.revokableURL) {
             // make sure to revoke iconURL once it is no longer needed.
             // For example, icon is changed or app is uninstalled
-            URL.revokeObjectURL(elem.dataset.revokableURL);
+            URL.revokeObjectURL(elm.dataset.revokableURL);
           }
           elem.dataset.revokableURL = blob ? iconURL : undefined;
           elem.style.backgroundImage = 'url("' + iconURL + '")';
