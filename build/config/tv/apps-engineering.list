@@ -22,6 +22,7 @@ apps/video
 apps/wallpaper
 apps/marketplace.firefox.com
 apps/default_theme
+apps/settings
 outoftree_apps/*
 dev_apps/test-agent
 dev_apps/homescreen-stingray
