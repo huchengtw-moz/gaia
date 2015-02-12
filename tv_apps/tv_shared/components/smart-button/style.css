@@ -94,7 +94,7 @@ smart-button[data-icon].disabled:before {
  * Simple Text Button
 **/
 smart-button[type="simple-text"] {
-  color: #dddddd;
+  color: #6E6E6E;
   background: none;
   border: none;
   border-radius: 0;
