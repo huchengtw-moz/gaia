@@ -63,6 +63,7 @@
     var err;
     switch(msg.type) {
       case 'load':
+        console.log('load ' + msg.url);
         this._player.load(msg.url);
         break;
       case 'play':
@@ -117,7 +118,16 @@
         this.initSession(presentation.session);
         break;
       case 'message':
-        this.handleRemoteMessage(JSON.parse(evt.data));
+        var data = evt.data;
+        if (data.indexOf('}{')) {
+          data = '[' + data.replace('}{', '},{') + ']';
+          var aList = JSON.parse(data);
+          for (var i = 0; i < aList.length; i++) {
+            this.handleRemoteMessage(aList[i]);
+          }
+        } else {
+          this.handleRemoteMessage(JSON.parse(data));
+        }
         break;
     }
   };

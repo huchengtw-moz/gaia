@@ -68,8 +68,7 @@
       return result;
     },
 
-    _handleMessage: function r_handleMessage(evt) {
-      var message = JSON.parse(evt.data);
+    _processMsg: function r_processMsg(message) {
       var renderedMessage = this._renderMessage(message);
 
       if (renderedMessage) {
@@ -77,6 +76,19 @@
           body: renderedMessage.body,
           icon: DEFAULT_ICON_URL
         });
+      }
+    },
+
+    _handleMessage: function r_handleMessage(evt) {
+      var data = evt.data;
+      if (data.indexOf('}{')) {
+        data = '[' + data.replace('}{', '},{') + ']';
+        var aList = JSON.parse(data);
+        for (var i = 0; i < aList.length; i++) {
+          this._processMsg(aList[i]);
+        }
+      } else {
+        this._processMsg(JSON.parse(data));
       }
     },
 
