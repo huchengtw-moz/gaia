@@ -12,4 +12,5 @@ html, body {
   margin: 0;
   padding: 0;
   background-image: url(dummy/device_deck_background.jpg);
+  background-size: 100% 100%;
 }
