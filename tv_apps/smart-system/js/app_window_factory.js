@@ -138,15 +138,15 @@
 
         if (app) {
           // If target app existed, kill it and relaunch.
-          app.kill();
-          window.addEventListener('appdestroyed',
+          window.addEventListener('appterminated',
           function awf_onappdestroyed(evt) {
-            if (evt.detail.instanceID !== app.instanceID) {
+            if (evt.detail.manifestURL !== app.manifestURL) {
               return;
             }
-            window.removeEventListener('appdestroyed', awf_onappdestroyed);
+            window.removeEventListener('appterminated', awf_onappdestroyed);
             self._launchPresentationApp(config, protocol);
           });
+          app.kill();
         } else {
           self._launchPresentationApp(config, protocol);
         }
