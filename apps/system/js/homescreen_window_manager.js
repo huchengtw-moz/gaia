@@ -70,7 +70,7 @@
           // XXX: There's a race between lockscreenWindow and homescreenWindow.
           // If lockscreenWindow is instantiated before homescreenWindow,
           // we should not display the homescreen here.
-          if (Service.locked) {
+          if (Service.query('LockScreenWindowManager:locked')) {
             this.getHomescreen().setVisible(false);
           }
           break;

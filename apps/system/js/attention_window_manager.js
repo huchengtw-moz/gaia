@@ -58,7 +58,7 @@
       }
       this._topMostWindow = null;
       var nextApp = homescreenLauncher.getHomescreen();
-      if (Service.locked) {
+      if (Service.query('LockScreenWindowManager:locked')) {
         this.closeAllAttentionWindows();
       } else if (nextApp && !nextApp.isDead()) {
         nextApp.ready(this.closeAllAttentionWindows.bind(this));

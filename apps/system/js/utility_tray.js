@@ -234,7 +234,8 @@ window.UtilityTray = {
         break;
 
       case 'touchstart':
-        if (window.Service.locked || window.Service.runningFTU) {
+        if (Service.query('LockScreenWindowManager:locked') ||
+            Service.runningFTU) {
           return;
         }
 

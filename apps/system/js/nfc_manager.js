@@ -127,8 +127,9 @@
     },
 
     _handle_screenchange: function(evt) {
-      var nfcEvt = ScreenManager.screenEnabled && !Service.locked ?
-                    'enable-polling' : 'disable-polling';
+      var nfcEvt = ScreenManager.screenEnabled &&
+                   !Service.query('LockScreenWindowManager:locked') ?
+                     'enable-polling' : 'disable-polling';
       this._doNfcStateTransition(nfcEvt);
     },
 

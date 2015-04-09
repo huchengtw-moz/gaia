@@ -465,7 +465,8 @@
         if (this.defaultVolumeControlChannel !== 'unknown') {
           return this.defaultVolumeControlChannel;
         } else {
-          return this.homescreenVisible || (Service.locked) ||
+          return this.homescreenVisible ||
+            (Service.query('LockScreenWindowManager:locked')) ||
             FtuLauncher.isFtuRunning() ? 'notification' : 'content';
         }
     }

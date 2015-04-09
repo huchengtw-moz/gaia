@@ -556,7 +556,7 @@
           if (this._activeApp && !this._activeApp.isHomescreen) {
             return;
           }
-          if (!Service.locked) {
+          if (!Service.query('LockScreenWindowManager:locked')) {
             this.display();
           }
           break;

@@ -2,7 +2,7 @@
 /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 
 /*global ActivityWindowManager, Browser, SecureWindowFactory,
-         SecureWindowManager, HomescreenLauncher, HomescreenWindowManager,
+         HomescreenLauncher, HomescreenWindowManager,
          FtuLauncher, SourceView, ScreenManager, Places, Activities,
          DeveloperHUD, DialerAgent, RemoteDebugger, HomeGesture,
          VisibilityManager, UsbStorage, TaskManager,
@@ -55,9 +55,6 @@ window.addEventListener('load', function startup() {
     window.activityWindowManager.start();
 
     /** @global */
-    window.secureWindowManager = window.secureWindowManager ||
-      new SecureWindowManager();
-    /** @global */
     window.secureWindowFactory = new SecureWindowFactory();
     /** @global */
     if (window.SuspendingAppPriorityManager) {
@@ -72,10 +69,6 @@ window.addEventListener('load', function startup() {
     window.trustedWindowManager = window.trustedWindowManager ||
       new TrustedWindowManager();
     window.trustedWindowManager.start();
-
-    /** @global */
-    window.lockScreenWindowManager = new window.LockScreenWindowManager();
-    window.lockScreenWindowManager.start();
 
     window.appWindowManager.start();
 

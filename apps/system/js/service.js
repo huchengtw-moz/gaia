@@ -200,7 +200,7 @@
      * @example
      * Service.query('FtuLauncher.isFtuRunning');
      * Service.query('isFtuRunning');
-     * 
+     *
      * @param  {String} state The machine name and the state name.
      * @return {String|Boolean|Number|Object}
      */
@@ -281,18 +281,6 @@
         return false;
       } else {
         return window.FtuLauncher.isFtuRunning();
-      }
-    },
-
-    /**
-     * XXX: LockscreenWindowManager should register 'locked' service.
-     */
-    get locked() {
-      // Someone ask this state too early.
-      if ('undefined' === typeof window.lockScreenWindowManager) {
-        return false;
-      } else {
-        return window.lockScreenWindowManager.isActive();
       }
     },
 

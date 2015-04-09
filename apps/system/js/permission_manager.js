@@ -270,7 +270,9 @@
           }
           break;
         case 'screenchange':
-          if (Service.locked && !detail.screenEnabled) {
+          if (Service.query('LockScreenWindowManager:locked') &&
+              !detail.screenEnabled) {
+
             this.discardPermissionRequest();
           }
           break;

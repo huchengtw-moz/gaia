@@ -1,6 +1,7 @@
 /* -*- Mode: Java; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- /
 /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 
+/* global Service */
 'use strict';
 
 
@@ -519,7 +520,9 @@ var NotificationScreen = {
     // Notification toaster
     if (notify) {
       this.updateToaster(detail, type, dir);
-      if (this.lockscreenPreview || !window.Service.locked) {
+      if (this.lockscreenPreview ||
+          !Service.query('LockScreenWindowManager:locked')) {
+
         this.toaster.classList.add('displayed');
 
         if (this._toasterTimeout) {
@@ -535,7 +538,8 @@ var NotificationScreen = {
 
     // Adding it to the lockscreen if locked and the privacy setting
     // does not prevent it.
-    if (Service.locked && this.lockscreenPreview) {
+    if (Service.query('LockScreenWindowManager:locked') &&
+        this.lockscreenPreview) {
       this.addLockScreenNotification(detail.id,
         notificationNode.cloneNode(true));
     }

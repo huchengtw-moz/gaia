@@ -573,7 +573,7 @@ var StatusBar = {
 
   // To reduce the duplicated code
   isLocked: function() {
-    return Service.locked;
+    return Service.query('LockScreenWindowManager:locked');
   },
 
   toCamelCase: function sb_toCamelCase(str) {

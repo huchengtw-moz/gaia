@@ -65,7 +65,7 @@
         break;
       case 'apprequestforeground':
         // XXX: Use hierachy manager to know who is top most.
-        if (!Service.locked &&
+        if (!Service.query('LockScreenWindowManager:locked') &&
             !attentionWindowManager.hasActiveWindow()) {
           evt.detail.setVisible(true);
         }
@@ -79,7 +79,7 @@
         this._normalAudioChannelActive = false;
         break;
       case 'attentionwindowmanager-deactivated':
-        if (window.Service.locked) {
+        if (Service.query('LockScreenWindowManager:locked')) {
           this.publish('showlockscreenwindow');
           return;
         }
@@ -118,7 +118,7 @@
         break;
 
       case 'attentionopened':
-        if (!Service.locked) {
+        if (!Service.query('LockScreenWindowManager:locked')) {
           this.publish('hidewindow', { type: evt.type });
         }
         break;
@@ -127,9 +127,10 @@
           this._resetDeviceLockedTimer();
 
           if (this._normalAudioChannelActive &&
-              evt.detail.channel !== 'normal' && window.Service.locked) {
+              evt.detail.channel !== 'normal' &&
+              Service.query('LockScreenWindowManager:locked')) {
             this._deviceLockedTimer = setTimeout(function setVisibility() {
-              if (window.Service.locked) {
+              if (Service.query('LockScreenWindowManager:locked')) {
                 this.publish('hidewindow',
                   { screenshoting: false, type: evt.type });
               }

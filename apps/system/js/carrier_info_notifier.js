@@ -5,6 +5,7 @@
 
 /* global ModalDialog */
 /* global NotificationScreen */
+/* global Service */
 
 var CarrierInfoNotifier = {
 
@@ -41,7 +42,7 @@ var CarrierInfoNotifier = {
 
     // If we are not inside the lockscreen, show the dialog
     // immediately, dispatch an event to hide
-    if (!window.Service.locked) {
+    if (!Service.query('LockScreenWindowManager:locked')) {
       this.dispatchEvent('emergencyalert');
       this.playNotification();
       showDialog();

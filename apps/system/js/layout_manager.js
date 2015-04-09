@@ -49,8 +49,9 @@
     get height() {
       var activeApp = Service.currentApp;
       var isFullScreenLayout = activeApp && activeApp.isFullScreenLayout();
-      var softwareButtonHeight = Service.locked || isFullScreenLayout ?
-        0 : softwareButtonManager.height;
+      var softwareButtonHeight =
+        Service.query('LockScreenWindowManager:locked') || isFullScreenLayout ?
+          0 : softwareButtonManager.height;
       var keyboardHeight = this.keyboardEnabled ?
         inputWindowManager.getHeight() : 0;
       var height = window.innerHeight - keyboardHeight - softwareButtonHeight;
