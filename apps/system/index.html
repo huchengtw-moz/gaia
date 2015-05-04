@@ -465,6 +465,9 @@
     <link rel="stylesheet" type="text/css" href="style/mobileid/mobileid.css">
     <script defer src="js/mobileid_manager.js"></script>
     <script defer src="js/mobileid_dialog.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="style/test_focus.css"/>
+    <script defer src="js/test_focus.js"></script>
   </head>
 
   <body class="theme-settings" role="application">
@@ -1194,6 +1197,10 @@
       <div id="right-panel" class="gesture-panel disabled" data-z-index-level="gesture-panel"></div>
       <div id="bottom-panel" class="gesture-panel" data-z-index-level="gesture-panel"></div>
 
+      <div id="test-panel" data-z-index-level="global-overlays">
+        <input type="text" id="test-times" value="100">
+        <button id="test-button">Run</button>
+      </div>
     </div> <!-- end of #screen -->
   </body>
 </html>

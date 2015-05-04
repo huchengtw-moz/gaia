@@ -1,0 +1,6 @@
+#test-panel, #test-times, #test-button {
+  width: 100%;
+  display: block;
+  position: absolute;
+  top: 50%;
+}
